@@ -1,0 +1,16 @@
+[
+  {
+    "entity": "items",
+    "fileName": "items-batch.xlsx",
+    "userId": "user-admin",
+    "username": "admin",
+    "date": "2026-08-26T10:19:03.499Z",
+    "totalRows": 1,
+    "successfulRows": 1,
+    "failedRows": 0,
+    "errors": [],
+    "id": "9c17d942-813e-481c-8d34-082158bfff34",
+    "createdAt": "2026-08-26T10:19:03.499Z",
+    "updatedAt": "2026-08-26T10:19:03.499Z"
+  }
+]

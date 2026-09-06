@@ -1,0 +1,59 @@
+[
+  {
+    "number": "GIN-2026-0001",
+    "type": "IN",
+    "warehouseId": "154421d3-9a29-47f4-b2f2-3c45ad924316",
+    "items": [
+      {
+        "itemId": "c8a3aba8-bbc4-4396-b1b6-22ede55aff6c",
+        "quantity": 100,
+        "unitCost": 50
+      },
+      {
+        "itemId": "7e41f015-72e3-4150-8d06-326898a760a9",
+        "quantity": 40,
+        "unitCost": 30
+      }
+    ],
+    "date": "2026-08-26",
+    "createdBy": "admin",
+    "id": "3417cc2e-bc99-46b1-96f1-76c4f0c81d94",
+    "createdAt": "2026-08-26T10:19:03.251Z",
+    "updatedAt": "2026-08-26T10:19:03.251Z"
+  },
+  {
+    "number": "GOUT-2026-0001",
+    "type": "OUT",
+    "warehouseId": "154421d3-9a29-47f4-b2f2-3c45ad924316",
+    "items": [
+      {
+        "itemId": "c8a3aba8-bbc4-4396-b1b6-22ede55aff6c",
+        "quantity": 95
+      }
+    ],
+    "date": "2026-08-26",
+    "createdBy": "keeper",
+    "id": "4b7c15b9-b3c0-43b6-920f-34aa736df6d6",
+    "createdAt": "2026-08-26T10:19:03.269Z",
+    "updatedAt": "2026-08-26T10:19:03.269Z"
+  },
+  {
+    "number": "GOUT-2026-0002",
+    "type": "OUT",
+    "warehouseId": "154421d3-9a29-47f4-b2f2-3c45ad924316",
+    "projectId": "b159798b-2121-40b9-9c0f-16a59f29de81",
+    "items": [
+      {
+        "itemId": "c8a3aba8-bbc4-4396-b1b6-22ede55aff6c",
+        "quantity": 3
+      }
+    ],
+    "referenceNumber": "MR-2026-0001",
+    "date": "2026-08-26",
+    "notes": "صرف مقابل طلب مواد MR-2026-0001",
+    "createdBy": "keeper",
+    "id": "b5eb0be3-6289-41f3-a9fc-a40cae49538f",
+    "createdAt": "2026-08-26T10:19:03.334Z",
+    "updatedAt": "2026-08-26T10:19:03.334Z"
+  }
+]

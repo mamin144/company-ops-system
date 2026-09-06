@@ -1,0 +1,38 @@
+[
+  {
+    "number": "GIN-2026-0001",
+    "type": "IN",
+    "warehouseId": "8b840882-965b-4c81-b339-0cfae57e63f6",
+    "items": [
+      {
+        "itemId": "d6b89461-9563-46ba-882e-792a354e3f41",
+        "quantity": 50,
+        "unitCost": 20
+      }
+    ],
+    "date": "2026-08-26",
+    "createdBy": "admin",
+    "id": "66b59e0b-281b-48c1-bd15-34fb9a222cf7",
+    "createdAt": "2026-08-26T11:26:57.995Z",
+    "updatedAt": "2026-08-26T11:26:57.995Z"
+  },
+  {
+    "number": "GOUT-2026-0001",
+    "type": "OUT",
+    "warehouseId": "8b840882-965b-4c81-b339-0cfae57e63f6",
+    "projectId": "e21e2584-6298-45a2-b36e-02e7e4517c2c",
+    "items": [
+      {
+        "itemId": "d6b89461-9563-46ba-882e-792a354e3f41",
+        "quantity": 3
+      }
+    ],
+    "referenceNumber": "MR-2026-0001",
+    "date": "2026-08-26",
+    "notes": "صرف مقابل طلب مواد MR-2026-0001",
+    "createdBy": "admin",
+    "id": "58a41366-65c5-4ecb-b184-216978fc0146",
+    "createdAt": "2026-08-26T11:26:58.039Z",
+    "updatedAt": "2026-08-26T11:26:58.039Z"
+  }
+]

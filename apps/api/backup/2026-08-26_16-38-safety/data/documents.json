@@ -1,0 +1,129 @@
+[
+  {
+    "title": "سيرة ذاتية للتجربة",
+    "category": "Contracts",
+    "documentType": "Contract",
+    "tags": [],
+    "revision": "01",
+    "status": "draft",
+    "uploadedBy": "admin",
+    "fileName": "cv-r1.pdf",
+    "fileExtension": "pdf",
+    "fileSize": 21,
+    "filePath": "C:\\Users\\OMAR\\Documents\\Default Project\\company-ops-system\\apps\\api\\storage\\documents\\unassigned\\Contracts\\1787751217986-8e5396e9-7aba-4c6c-a8fc-e1b26e11ca7a.pdf",
+    "revisions": [
+      {
+        "id": "b65b1c90-6f7b-49f0-a58b-a63b01b743b4",
+        "revision": "00",
+        "fileName": "Mahmoud_Amin_CV.pdf",
+        "fileExtension": "pdf",
+        "fileSize": 47,
+        "filePath": "documents\\unassigned\\Contracts\\1787751217877-b9130c1e-bdb1-4e6b-b48c-df456085c603.pdf",
+        "uploadedBy": "admin",
+        "uploadedAt": "2026-08-26T13:33:37.877Z"
+      },
+      {
+        "id": "b8ac93ca-0877-4967-91d4-0fa1b24900ed",
+        "revision": "01",
+        "fileName": "cv-r1.pdf",
+        "fileExtension": "pdf",
+        "fileSize": 21,
+        "filePath": "documents\\unassigned\\Contracts\\1787751217986-8e5396e9-7aba-4c6c-a8fc-e1b26e11ca7a.pdf",
+        "uploadedBy": "admin",
+        "uploadedAt": "2026-08-26T13:33:37.987Z",
+        "notes": "إصدار معدل"
+      }
+    ],
+    "createdBy": "admin",
+    "id": "0c0d383c-ba99-4f2a-b76e-7afeeb8cdf21",
+    "createdAt": "2026-08-26T13:33:37.877Z",
+    "updatedAt": "2026-08-26T13:33:37.987Z"
+  },
+  {
+    "title": "عقد بالاسم العربي",
+    "category": "Contracts",
+    "documentType": "Contract",
+    "tags": [],
+    "revision": "00",
+    "status": "draft",
+    "uploadedBy": "admin",
+    "fileName": "عقد مقاولة رقم ١٢.pdf",
+    "fileExtension": "pdf",
+    "fileSize": 47,
+    "filePath": "documents\\unassigned\\Contracts\\1787751217919-33836051-0bcb-45bd-a43a-e1448c207953.pdf",
+    "revisions": [
+      {
+        "id": "a0cdf51d-22f2-4343-9ded-4b7aba1d57cc",
+        "revision": "00",
+        "fileName": "عقد مقاولة رقم ١٢.pdf",
+        "fileExtension": "pdf",
+        "fileSize": 47,
+        "filePath": "documents\\unassigned\\Contracts\\1787751217919-33836051-0bcb-45bd-a43a-e1448c207953.pdf",
+        "uploadedBy": "admin",
+        "uploadedAt": "2026-08-26T13:33:37.920Z"
+      }
+    ],
+    "createdBy": "admin",
+    "id": "8efcb155-0b13-46a3-b346-2df5c8f853fe",
+    "createdAt": "2026-08-26T13:33:37.920Z",
+    "updatedAt": "2026-08-26T13:33:37.920Z"
+  },
+  {
+    "title": "مخطط صورة",
+    "category": "Drawings",
+    "documentType": "Drawing",
+    "tags": [],
+    "revision": "00",
+    "status": "draft",
+    "uploadedBy": "admin",
+    "fileName": "plan.png",
+    "fileExtension": "png",
+    "fileSize": 8,
+    "filePath": "documents\\unassigned\\Drawings\\1787751217943-5bf886dc-661b-4cd9-960f-3a097267a31f.png",
+    "revisions": [
+      {
+        "id": "0b09c68b-2fd8-4a6c-87c0-f740e1cac80a",
+        "revision": "00",
+        "fileName": "plan.png",
+        "fileExtension": "png",
+        "fileSize": 8,
+        "filePath": "documents\\unassigned\\Drawings\\1787751217943-5bf886dc-661b-4cd9-960f-3a097267a31f.png",
+        "uploadedBy": "admin",
+        "uploadedAt": "2026-08-26T13:33:37.944Z"
+      }
+    ],
+    "createdBy": "admin",
+    "id": "cbfa9975-8d52-4764-bcf8-7ee432a26362",
+    "createdAt": "2026-08-26T13:33:37.944Z",
+    "updatedAt": "2026-08-26T13:33:37.944Z"
+  },
+  {
+    "title": "مضغوط",
+    "category": "Other",
+    "documentType": "Report",
+    "tags": [],
+    "revision": "00",
+    "status": "draft",
+    "uploadedBy": "admin",
+    "fileName": "archive.zip",
+    "fileExtension": "zip",
+    "fileSize": 12,
+    "filePath": "documents\\unassigned\\Other\\1787751217964-a69f5ac9-6757-4add-bf86-a890d7e11b21.zip",
+    "revisions": [
+      {
+        "id": "4f7228f1-b108-4ad5-a3ea-f5fb4981a9d0",
+        "revision": "00",
+        "fileName": "archive.zip",
+        "fileExtension": "zip",
+        "fileSize": 12,
+        "filePath": "documents\\unassigned\\Other\\1787751217964-a69f5ac9-6757-4add-bf86-a890d7e11b21.zip",
+        "uploadedBy": "admin",
+        "uploadedAt": "2026-08-26T13:33:37.965Z"
+      }
+    ],
+    "createdBy": "admin",
+    "id": "a0ba63ad-eb10-4056-922a-ed2f49b73bdc",
+    "createdAt": "2026-08-26T13:33:37.965Z",
+    "updatedAt": "2026-08-26T13:33:37.965Z"
+  }
+]

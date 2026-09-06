@@ -1,0 +1,35 @@
+[
+  {
+    "id": "59c419186e784c57abb8fb4c",
+    "userId": "user-admin",
+    "username": "admin",
+    "tokenHash": "465d4222d4bde3d719c2a2e4b96a1ca25728fbd070890d74ddc3504dc17c7ef1",
+    "createdAt": "2026-08-26T11:26:27.946Z",
+    "expiresAt": "2026-08-27T11:26:27.946Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": false
+  },
+  {
+    "id": "ed56a41845cb1bf9b9e44b73",
+    "userId": "user-keeper",
+    "username": "keeper",
+    "tokenHash": "19f8c82bce008585671e31677e99475c23c57176aa559c544041bba52e96ceff",
+    "createdAt": "2026-08-26T11:26:28.080Z",
+    "expiresAt": "2026-08-27T11:26:28.080Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": false
+  },
+  {
+    "id": "e48204bc378c48ebe9dd810d",
+    "userId": "user-admin",
+    "username": "admin",
+    "tokenHash": "a4b86a945620ecf1c703f52883d936b3172271b08f6d3cd955c7f1a787b6fac5",
+    "createdAt": "2026-08-26T11:26:57.950Z",
+    "expiresAt": "2026-08-27T11:26:57.950Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": false
+  }
+]

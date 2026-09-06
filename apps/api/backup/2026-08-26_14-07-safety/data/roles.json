@@ -1,0 +1,115 @@
+[
+  {
+    "id": "role-admin",
+    "name": "admin",
+    "nameAr": "مدير النظام",
+    "permissions": [
+      "archive.view",
+      "archive.upload",
+      "archive.edit",
+      "archive.delete",
+      "archive.download",
+      "warehouse.view",
+      "warehouse.create",
+      "warehouse.edit",
+      "warehouse.delete",
+      "warehouse.stock_in",
+      "warehouse.stock_out",
+      "warehouse.transfer",
+      "warehouse.adjust",
+      "warehouse.return",
+      "projects.view",
+      "projects.create",
+      "projects.edit",
+      "projects.delete",
+      "materialRequests.view",
+      "materialRequests.create",
+      "materialRequests.approve",
+      "materialRequests.issue",
+      "reports.view",
+      "audit.view",
+      "settings.manage",
+      "users.manage",
+      "backup.manage"
+    ],
+    "isSystem": true,
+    "createdAt": "2026-08-26T11:07:07.203Z",
+    "updatedAt": "2026-08-26T11:07:07.203Z"
+  },
+  {
+    "id": "role-management",
+    "name": "management",
+    "nameAr": "الإدارة",
+    "permissions": [
+      "archive.view",
+      "archive.download",
+      "warehouse.view",
+      "projects.view",
+      "projects.create",
+      "projects.edit",
+      "materialRequests.view",
+      "materialRequests.approve",
+      "reports.view",
+      "audit.view"
+    ],
+    "isSystem": true,
+    "createdAt": "2026-08-26T11:07:07.203Z",
+    "updatedAt": "2026-08-26T11:07:07.203Z"
+  },
+  {
+    "id": "role-warehouse",
+    "name": "warehouse",
+    "nameAr": "المخازن",
+    "permissions": [
+      "archive.view",
+      "archive.download",
+      "warehouse.view",
+      "warehouse.create",
+      "warehouse.edit",
+      "warehouse.stock_in",
+      "warehouse.stock_out",
+      "warehouse.transfer",
+      "warehouse.adjust",
+      "warehouse.return",
+      "projects.view",
+      "materialRequests.view",
+      "materialRequests.issue"
+    ],
+    "isSystem": true,
+    "createdAt": "2026-08-26T11:07:07.203Z",
+    "updatedAt": "2026-08-26T11:07:07.203Z"
+  },
+  {
+    "id": "role-technical",
+    "name": "technical",
+    "nameAr": "الفني",
+    "permissions": [
+      "archive.view",
+      "archive.upload",
+      "archive.edit",
+      "archive.download",
+      "projects.view",
+      "warehouse.view",
+      "materialRequests.view",
+      "materialRequests.create"
+    ],
+    "isSystem": true,
+    "createdAt": "2026-08-26T11:07:07.203Z",
+    "updatedAt": "2026-08-26T11:07:07.203Z"
+  },
+  {
+    "id": "role-viewer",
+    "name": "viewer",
+    "nameAr": "مشاهدة فقط",
+    "permissions": [
+      "archive.view",
+      "archive.download",
+      "warehouse.view",
+      "projects.view",
+      "materialRequests.view"
+    ],
+    "isSystem": true,
+    "createdAt": "2026-08-26T11:07:07.203Z",
+    "updatedAt": "2026-08-26T11:07:07.203Z"
+  }
+]

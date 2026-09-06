@@ -1,0 +1,14 @@
+[
+  {
+    "code": "IT-F1",
+    "name": "صنف F1",
+    "category": "عام",
+    "unit": "وحدة",
+    "minimumStock": 10,
+    "trackingType": "batch",
+    "createdBy": "admin",
+    "id": "d6b89461-9563-46ba-882e-792a354e3f41",
+    "createdAt": "2026-08-26T11:26:57.984Z",
+    "updatedAt": "2026-08-26T11:26:57.984Z"
+  }
+]

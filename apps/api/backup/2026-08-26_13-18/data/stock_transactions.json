@@ -1,0 +1,40 @@
+[
+  {
+    "number": "GIN-2026-0001",
+    "type": "IN",
+    "warehouseId": "75ab3023-2b95-4fe8-ba08-3da360ecaa41",
+    "items": [
+      {
+        "itemId": "342f3f5b-4914-4f30-9f07-cc510947cddb",
+        "quantity": 100,
+        "unitCost": 50
+      },
+      {
+        "itemId": "8746ff23-6e95-43c0-8c56-40168b869a25",
+        "quantity": 40,
+        "unitCost": 30
+      }
+    ],
+    "date": "2026-08-26",
+    "createdBy": "admin",
+    "id": "003a3cd3-bd08-4c42-bab8-882ffcc1dd58",
+    "createdAt": "2026-08-26T10:18:28.390Z",
+    "updatedAt": "2026-08-26T10:18:28.390Z"
+  },
+  {
+    "number": "GOUT-2026-0001",
+    "type": "OUT",
+    "warehouseId": "75ab3023-2b95-4fe8-ba08-3da360ecaa41",
+    "items": [
+      {
+        "itemId": "342f3f5b-4914-4f30-9f07-cc510947cddb",
+        "quantity": 95
+      }
+    ],
+    "date": "2026-08-26",
+    "createdBy": "keeper",
+    "id": "efae3102-ebfa-41ba-b0bd-4a495d2e992b",
+    "createdAt": "2026-08-26T10:18:28.403Z",
+    "updatedAt": "2026-08-26T10:18:28.403Z"
+  }
+]

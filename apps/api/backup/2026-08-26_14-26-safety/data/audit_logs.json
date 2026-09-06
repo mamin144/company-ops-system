@@ -1,0 +1,467 @@
+[
+  {
+    "id": "78f79b59-de7e-4049-9cc0-c76e3ef0cfd3",
+    "username": "anonymous",
+    "action": "login",
+    "entity": "user",
+    "entityId": "user-admin",
+    "timestamp": "2026-08-26T11:26:27.948Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "a389f185-1c40-4ef1-b732-1fd1c5f26252",
+    "username": "anonymous",
+    "action": "login",
+    "entity": "user",
+    "entityId": "user-keeper",
+    "timestamp": "2026-08-26T11:26:28.082Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "c2d1ab44-8285-4b46-b62e-aa209f4fac91",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "document",
+    "entityId": "180544cc-d3c8-4429-91f6-5cba84b753ed",
+    "newValue": {
+      "title": "عقد معاينة",
+      "category": "Contracts",
+      "documentType": "Contract",
+      "tags": [],
+      "revision": "00",
+      "status": "draft",
+      "uploadedBy": "admin",
+      "fileName": "contract.pdf",
+      "fileExtension": "pdf",
+      "fileSize": 13,
+      "filePath": "documents\\unassigned\\Contracts\\1787743588144-dc43e54e-3d12-4a7a-8665-2be51a56f943.pdf",
+      "revisions": [
+        {
+          "id": "17745f9a-b503-4b98-94f2-cac674b576e0",
+          "revision": "00",
+          "fileName": "contract.pdf",
+          "fileExtension": "pdf",
+          "fileSize": 13,
+          "uploadedBy": "admin",
+          "uploadedAt": "2026-08-26T11:26:28.144Z"
+        }
+      ],
+      "createdBy": "admin",
+      "id": "180544cc-d3c8-4429-91f6-5cba84b753ed",
+      "createdAt": "2026-08-26T11:26:28.145Z",
+      "updatedAt": "2026-08-26T11:26:28.145Z"
+    },
+    "timestamp": "2026-08-26T11:26:28.146Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "faf6096e-5623-448c-aebc-2186d2598cd2",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "document",
+    "entityId": "8a17b211-fe7a-4298-8446-d88a409122ca",
+    "newValue": {
+      "title": "مخطط صورة",
+      "category": "Drawings",
+      "documentType": "Drawing",
+      "tags": [],
+      "revision": "00",
+      "status": "draft",
+      "uploadedBy": "admin",
+      "fileName": "plan.png",
+      "fileExtension": "png",
+      "fileSize": 4,
+      "filePath": "documents\\unassigned\\Drawings\\1787743588174-5346a321-48ac-42a1-887f-390f882e3855.png",
+      "revisions": [
+        {
+          "id": "f606c876-7b31-48b3-9d94-1403514322ec",
+          "revision": "00",
+          "fileName": "plan.png",
+          "fileExtension": "png",
+          "fileSize": 4,
+          "uploadedBy": "admin",
+          "uploadedAt": "2026-08-26T11:26:28.175Z"
+        }
+      ],
+      "createdBy": "admin",
+      "id": "8a17b211-fe7a-4298-8446-d88a409122ca",
+      "createdAt": "2026-08-26T11:26:28.175Z",
+      "updatedAt": "2026-08-26T11:26:28.175Z"
+    },
+    "timestamp": "2026-08-26T11:26:28.177Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "6fb34042-d394-4882-b56c-3d3427141aa2",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "document",
+    "entityId": "ee6b0f2c-33fc-419d-aa1b-d71fc96ef719",
+    "newValue": {
+      "title": "كتابة إكسل",
+      "category": "BOQ",
+      "documentType": "Report",
+      "tags": [],
+      "revision": "00",
+      "status": "draft",
+      "uploadedBy": "admin",
+      "fileName": "book.xlsx",
+      "fileExtension": "xlsx",
+      "fileSize": 2,
+      "filePath": "documents\\unassigned\\BOQ\\1787743588191-0f81b5dd-07b4-4fd4-82c1-47ea2db94c47.xlsx",
+      "revisions": [
+        {
+          "id": "7a780b04-6d23-4361-9626-8f67788a5035",
+          "revision": "00",
+          "fileName": "book.xlsx",
+          "fileExtension": "xlsx",
+          "fileSize": 2,
+          "uploadedBy": "admin",
+          "uploadedAt": "2026-08-26T11:26:28.192Z"
+        }
+      ],
+      "createdBy": "admin",
+      "id": "ee6b0f2c-33fc-419d-aa1b-d71fc96ef719",
+      "createdAt": "2026-08-26T11:26:28.192Z",
+      "updatedAt": "2026-08-26T11:26:28.192Z"
+    },
+    "timestamp": "2026-08-26T11:26:28.193Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "a9acc368-1fef-4ad7-a8b2-2ece45e2b560",
+    "username": "anonymous",
+    "action": "login",
+    "entity": "user",
+    "entityId": "user-admin",
+    "timestamp": "2026-08-26T11:26:57.952Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "4905dd02-d5d5-4ff5-8bed-8a2ca982465c",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "project",
+    "entityId": "e21e2584-6298-45a2-b36e-02e7e4517c2c",
+    "newValue": {
+      "projectCode": "PRJ-F",
+      "projectName": "مشروع نهائي",
+      "client": "عميل",
+      "mainContractor": "",
+      "siteLocation": "",
+      "contractNumber": "",
+      "status": "active",
+      "role": "subcontractor",
+      "createdBy": "admin",
+      "id": "e21e2584-6298-45a2-b36e-02e7e4517c2c",
+      "createdAt": "2026-08-26T11:26:57.968Z",
+      "updatedAt": "2026-08-26T11:26:57.968Z"
+    },
+    "timestamp": "2026-08-26T11:26:57.969Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "580ab052-eae0-456f-8fa4-8eb7c0a73fe9",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "warehouse",
+    "entityId": "8b840882-965b-4c81-b339-0cfae57e63f6",
+    "newValue": {
+      "code": "WH-F",
+      "name": "مخزن F",
+      "type": "central",
+      "status": "active",
+      "createdBy": "admin",
+      "id": "8b840882-965b-4c81-b339-0cfae57e63f6",
+      "createdAt": "2026-08-26T11:26:57.976Z",
+      "updatedAt": "2026-08-26T11:26:57.976Z"
+    },
+    "timestamp": "2026-08-26T11:26:57.977Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "80b2bf58-0bad-4267-b989-233890ffc02d",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "item",
+    "entityId": "d6b89461-9563-46ba-882e-792a354e3f41",
+    "newValue": {
+      "code": "IT-F1",
+      "name": "صنف F1",
+      "category": "عام",
+      "unit": "وحدة",
+      "minimumStock": 10,
+      "trackingType": "batch",
+      "createdBy": "admin",
+      "id": "d6b89461-9563-46ba-882e-792a354e3f41",
+      "createdAt": "2026-08-26T11:26:57.984Z",
+      "updatedAt": "2026-08-26T11:26:57.984Z"
+    },
+    "timestamp": "2026-08-26T11:26:57.986Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "7a035e51-ccda-4d5c-b111-b6abc8b97635",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "stock-in",
+    "entity": "stock-transaction",
+    "entityId": "66b59e0b-281b-48c1-bd15-34fb9a222cf7",
+    "newValue": {
+      "number": "GIN-2026-0001",
+      "type": "IN",
+      "warehouseId": "8b840882-965b-4c81-b339-0cfae57e63f6",
+      "items": [
+        {
+          "itemId": "d6b89461-9563-46ba-882e-792a354e3f41",
+          "quantity": 50,
+          "unitCost": 20
+        }
+      ],
+      "date": "2026-08-26",
+      "createdBy": "admin",
+      "id": "66b59e0b-281b-48c1-bd15-34fb9a222cf7",
+      "createdAt": "2026-08-26T11:26:57.995Z",
+      "updatedAt": "2026-08-26T11:26:57.995Z"
+    },
+    "timestamp": "2026-08-26T11:26:57.998Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "f228e586-33e3-45e1-a29c-eb1dacc9dce5",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "material-request",
+    "entityId": "4bf3a656-ed47-42de-b787-322efe644da3",
+    "newValue": {
+      "number": "MR-2026-0001",
+      "projectId": "e21e2584-6298-45a2-b36e-02e7e4517c2c",
+      "warehouseId": "8b840882-965b-4c81-b339-0cfae57e63f6",
+      "status": "draft",
+      "items": [
+        {
+          "itemId": "d6b89461-9563-46ba-882e-792a354e3f41",
+          "requestedQty": 4
+        }
+      ],
+      "requestedBy": "admin",
+      "createdBy": "admin",
+      "id": "4bf3a656-ed47-42de-b787-322efe644da3",
+      "createdAt": "2026-08-26T11:26:58.007Z",
+      "updatedAt": "2026-08-26T11:26:58.007Z"
+    },
+    "timestamp": "2026-08-26T11:26:58.009Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "93007a05-08d9-4db6-ae15-bc960e2a37ab",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "submit",
+    "entity": "material-request",
+    "entityId": "4bf3a656-ed47-42de-b787-322efe644da3",
+    "oldValue": {
+      "number": "MR-2026-0001",
+      "projectId": "e21e2584-6298-45a2-b36e-02e7e4517c2c",
+      "warehouseId": "8b840882-965b-4c81-b339-0cfae57e63f6",
+      "status": "draft",
+      "items": [
+        {
+          "itemId": "d6b89461-9563-46ba-882e-792a354e3f41",
+          "requestedQty": 4
+        }
+      ],
+      "requestedBy": "admin",
+      "createdBy": "admin",
+      "id": "4bf3a656-ed47-42de-b787-322efe644da3",
+      "createdAt": "2026-08-26T11:26:58.007Z",
+      "updatedAt": "2026-08-26T11:26:58.007Z"
+    },
+    "newValue": {
+      "number": "MR-2026-0001",
+      "projectId": "e21e2584-6298-45a2-b36e-02e7e4517c2c",
+      "warehouseId": "8b840882-965b-4c81-b339-0cfae57e63f6",
+      "status": "submitted",
+      "items": [
+        {
+          "itemId": "d6b89461-9563-46ba-882e-792a354e3f41",
+          "requestedQty": 4
+        }
+      ],
+      "requestedBy": "admin",
+      "createdBy": "admin",
+      "id": "4bf3a656-ed47-42de-b787-322efe644da3",
+      "createdAt": "2026-08-26T11:26:58.007Z",
+      "updatedAt": "2026-08-26T11:26:58.015Z"
+    },
+    "timestamp": "2026-08-26T11:26:58.017Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "9fa5fc2d-b1e2-4009-909d-83546c701ade",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "approve",
+    "entity": "material-request",
+    "entityId": "4bf3a656-ed47-42de-b787-322efe644da3",
+    "oldValue": {
+      "number": "MR-2026-0001",
+      "projectId": "e21e2584-6298-45a2-b36e-02e7e4517c2c",
+      "warehouseId": "8b840882-965b-4c81-b339-0cfae57e63f6",
+      "status": "submitted",
+      "items": [
+        {
+          "itemId": "d6b89461-9563-46ba-882e-792a354e3f41",
+          "requestedQty": 4
+        }
+      ],
+      "requestedBy": "admin",
+      "createdBy": "admin",
+      "id": "4bf3a656-ed47-42de-b787-322efe644da3",
+      "createdAt": "2026-08-26T11:26:58.007Z",
+      "updatedAt": "2026-08-26T11:26:58.015Z"
+    },
+    "newValue": {
+      "number": "MR-2026-0001",
+      "projectId": "e21e2584-6298-45a2-b36e-02e7e4517c2c",
+      "warehouseId": "8b840882-965b-4c81-b339-0cfae57e63f6",
+      "status": "approved",
+      "items": [
+        {
+          "itemId": "d6b89461-9563-46ba-882e-792a354e3f41",
+          "requestedQty": 4
+        }
+      ],
+      "requestedBy": "admin",
+      "createdBy": "admin",
+      "id": "4bf3a656-ed47-42de-b787-322efe644da3",
+      "createdAt": "2026-08-26T11:26:58.007Z",
+      "updatedAt": "2026-08-26T11:26:58.026Z",
+      "reviewedBy": "admin"
+    },
+    "timestamp": "2026-08-26T11:26:58.027Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "fd2e1091-0e71-4d26-8a58-535ab6adb75e",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "issue-stock",
+    "entity": "material-request",
+    "entityId": "4bf3a656-ed47-42de-b787-322efe644da3",
+    "oldValue": {
+      "number": "MR-2026-0001",
+      "projectId": "e21e2584-6298-45a2-b36e-02e7e4517c2c",
+      "warehouseId": "8b840882-965b-4c81-b339-0cfae57e63f6",
+      "status": "approved",
+      "items": [
+        {
+          "itemId": "d6b89461-9563-46ba-882e-792a354e3f41",
+          "requestedQty": 4
+        }
+      ],
+      "requestedBy": "admin",
+      "createdBy": "admin",
+      "id": "4bf3a656-ed47-42de-b787-322efe644da3",
+      "createdAt": "2026-08-26T11:26:58.007Z",
+      "updatedAt": "2026-08-26T11:26:58.026Z",
+      "reviewedBy": "admin"
+    },
+    "newValue": {
+      "transaction": "GOUT-2026-0001"
+    },
+    "timestamp": "2026-08-26T11:26:58.044Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "78ca4f8c-4c39-4d6b-8be8-db9d59e2b0f7",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "delete-blocked",
+    "entity": "item",
+    "entityId": "d6b89461-9563-46ba-882e-792a354e3f41",
+    "timestamp": "2026-08-26T11:26:58.053Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "32e56059-49de-42a4-9529-b215d2686c73",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "delete-blocked",
+    "entity": "warehouse",
+    "entityId": "8b840882-965b-4c81-b339-0cfae57e63f6",
+    "timestamp": "2026-08-26T11:26:58.060Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "590bb85a-4716-42c3-bdc7-eb349ecf2eb3",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "delete-blocked",
+    "entity": "project",
+    "entityId": "e21e2584-6298-45a2-b36e-02e7e4517c2c",
+    "timestamp": "2026-08-26T11:26:58.069Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "ace0c301-73af-437a-af17-2e8e1574b511",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "document",
+    "entityId": "feaadb7a-98bb-45d1-8df6-b4d91f316faf",
+    "newValue": {
+      "title": "مستند",
+      "category": "Contracts",
+      "documentType": "Contract",
+      "tags": [],
+      "revision": "00",
+      "status": "draft",
+      "uploadedBy": "admin",
+      "fileName": "a.pdf",
+      "fileExtension": "pdf",
+      "fileSize": 4,
+      "filePath": "documents\\unassigned\\Contracts\\1787743618078-bd1824af-07c2-4c0a-90c2-8192834b1b32.pdf",
+      "revisions": [
+        {
+          "id": "6ad4f2f9-ca02-4e94-8266-08642dd3fa50",
+          "revision": "00",
+          "fileName": "a.pdf",
+          "fileExtension": "pdf",
+          "fileSize": 4,
+          "uploadedBy": "admin",
+          "uploadedAt": "2026-08-26T11:26:58.079Z"
+        }
+      ],
+      "createdBy": "admin",
+      "id": "feaadb7a-98bb-45d1-8df6-b4d91f316faf",
+      "createdAt": "2026-08-26T11:26:58.079Z",
+      "updatedAt": "2026-08-26T11:26:58.079Z"
+    },
+    "timestamp": "2026-08-26T11:26:58.081Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "b9383c24-ee56-4d1a-8cb3-bf82a3c804a3",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "new-revision",
+    "entity": "document",
+    "entityId": "feaadb7a-98bb-45d1-8df6-b4d91f316faf",
+    "oldValue": {
+      "revision": "00"
+    },
+    "newValue": {
+      "revision": "01"
+    },
+    "timestamp": "2026-08-26T11:26:58.091Z",
+    "ipAddress": "::1"
+  }
+]

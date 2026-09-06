@@ -1,0 +1,36 @@
+[
+  {
+    "code": "IT-X",
+    "name": "ØµÙ†Ù X",
+    "category": "Ø¹Ø§Ù…",
+    "unit": "Ù‚Ø·Ø¹Ø©",
+    "minimumStock": 5,
+    "createdBy": "admin",
+    "id": "e5b5016b-516d-48eb-9779-e3383367fc62",
+    "createdAt": "2026-08-26T11:05:00.618Z",
+    "updatedAt": "2026-08-26T11:05:00.618Z"
+  },
+  {
+    "code": "IT-R",
+    "name": "صنف R",
+    "category": "عام",
+    "unit": "وحدة",
+    "minimumStock": 10,
+    "createdBy": "admin",
+    "id": "21dd7003-eca0-4033-913f-3fd2095ff9a2",
+    "createdAt": "2026-08-26T11:05:40.711Z",
+    "updatedAt": "2026-08-26T11:05:40.711Z"
+  },
+  {
+    "code": "IT-H",
+    "name": "صنف H",
+    "category": "عام",
+    "unit": "وحدة",
+    "brand": "",
+    "minimumStock": 0,
+    "notes": "",
+    "id": "eb4b33b3-35c8-4b17-af08-a96e68b175ce",
+    "createdAt": "2026-08-26T11:05:40.847Z",
+    "updatedAt": "2026-08-26T11:05:40.847Z"
+  }
+]

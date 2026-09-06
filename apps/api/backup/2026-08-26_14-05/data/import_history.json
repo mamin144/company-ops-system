@@ -1,0 +1,16 @@
+[
+  {
+    "entity": "items",
+    "fileName": "hist.xlsx",
+    "userId": "user-admin",
+    "username": "admin",
+    "date": "2026-08-26T11:05:40.848Z",
+    "totalRows": 1,
+    "successfulRows": 1,
+    "failedRows": 0,
+    "errors": [],
+    "id": "6a1607b4-3aa7-4bb7-bd59-72e2aa65ca2c",
+    "createdAt": "2026-08-26T11:05:40.848Z",
+    "updatedAt": "2026-08-26T11:05:40.848Z"
+  }
+]

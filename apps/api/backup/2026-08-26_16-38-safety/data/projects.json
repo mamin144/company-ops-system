@@ -1,0 +1,42 @@
+[
+  {
+    "projectCode": "PRJ-B",
+    "projectName": "مشروع البروكسي",
+    "client": "عميل",
+    "mainContractor": "",
+    "siteLocation": "",
+    "contractNumber": "",
+    "status": "active",
+    "role": "subcontractor",
+    "createdBy": "admin",
+    "id": "06adb20a-0db4-4aae-ae15-173b4ff7d733",
+    "createdAt": "2026-08-26T13:33:37.700Z",
+    "updatedAt": "2026-08-26T13:33:37.700Z"
+  },
+  {
+    "projectCode": "PRJ-R",
+    "projectName": "رجعة",
+    "client": "x",
+    "mainContractor": "",
+    "siteLocation": "",
+    "contractNumber": "",
+    "status": "active",
+    "createdBy": "admin",
+    "id": "802a97a8-cb32-4dc5-9dd9-513e4e73e366",
+    "createdAt": "2026-08-26T13:35:42.404Z",
+    "updatedAt": "2026-08-26T13:35:42.404Z"
+  },
+  {
+    "projectCode": "PRJ-R3",
+    "projectName": "ر3",
+    "client": "x",
+    "mainContractor": "",
+    "siteLocation": "",
+    "contractNumber": "",
+    "status": "active",
+    "createdBy": "admin",
+    "id": "481614bb-e513-48c1-94a2-20d84660f94e",
+    "createdAt": "2026-08-26T13:38:21.252Z",
+    "updatedAt": "2026-08-26T13:38:21.252Z"
+  }
+]

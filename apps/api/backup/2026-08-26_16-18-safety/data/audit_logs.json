@@ -1,0 +1,11 @@
+[
+  {
+    "id": "1ea01298-72af-4e6a-af7d-a1a8be53c54b",
+    "username": "anonymous",
+    "action": "login",
+    "entity": "user",
+    "entityId": "user-admin",
+    "timestamp": "2026-08-26T13:18:38.067Z",
+    "ipAddress": "::1"
+  }
+]

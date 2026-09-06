@@ -1,0 +1,128 @@
+[
+  {
+    "title": "عقد معاينة",
+    "category": "Contracts",
+    "documentType": "Contract",
+    "tags": [],
+    "revision": "00",
+    "status": "draft",
+    "uploadedBy": "admin",
+    "fileName": "contract.pdf",
+    "fileExtension": "pdf",
+    "fileSize": 13,
+    "filePath": "documents\\unassigned\\Contracts\\1787743588144-dc43e54e-3d12-4a7a-8665-2be51a56f943.pdf",
+    "revisions": [
+      {
+        "id": "17745f9a-b503-4b98-94f2-cac674b576e0",
+        "revision": "00",
+        "fileName": "contract.pdf",
+        "fileExtension": "pdf",
+        "fileSize": 13,
+        "filePath": "documents\\unassigned\\Contracts\\1787743588144-dc43e54e-3d12-4a7a-8665-2be51a56f943.pdf",
+        "uploadedBy": "admin",
+        "uploadedAt": "2026-08-26T11:26:28.144Z"
+      }
+    ],
+    "createdBy": "admin",
+    "id": "180544cc-d3c8-4429-91f6-5cba84b753ed",
+    "createdAt": "2026-08-26T11:26:28.145Z",
+    "updatedAt": "2026-08-26T11:26:28.145Z"
+  },
+  {
+    "title": "مخطط صورة",
+    "category": "Drawings",
+    "documentType": "Drawing",
+    "tags": [],
+    "revision": "00",
+    "status": "draft",
+    "uploadedBy": "admin",
+    "fileName": "plan.png",
+    "fileExtension": "png",
+    "fileSize": 4,
+    "filePath": "documents\\unassigned\\Drawings\\1787743588174-5346a321-48ac-42a1-887f-390f882e3855.png",
+    "revisions": [
+      {
+        "id": "f606c876-7b31-48b3-9d94-1403514322ec",
+        "revision": "00",
+        "fileName": "plan.png",
+        "fileExtension": "png",
+        "fileSize": 4,
+        "filePath": "documents\\unassigned\\Drawings\\1787743588174-5346a321-48ac-42a1-887f-390f882e3855.png",
+        "uploadedBy": "admin",
+        "uploadedAt": "2026-08-26T11:26:28.175Z"
+      }
+    ],
+    "createdBy": "admin",
+    "id": "8a17b211-fe7a-4298-8446-d88a409122ca",
+    "createdAt": "2026-08-26T11:26:28.175Z",
+    "updatedAt": "2026-08-26T11:26:28.175Z"
+  },
+  {
+    "title": "كتابة إكسل",
+    "category": "BOQ",
+    "documentType": "Report",
+    "tags": [],
+    "revision": "00",
+    "status": "draft",
+    "uploadedBy": "admin",
+    "fileName": "book.xlsx",
+    "fileExtension": "xlsx",
+    "fileSize": 2,
+    "filePath": "documents\\unassigned\\BOQ\\1787743588191-0f81b5dd-07b4-4fd4-82c1-47ea2db94c47.xlsx",
+    "revisions": [
+      {
+        "id": "7a780b04-6d23-4361-9626-8f67788a5035",
+        "revision": "00",
+        "fileName": "book.xlsx",
+        "fileExtension": "xlsx",
+        "fileSize": 2,
+        "filePath": "documents\\unassigned\\BOQ\\1787743588191-0f81b5dd-07b4-4fd4-82c1-47ea2db94c47.xlsx",
+        "uploadedBy": "admin",
+        "uploadedAt": "2026-08-26T11:26:28.192Z"
+      }
+    ],
+    "createdBy": "admin",
+    "id": "ee6b0f2c-33fc-419d-aa1b-d71fc96ef719",
+    "createdAt": "2026-08-26T11:26:28.192Z",
+    "updatedAt": "2026-08-26T11:26:28.192Z"
+  },
+  {
+    "title": "مستند",
+    "category": "Contracts",
+    "documentType": "Contract",
+    "tags": [],
+    "revision": "01",
+    "status": "draft",
+    "uploadedBy": "admin",
+    "fileName": "b.pdf",
+    "fileExtension": "pdf",
+    "fileSize": 4,
+    "filePath": "documents\\unassigned\\Contracts\\1787743618089-a255e8fe-0078-46af-9627-dab7b9b5f8ea.pdf",
+    "revisions": [
+      {
+        "id": "6ad4f2f9-ca02-4e94-8266-08642dd3fa50",
+        "revision": "00",
+        "fileName": "a.pdf",
+        "fileExtension": "pdf",
+        "fileSize": 4,
+        "filePath": "documents\\unassigned\\Contracts\\1787743618078-bd1824af-07c2-4c0a-90c2-8192834b1b32.pdf",
+        "uploadedBy": "admin",
+        "uploadedAt": "2026-08-26T11:26:58.079Z"
+      },
+      {
+        "id": "5170704f-f220-49b7-b6f5-63b4d8ad92a0",
+        "revision": "01",
+        "fileName": "b.pdf",
+        "fileExtension": "pdf",
+        "fileSize": 4,
+        "filePath": "documents\\unassigned\\Contracts\\1787743618089-a255e8fe-0078-46af-9627-dab7b9b5f8ea.pdf",
+        "uploadedBy": "admin",
+        "uploadedAt": "2026-08-26T11:26:58.089Z"
+      }
+    ],
+    "createdBy": "admin",
+    "id": "feaadb7a-98bb-45d1-8df6-b4d91f316faf",
+    "createdAt": "2026-08-26T11:26:58.079Z",
+    "updatedAt": "2026-08-26T11:26:58.090Z"
+  }
+]

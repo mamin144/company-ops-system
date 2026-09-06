@@ -1,0 +1,42 @@
+[
+  {
+    "title": "مخطط معماري",
+    "category": "Drawings",
+    "documentType": "Drawing",
+    "revision": "01",
+    "tags": [],
+    "status": "approved",
+    "uploadedBy": "admin",
+    "fileName": "drawing-v2.pdf",
+    "fileExtension": "pdf",
+    "fileSize": 13,
+    "filePath": "documents\\unassigned\\Drawings\\1787739543372-4dcf929e-7a86-44b4-8eae-c8cd4aaddae7.pdf",
+    "revisions": [
+      {
+        "id": "12748b2e-cb63-4262-8e16-59b1f7faeb0a",
+        "revision": "00",
+        "fileName": "drawing.pdf",
+        "fileExtension": "pdf",
+        "fileSize": 13,
+        "filePath": "documents\\unassigned\\Drawings\\1787739543356-08bd9113-1edf-4f7c-ad02-ee0bff863815.pdf",
+        "uploadedBy": "admin",
+        "uploadedAt": "2026-08-26T10:19:03.356Z"
+      },
+      {
+        "id": "77a102fe-27ff-472d-8bed-c599b706a7b3",
+        "revision": "01",
+        "fileName": "drawing-v2.pdf",
+        "fileExtension": "pdf",
+        "fileSize": 13,
+        "filePath": "documents\\unassigned\\Drawings\\1787739543372-4dcf929e-7a86-44b4-8eae-c8cd4aaddae7.pdf",
+        "uploadedBy": "admin",
+        "uploadedAt": "2026-08-26T10:19:03.373Z",
+        "notes": "تعديل الواجهة"
+      }
+    ],
+    "createdBy": "admin",
+    "id": "1bd3e517-df26-429c-8d7c-5eaf7becc837",
+    "createdAt": "2026-08-26T10:19:03.356Z",
+    "updatedAt": "2026-08-26T10:19:03.384Z"
+  }
+]

@@ -1,0 +1,112 @@
+[
+  {
+    "id": "0ba831da07e9b610bab158c4",
+    "userId": "user-admin",
+    "username": "admin",
+    "tokenHash": "cd50c0b351f07e421ac0d0e50bfb440e5a7e1eb308ec5317a5bf5e337684c206",
+    "createdAt": "2026-08-26T13:33:37.532Z",
+    "expiresAt": "2026-09-25T13:33:37.532Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": true
+  },
+  {
+    "id": "616efc91a312ce515fedcd8e",
+    "userId": "user-admin",
+    "username": "admin",
+    "tokenHash": "965367e0bf9142c7e8dbd58317bba8d8830370be008dff4364297b594a78da5f",
+    "createdAt": "2026-08-26T13:33:37.683Z",
+    "expiresAt": "2026-08-27T13:33:37.683Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": false
+  },
+  {
+    "id": "2cc540eb46080a1c1371fb1c",
+    "userId": "user-keeper",
+    "username": "keeper",
+    "tokenHash": "5d37e2155d490bccb6888004d9455c38419b10a3dafd0c527bb91c200921febb",
+    "createdAt": "2026-08-26T13:33:38.161Z",
+    "expiresAt": "2026-08-27T13:33:38.161Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": false
+  },
+  {
+    "id": "faefd2512e4bdcdc8b45b405",
+    "userId": "user-admin",
+    "username": "admin",
+    "tokenHash": "1b6bcf97797f7c4827100cfae392ff3d27a6b50e9807484815cd9d29735fa538",
+    "createdAt": "2026-08-26T13:35:41.445Z",
+    "expiresAt": "2026-08-27T13:35:41.445Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": false
+  },
+  {
+    "id": "d28ed4f48c6cb51da8409ee6",
+    "userId": "user-admin",
+    "username": "admin",
+    "tokenHash": "b382e64bf2fd013511380c2a7f7c8ce0cf00058c3e9861b80a4e06769c4c4b7e",
+    "createdAt": "2026-08-26T13:35:41.917Z",
+    "expiresAt": "2026-09-25T13:35:41.941Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": true
+  },
+  {
+    "id": "28cd8e714d232af435f3259d",
+    "userId": "user-keeper",
+    "username": "keeper",
+    "tokenHash": "232140df74af44d6a664903dd3c0dcfc03606442df3e7c2ab16436ec3a8804f1",
+    "createdAt": "2026-08-26T13:35:42.323Z",
+    "expiresAt": "2026-08-27T13:35:42.323Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": false
+  },
+  {
+    "id": "9125b508fc46ca893710a152",
+    "userId": "user-admin",
+    "username": "admin",
+    "tokenHash": "1a9a6b6dcd049cac292d184af7836429daa29bbd5b1ba908da9f44ebf812fba1",
+    "createdAt": "2026-08-26T13:36:30.513Z",
+    "expiresAt": "2026-08-27T13:36:30.513Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": false
+  },
+  {
+    "id": "649aae216ec5a17232d7c70f",
+    "userId": "user-admin",
+    "username": "admin",
+    "tokenHash": "f9852af32ebe282a98ee8c1ca059f8cf2ade2a8c240cb5e79fa2916346dca715",
+    "createdAt": "2026-08-26T13:38:20.938Z",
+    "expiresAt": "2026-08-27T13:38:20.938Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": false
+  },
+  {
+    "id": "3e2733134d19cb541ee6fe31",
+    "userId": "user-admin",
+    "username": "admin",
+    "tokenHash": "97779940f37e5bbdcce20b72a4a30f848bc21b3118285924cf19efbd2d5ce1b4",
+    "createdAt": "2026-08-26T13:38:21.073Z",
+    "expiresAt": "2026-09-25T13:38:21.086Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": true
+  },
+  {
+    "id": "56dd3ae14794a02616300bfe",
+    "userId": "user-keeper",
+    "username": "keeper",
+    "tokenHash": "efe287a16ad8a19ceb99795f5d1f5504d07439bce80892a07d9261c6ccd68d9b",
+    "createdAt": "2026-08-26T13:38:21.219Z",
+    "expiresAt": "2026-08-27T13:38:21.219Z",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "rememberMe": false
+  }
+]

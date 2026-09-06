@@ -1,0 +1,37 @@
+[
+  {
+    "code": "IT-CEM",
+    "name": "أسمنت",
+    "category": "مواد بناء",
+    "unit": "كيس",
+    "minimumStock": 10,
+    "trackingType": "batch",
+    "createdBy": "admin",
+    "id": "9a36d2aa-351e-4963-a9a3-33a2b27d22e1",
+    "createdAt": "2026-08-26T10:17:29.981Z",
+    "updatedAt": "2026-08-26T10:17:29.981Z"
+  },
+  {
+    "code": "IT-SAND",
+    "name": "رمل",
+    "category": "مواد بناء",
+    "unit": "متر",
+    "minimumStock": 5,
+    "createdBy": "admin",
+    "id": "4304cb95-a87a-484f-b34c-f68ae6dc8bf4",
+    "createdAt": "2026-08-26T10:17:29.988Z",
+    "updatedAt": "2026-08-26T10:17:29.988Z"
+  },
+  {
+    "code": "IT-PNT",
+    "name": "دهان",
+    "category": "تشطيبات",
+    "unit": "جالون",
+    "brand": "",
+    "minimumStock": 4,
+    "notes": "",
+    "id": "1f301e5b-73f6-4ca6-8cb3-2e3d1c385ebb",
+    "createdAt": "2026-08-26T10:17:30.212Z",
+    "updatedAt": "2026-08-26T10:17:30.212Z"
+  }
+]

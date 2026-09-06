@@ -1,0 +1,73 @@
+[
+  {
+    "number": "GIN-2026-0001",
+    "type": "IN",
+    "warehouseId": "a0bb88ad-5c6a-439f-b068-0ed212efaef8",
+    "projectId": "f4cdc8a8-8f7a-4e09-b14e-4bee67310c7a",
+    "items": [
+      {
+        "itemId": "16920562-00d6-449d-bfa3-e467959ec908",
+        "quantity": 30,
+        "unitCost": 7
+      }
+    ],
+    "date": "2026-08-26",
+    "createdBy": "admin",
+    "id": "fc3b778e-cda3-4826-bfaf-da0df4aea460",
+    "createdAt": "2026-08-26T13:12:21.268Z",
+    "updatedAt": "2026-08-26T13:12:21.269Z"
+  },
+  {
+    "number": "TRF-2026-0001",
+    "type": "TRANSFER",
+    "warehouseId": "a0bb88ad-5c6a-439f-b068-0ed212efaef8",
+    "destinationWarehouseId": "3942f342-0703-40c4-956c-9e0e0d01e901",
+    "projectId": "f4cdc8a8-8f7a-4e09-b14e-4bee67310c7a",
+    "items": [
+      {
+        "itemId": "16920562-00d6-449d-bfa3-e467959ec908",
+        "quantity": 10
+      }
+    ],
+    "date": "2026-08-26",
+    "createdBy": "admin",
+    "id": "908ea0e6-6406-4665-b94c-9f9efa3affd8",
+    "createdAt": "2026-08-26T13:12:21.284Z",
+    "updatedAt": "2026-08-26T13:12:21.284Z"
+  },
+  {
+    "number": "GIN-2026-0002",
+    "type": "IN",
+    "warehouseId": "7025f8d6-6a5f-4ed1-9f5a-13758db39bef",
+    "items": [
+      {
+        "itemId": "4eb703ed-1b17-4a3f-8550-aa2b089bcf9f",
+        "quantity": 2
+      }
+    ],
+    "date": "2026-08-26",
+    "createdBy": "admin",
+    "id": "2508f412-abb4-46ba-820f-7043ec020a2f",
+    "createdAt": "2026-08-26T13:13:16.327Z",
+    "updatedAt": "2026-08-26T13:13:16.327Z"
+  },
+  {
+    "number": "GOUT-2026-0001",
+    "type": "OUT",
+    "warehouseId": "7025f8d6-6a5f-4ed1-9f5a-13758db39bef",
+    "projectId": "f97227ce-caca-4d54-8828-9fc26964817b",
+    "items": [
+      {
+        "itemId": "4eb703ed-1b17-4a3f-8550-aa2b089bcf9f",
+        "quantity": 2
+      }
+    ],
+    "referenceNumber": "MR-2026-0001",
+    "date": "2026-08-26",
+    "notes": "صرف مقابل طلب مواد MR-2026-0001",
+    "createdBy": "admin",
+    "id": "2cbaa06e-84f8-43a2-99fb-7916f4790b47",
+    "createdAt": "2026-08-26T13:13:16.381Z",
+    "updatedAt": "2026-08-26T13:13:16.381Z"
+  }
+]

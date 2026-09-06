@@ -1,0 +1,16 @@
+{
+  "name": "company-ops-system",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @cos/api",
+    "dev:web": "npm run dev --workspace @cos/web",
+    "dev:api": "npm run dev --workspace @cos/api",
+    "build": "npm run build --workspace @cos/shared && npm run build --workspace @cos/api && npm run build --workspace @cos/web",
+    "typecheck": "npm run typecheck --workspace @cos/shared && npm run typecheck --workspace @cos/api && npm run typecheck --workspace @cos/web"
+  }
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "03cbf02e-3352-4480-9bc2-3061254c7399",
+    "type": "material-request",
+    "title": "طلب مواد جديد MR-2026-0001",
+    "message": "admin أرسل طلب مواد للمراجعة",
+    "link": "/material-requests",
+    "entityId": "37baf8b9-a35a-424e-8ede-fe24a1f3e157",
+    "readBy": [],
+    "createdAt": "2026-08-26T11:05:00.674Z"
+  },
+  {
+    "id": "d6680389-0b3f-4181-819e-6f67142ebc46",
+    "type": "low-stock",
+    "title": "تنبيه مخزون منخفض: صنف R",
+    "message": "الرصيد الحالي 8 وهو أقل من حد الأمان (10)",
+    "link": "/stock",
+    "entityId": "21dd7003-eca0-4033-913f-3fd2095ff9a2",
+    "readBy": [],
+    "createdAt": "2026-08-26T11:05:40.724Z"
+  },
+  {
+    "id": "93a09b8c-22d0-4c48-a14b-e39c5145bffa",
+    "type": "document-status",
+    "title": "تغيير حالة مستند: مستند رجريشن",
+    "message": "مسودة ← قيد المراجعة بواسطة admin",
+    "link": "/archive?focus=6efaa963-e765-4367-afcb-e73527f3d60e",
+    "entityId": "6efaa963-e765-4367-afcb-e73527f3d60e",
+    "readBy": [],
+    "createdAt": "2026-08-26T11:05:40.807Z"
+  }
+]

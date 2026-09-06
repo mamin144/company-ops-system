@@ -1,0 +1,22 @@
+[
+  {
+    "id": "4e911eeb-16f3-4119-a2b3-29fec9a1631a",
+    "type": "low-stock",
+    "title": "تنبيه مخزون منخفض: أسمنت",
+    "message": "الرصيد الحالي 5 وهو أقل من حد الأمان (10)",
+    "link": "/stock",
+    "entityId": "9a36d2aa-351e-4963-a9a3-33a2b27d22e1",
+    "readBy": [],
+    "createdAt": "2026-08-26T10:17:30.014Z"
+  },
+  {
+    "id": "f6ede638-7b73-4bff-b816-65e02b2a0ba8",
+    "type": "document-status",
+    "title": "تغيير حالة مستند: مخطط معماري",
+    "message": "مسودة ← معتمد بواسطة admin",
+    "link": "/archive?focus=8578c18b-62da-4f64-8640-4edf2cddfd16",
+    "entityId": "8578c18b-62da-4f64-8640-4edf2cddfd16",
+    "readBy": [],
+    "createdAt": "2026-08-26T10:17:30.112Z"
+  }
+]

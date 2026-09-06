@@ -1,0 +1,42 @@
+[
+  {
+    "id": "cf1565a3-8fed-4da1-ab20-b00809fc7d43",
+    "code": "pcs",
+    "name": "Pieces",
+    "isActive": true,
+    "createdAt": "2026-08-26T11:26:24.976Z",
+    "updatedAt": "2026-08-26T11:26:24.976Z"
+  },
+  {
+    "id": "05630d5b-a64f-494d-adfd-1f2f0ba6762a",
+    "code": "box",
+    "name": "Box",
+    "isActive": true,
+    "createdAt": "2026-08-26T11:26:24.976Z",
+    "updatedAt": "2026-08-26T11:26:24.976Z"
+  },
+  {
+    "id": "96627e5c-86aa-4e6a-bb59-bd0a6c63570f",
+    "code": "kg",
+    "name": "Kilogram",
+    "isActive": true,
+    "createdAt": "2026-08-26T11:26:24.976Z",
+    "updatedAt": "2026-08-26T11:26:24.976Z"
+  },
+  {
+    "id": "9484f91d-c8c1-4a11-9f23-31d965a47526",
+    "code": "m",
+    "name": "Meter",
+    "isActive": true,
+    "createdAt": "2026-08-26T11:26:24.976Z",
+    "updatedAt": "2026-08-26T11:26:24.976Z"
+  },
+  {
+    "id": "09d8d498-7b40-4fc1-beb5-b21f6aa8ce7f",
+    "code": "sqm",
+    "name": "Square meter",
+    "isActive": true,
+    "createdAt": "2026-08-26T11:26:24.976Z",
+    "updatedAt": "2026-08-26T11:26:24.976Z"
+  }
+]

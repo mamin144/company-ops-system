@@ -1,0 +1,22 @@
+[
+  {
+    "id": "user-admin",
+    "username": "admin",
+    "fullName": "مدير النظام",
+    "passwordHash": "$2b$10$WDzTFnWpYI9FvaDTyJKLpe6oGddwkovUt85Ns66auTNJuI5ndJ5BC",
+    "roleName": "admin",
+    "isActive": true,
+    "createdAt": "2026-08-26T13:18:37.134Z",
+    "updatedAt": "2026-08-26T13:18:37.134Z"
+  },
+  {
+    "id": "user-keeper",
+    "username": "keeper",
+    "fullName": "أمين المخزن",
+    "passwordHash": "$2b$10$j1nokfKIqKgIsY9oETFlouiqaQ6XBlaoq6v98uM2iNspo8XXAfGAa",
+    "roleName": "warehouse",
+    "isActive": true,
+    "createdAt": "2026-08-26T13:18:37.234Z",
+    "updatedAt": "2026-08-26T13:18:37.234Z"
+  }
+]

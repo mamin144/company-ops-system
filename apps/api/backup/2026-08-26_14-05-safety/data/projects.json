@@ -1,0 +1,29 @@
+[
+  {
+    "projectCode": "PRJ-200",
+    "projectName": "Ù…Ø¬Ù…Ø¹ Ø§Ù„Ø¥Ø³ÙƒÙ†Ø¯Ø±ÙŠØ©",
+    "client": "Ø¹Ù…ÙŠÙ„",
+    "mainContractor": "",
+    "siteLocation": "",
+    "contractNumber": "",
+    "status": "active",
+    "role": "main-contractor",
+    "createdBy": "admin",
+    "id": "95a03bc9-1400-426b-ad94-403f775cbbf3",
+    "createdAt": "2026-08-26T11:05:00.604Z",
+    "updatedAt": "2026-08-26T11:05:00.604Z"
+  },
+  {
+    "projectCode": "PRJ-R",
+    "projectName": "مشروع رجريشن",
+    "client": "x",
+    "mainContractor": "",
+    "siteLocation": "",
+    "contractNumber": "",
+    "status": "active",
+    "createdBy": "admin",
+    "id": "44d0e2b8-e3b1-4cb2-a38f-448c9d21517e",
+    "createdAt": "2026-08-26T11:05:40.694Z",
+    "updatedAt": "2026-08-26T11:05:40.694Z"
+  }
+]

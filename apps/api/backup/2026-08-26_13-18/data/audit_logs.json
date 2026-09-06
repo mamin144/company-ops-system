@@ -1,0 +1,395 @@
+[
+  {
+    "id": "2061b65b-6d8b-49c2-a0a5-1a544f16eb3e",
+    "username": "anonymous",
+    "action": "login",
+    "entity": "user",
+    "entityId": "user-admin",
+    "timestamp": "2026-08-26T10:18:28.180Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "72187969-f1c4-43be-8b1e-7ff39bb6d190",
+    "username": "anonymous",
+    "action": "login",
+    "entity": "user",
+    "entityId": "user-keeper",
+    "timestamp": "2026-08-26T10:18:28.315Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "d12396d9-3aac-457e-ae52-b9356a488f81",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "project",
+    "entityId": "6f4cfe27-9ad9-473a-9637-4f4f75bba659",
+    "newValue": {
+      "projectCode": "PRJ-100",
+      "projectName": "برج النيل",
+      "client": "شركة مصر",
+      "mainContractor": "أوراسكوم",
+      "siteLocation": "القاهرة",
+      "contractNumber": "C-100",
+      "status": "active",
+      "role": "subcontractor",
+      "createdBy": "admin",
+      "id": "6f4cfe27-9ad9-473a-9637-4f4f75bba659",
+      "createdAt": "2026-08-26T10:18:28.340Z",
+      "updatedAt": "2026-08-26T10:18:28.340Z"
+    },
+    "timestamp": "2026-08-26T10:18:28.343Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "5b0feed1-8965-4bb9-9776-057634e86a24",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "warehouse",
+    "entityId": "75ab3023-2b95-4fe8-ba08-3da360ecaa41",
+    "newValue": {
+      "code": "WH-MAIN",
+      "name": "مخزن الموقع",
+      "type": "site",
+      "projectId": "6f4cfe27-9ad9-473a-9637-4f4f75bba659",
+      "status": "active",
+      "createdBy": "admin",
+      "id": "75ab3023-2b95-4fe8-ba08-3da360ecaa41",
+      "createdAt": "2026-08-26T10:18:28.358Z",
+      "updatedAt": "2026-08-26T10:18:28.358Z"
+    },
+    "timestamp": "2026-08-26T10:18:28.359Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "053f4d89-301d-4b78-8605-50a672f168c5",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "item",
+    "entityId": "342f3f5b-4914-4f30-9f07-cc510947cddb",
+    "newValue": {
+      "code": "IT-CEM",
+      "name": "أسمنت",
+      "category": "مواد بناء",
+      "unit": "كيس",
+      "minimumStock": 10,
+      "trackingType": "batch",
+      "createdBy": "admin",
+      "id": "342f3f5b-4914-4f30-9f07-cc510947cddb",
+      "createdAt": "2026-08-26T10:18:28.370Z",
+      "updatedAt": "2026-08-26T10:18:28.370Z"
+    },
+    "timestamp": "2026-08-26T10:18:28.371Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "f35dba80-5d1a-442f-954c-a5ce57c01e26",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "item",
+    "entityId": "8746ff23-6e95-43c0-8c56-40168b869a25",
+    "newValue": {
+      "code": "IT-SAND",
+      "name": "رمل",
+      "category": "مواد بناء",
+      "unit": "متر",
+      "minimumStock": 5,
+      "createdBy": "admin",
+      "id": "8746ff23-6e95-43c0-8c56-40168b869a25",
+      "createdAt": "2026-08-26T10:18:28.379Z",
+      "updatedAt": "2026-08-26T10:18:28.379Z"
+    },
+    "timestamp": "2026-08-26T10:18:28.381Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "f929fb40-3b8e-414a-87fb-f592b0a4eb4d",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "stock-in",
+    "entity": "stock-transaction",
+    "entityId": "003a3cd3-bd08-4c42-bab8-882ffcc1dd58",
+    "newValue": {
+      "number": "GIN-2026-0001",
+      "type": "IN",
+      "warehouseId": "75ab3023-2b95-4fe8-ba08-3da360ecaa41",
+      "items": [
+        {
+          "itemId": "342f3f5b-4914-4f30-9f07-cc510947cddb",
+          "quantity": 100,
+          "unitCost": 50
+        },
+        {
+          "itemId": "8746ff23-6e95-43c0-8c56-40168b869a25",
+          "quantity": 40,
+          "unitCost": 30
+        }
+      ],
+      "date": "2026-08-26",
+      "createdBy": "admin",
+      "id": "003a3cd3-bd08-4c42-bab8-882ffcc1dd58",
+      "createdAt": "2026-08-26T10:18:28.390Z",
+      "updatedAt": "2026-08-26T10:18:28.390Z"
+    },
+    "timestamp": "2026-08-26T10:18:28.393Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "f42efc7e-451d-443f-b281-95ff9f4192e8",
+    "userId": "user-keeper",
+    "username": "keeper",
+    "action": "stock-out",
+    "entity": "stock-transaction",
+    "entityId": "efae3102-ebfa-41ba-b0bd-4a495d2e992b",
+    "newValue": {
+      "number": "GOUT-2026-0001",
+      "type": "OUT",
+      "warehouseId": "75ab3023-2b95-4fe8-ba08-3da360ecaa41",
+      "items": [
+        {
+          "itemId": "342f3f5b-4914-4f30-9f07-cc510947cddb",
+          "quantity": 95
+        }
+      ],
+      "date": "2026-08-26",
+      "createdBy": "keeper",
+      "id": "efae3102-ebfa-41ba-b0bd-4a495d2e992b",
+      "createdAt": "2026-08-26T10:18:28.403Z",
+      "updatedAt": "2026-08-26T10:18:28.403Z"
+    },
+    "timestamp": "2026-08-26T10:18:28.408Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "0381b4a9-30fc-47a5-a24a-d330c1337dda",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "material-request",
+    "entityId": "79b642ae-6400-485d-8f4c-2d55f8fb3486",
+    "newValue": {
+      "number": "MR-2026-0001",
+      "projectId": "6f4cfe27-9ad9-473a-9637-4f4f75bba659",
+      "warehouseId": "75ab3023-2b95-4fe8-ba08-3da360ecaa41",
+      "status": "draft",
+      "items": [
+        {
+          "itemId": "342f3f5b-4914-4f30-9f07-cc510947cddb",
+          "requestedQty": 20
+        }
+      ],
+      "requestedBy": "admin",
+      "createdBy": "admin",
+      "id": "79b642ae-6400-485d-8f4c-2d55f8fb3486",
+      "createdAt": "2026-08-26T10:18:28.417Z",
+      "updatedAt": "2026-08-26T10:18:28.417Z"
+    },
+    "timestamp": "2026-08-26T10:18:28.418Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "748d4cd8-e74c-4f41-8925-1616959eca53",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "submit",
+    "entity": "material-request",
+    "entityId": "79b642ae-6400-485d-8f4c-2d55f8fb3486",
+    "oldValue": {
+      "number": "MR-2026-0001",
+      "projectId": "6f4cfe27-9ad9-473a-9637-4f4f75bba659",
+      "warehouseId": "75ab3023-2b95-4fe8-ba08-3da360ecaa41",
+      "status": "draft",
+      "items": [
+        {
+          "itemId": "342f3f5b-4914-4f30-9f07-cc510947cddb",
+          "requestedQty": 20
+        }
+      ],
+      "requestedBy": "admin",
+      "createdBy": "admin",
+      "id": "79b642ae-6400-485d-8f4c-2d55f8fb3486",
+      "createdAt": "2026-08-26T10:18:28.417Z",
+      "updatedAt": "2026-08-26T10:18:28.417Z"
+    },
+    "newValue": {
+      "number": "MR-2026-0001",
+      "projectId": "6f4cfe27-9ad9-473a-9637-4f4f75bba659",
+      "warehouseId": "75ab3023-2b95-4fe8-ba08-3da360ecaa41",
+      "status": "submitted",
+      "items": [
+        {
+          "itemId": "342f3f5b-4914-4f30-9f07-cc510947cddb",
+          "requestedQty": 20
+        }
+      ],
+      "requestedBy": "admin",
+      "createdBy": "admin",
+      "id": "79b642ae-6400-485d-8f4c-2d55f8fb3486",
+      "createdAt": "2026-08-26T10:18:28.417Z",
+      "updatedAt": "2026-08-26T10:18:28.427Z"
+    },
+    "timestamp": "2026-08-26T10:18:28.428Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "c00f20b5-195a-47fa-aede-1a8f3adb5c04",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "approve",
+    "entity": "material-request",
+    "entityId": "79b642ae-6400-485d-8f4c-2d55f8fb3486",
+    "oldValue": {
+      "number": "MR-2026-0001",
+      "projectId": "6f4cfe27-9ad9-473a-9637-4f4f75bba659",
+      "warehouseId": "75ab3023-2b95-4fe8-ba08-3da360ecaa41",
+      "status": "submitted",
+      "items": [
+        {
+          "itemId": "342f3f5b-4914-4f30-9f07-cc510947cddb",
+          "requestedQty": 20
+        }
+      ],
+      "requestedBy": "admin",
+      "createdBy": "admin",
+      "id": "79b642ae-6400-485d-8f4c-2d55f8fb3486",
+      "createdAt": "2026-08-26T10:18:28.417Z",
+      "updatedAt": "2026-08-26T10:18:28.427Z"
+    },
+    "newValue": {
+      "number": "MR-2026-0001",
+      "projectId": "6f4cfe27-9ad9-473a-9637-4f4f75bba659",
+      "warehouseId": "75ab3023-2b95-4fe8-ba08-3da360ecaa41",
+      "status": "approved",
+      "items": [
+        {
+          "itemId": "342f3f5b-4914-4f30-9f07-cc510947cddb",
+          "requestedQty": 20
+        }
+      ],
+      "requestedBy": "admin",
+      "createdBy": "admin",
+      "id": "79b642ae-6400-485d-8f4c-2d55f8fb3486",
+      "createdAt": "2026-08-26T10:18:28.417Z",
+      "updatedAt": "2026-08-26T10:18:28.435Z",
+      "reviewedBy": "admin"
+    },
+    "timestamp": "2026-08-26T10:18:28.436Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "593f8edf-78c6-4352-a8e9-532a42c01e08",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "document",
+    "entityId": "914bba69-1977-4ea6-bf17-3be16d62357f",
+    "newValue": {
+      "title": "مخطط معماري",
+      "category": "Drawings",
+      "documentType": "Drawing",
+      "revision": "00",
+      "tags": [],
+      "status": "draft",
+      "uploadedBy": "admin",
+      "fileName": "drawing.pdf",
+      "fileExtension": "pdf",
+      "fileSize": 13,
+      "filePath": "documents\\unassigned\\Drawings\\1787739508458-cd155ad1-fac5-447c-b129-59df0a7cfd0e.pdf",
+      "revisions": [
+        {
+          "id": "e239fef2-1b2a-4f17-ad2e-a6483388055a",
+          "revision": "00",
+          "fileName": "drawing.pdf",
+          "fileExtension": "pdf",
+          "fileSize": 13,
+          "uploadedBy": "admin",
+          "uploadedAt": "2026-08-26T10:18:28.459Z"
+        }
+      ],
+      "createdBy": "admin",
+      "id": "914bba69-1977-4ea6-bf17-3be16d62357f",
+      "createdAt": "2026-08-26T10:18:28.459Z",
+      "updatedAt": "2026-08-26T10:18:28.459Z"
+    },
+    "timestamp": "2026-08-26T10:18:28.460Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "8d23d432-b5b8-4c48-8f1b-46f15ae97681",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "new-revision",
+    "entity": "document",
+    "entityId": "914bba69-1977-4ea6-bf17-3be16d62357f",
+    "oldValue": {
+      "revision": "00"
+    },
+    "newValue": {
+      "revision": "01"
+    },
+    "timestamp": "2026-08-26T10:18:28.477Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "4a510121-0354-46c6-ada2-4333899114bf",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "status-change",
+    "entity": "document",
+    "entityId": "914bba69-1977-4ea6-bf17-3be16d62357f",
+    "oldValue": {
+      "status": "draft"
+    },
+    "newValue": {
+      "status": "approved"
+    },
+    "timestamp": "2026-08-26T10:18:28.497Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "5bae5888-60b5-4afb-ab2f-2fba0e840899",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "delete-blocked",
+    "entity": "item",
+    "entityId": "342f3f5b-4914-4f30-9f07-cc510947cddb",
+    "timestamp": "2026-08-26T10:18:28.555Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "884654b1-02e0-4666-9702-ffcace899710",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "delete-blocked",
+    "entity": "warehouse",
+    "entityId": "75ab3023-2b95-4fe8-ba08-3da360ecaa41",
+    "timestamp": "2026-08-26T10:18:28.565Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "e1d8352e-a2cd-4859-956c-989e7f1d9151",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "delete-blocked",
+    "entity": "project",
+    "entityId": "6f4cfe27-9ad9-473a-9637-4f4f75bba659",
+    "timestamp": "2026-08-26T10:18:28.573Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "2e3c2089-933b-46a8-a7db-0b243ff83bcc",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "excel-import",
+    "entity": "items",
+    "newValue": {
+      "imported": 1,
+      "failed": 0
+    },
+    "timestamp": "2026-08-26T10:18:28.626Z",
+    "ipAddress": "::1"
+  }
+]

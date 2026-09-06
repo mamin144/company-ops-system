@@ -1,0 +1,16 @@
+[
+  {
+    "projectCode": "PRJ-100",
+    "projectName": "برج النيل",
+    "client": "شركة مصر",
+    "mainContractor": "أوراسكوم",
+    "siteLocation": "القاهرة",
+    "contractNumber": "C-100",
+    "status": "active",
+    "role": "subcontractor",
+    "createdBy": "admin",
+    "id": "6f4cfe27-9ad9-473a-9637-4f4f75bba659",
+    "createdAt": "2026-08-26T10:18:28.340Z",
+    "updatedAt": "2026-08-26T10:18:28.340Z"
+  }
+]

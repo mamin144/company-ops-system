@@ -1,0 +1,13 @@
+[
+  {
+    "id": "c8cff6dc780ccc5a06a08443",
+    "userId": "user-admin",
+    "username": "admin",
+    "tokenHash": "92bda43ce5cfbde7032b0f786a9bb19fd59b215b4ed53e99200f95a5c17f3eae",
+    "createdAt": "2026-08-26T11:30:15.323Z",
+    "expiresAt": "2026-08-27T11:30:15.323Z",
+    "ipAddress": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "rememberMe": false
+  }
+]

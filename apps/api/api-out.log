@@ -1,0 +1,27 @@
+
+> @cos/api@0.1.0 dev
+> tsx watch src/server.ts
+
+Failed to start server: error: password authentication failed for user "postgres"
+    at C:\Users\OMAR\Documents\Default Project\company-ops-system\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async runMigrations (C:\Users\OMAR\Documents\Default Project\company-ops-system\apps\api\src\database\migrate.ts:9:18)
+    at async createApp (C:\Users\OMAR\Documents\Default Project\company-ops-system\apps\api\src\app.ts:15:3) {
+  length: 104,
+  severity: 'FATAL',
+  code: '28P01',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'auth.c',
+  line: '320',
+  routine: 'auth_failed'
+}

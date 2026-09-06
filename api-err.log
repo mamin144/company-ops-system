@@ -1,0 +1,27 @@
+Failed to start server: AggregateError [ECONNREFUSED]: 
+    at C:\Users\OMAR\Documents\Default Project\company-ops-system\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async runMigrations (C:\Users\OMAR\Documents\Default Project\company-ops-system\apps\api\src\database\migrate.ts:9:18)
+    at async createApp (C:\Users\OMAR\Documents\Default Project\company-ops-system\apps\api\src\app.ts:15:3) {
+  code: 'ECONNREFUSED',
+  [errors]: [
+    Error: connect ECONNREFUSED ::1:4000
+        at createConnectionError (node:net:1678:14)
+        at afterConnectMultiple (node:net:1708:16) {
+      errno: -4078,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '::1',
+      port: 4000
+    },
+    Error: connect ECONNREFUSED 127.0.0.1:4000
+        at createConnectionError (node:net:1678:14)
+        at afterConnectMultiple (node:net:1708:16) {
+      errno: -4078,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 4000
+    }
+  ]
+}

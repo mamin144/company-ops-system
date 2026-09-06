@@ -1,0 +1,33 @@
+[
+  {
+    "code": "WH-A",
+    "name": "Ù…Ø®Ø²Ù† Ø£",
+    "type": "central",
+    "status": "active",
+    "createdBy": "admin",
+    "id": "9830ce85-c8d3-48be-9c73-915ae4779895",
+    "createdAt": "2026-08-26T11:05:00.611Z",
+    "updatedAt": "2026-08-26T11:05:00.611Z"
+  },
+  {
+    "code": "WH-B",
+    "name": "Ù…Ø®Ø²Ù† Ø¨",
+    "type": "site",
+    "status": "active",
+    "createdBy": "admin",
+    "id": "871411d8-ce4a-4e53-b6f3-784a068a9bab",
+    "createdAt": "2026-08-26T11:05:00.642Z",
+    "updatedAt": "2026-08-26T11:05:00.642Z"
+  },
+  {
+    "code": "WH-R",
+    "name": "مخزن R",
+    "type": "central",
+    "projectId": "44d0e2b8-e3b1-4cb2-a38f-448c9d21517e",
+    "status": "active",
+    "createdBy": "admin",
+    "id": "437cab3e-c40a-42ab-8fc5-4fbcb136f621",
+    "createdAt": "2026-08-26T11:05:40.704Z",
+    "updatedAt": "2026-08-26T11:05:40.704Z"
+  }
+]

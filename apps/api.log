@@ -1,0 +1,7 @@
+npm error Lifecycle script `dev:api` failed with error:
+npm error workspace @cos/api@0.1.0
+npm error location C:\Users\OMAR\Documents\Default Project\company-ops-system\apps\api
+npm error Missing script: "dev:api"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run --workspace=@cos/api@0.1.0

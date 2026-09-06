@@ -1,0 +1,21 @@
+[
+  {
+    "number": "MR-2026-0001",
+    "projectId": "f97227ce-caca-4d54-8828-9fc26964817b",
+    "warehouseId": "7025f8d6-6a5f-4ed1-9f5a-13758db39bef",
+    "status": "issued",
+    "items": [
+      {
+        "itemId": "4eb703ed-1b17-4a3f-8550-aa2b089bcf9f",
+        "requestedQty": 2,
+        "issuedQty": 2
+      }
+    ],
+    "requestedBy": "admin",
+    "createdBy": "admin",
+    "id": "cd1f7183-4755-411a-a2f6-5a071621da3d",
+    "createdAt": "2026-08-26T13:13:16.341Z",
+    "updatedAt": "2026-08-26T13:13:16.384Z",
+    "reviewedBy": "admin"
+  }
+]
