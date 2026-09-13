@@ -267,7 +267,7 @@ export const FinancialsPage = () => {
                     return (
                       <React.Fragment key={regionKey}>
                         {/* Region Row */}
-                        <tr style={{ background: 'var(--surface-hover)', cursor: 'pointer' }} onClick={() => toggleRegion(regionKey)}>
+                        <tr className="regionGroupRow" style={{ cursor: 'pointer' }} onClick={() => toggleRegion(regionKey)}>
                           <td colSpan={5 + maxIpcCount * 2 + 1} style={{ paddingRight: 32 }}>
                             {regionExpanded ? '▼' : '◀'} <strong>{region}</strong> — {projects.length} مشاريع — {regionBoqTotal.toLocaleString()}
                           </td>
@@ -276,7 +276,7 @@ export const FinancialsPage = () => {
                         {regionExpanded && projects.map(p => {
                           const docCount = p.linkedDocs.length;
                           return (
-                            <tr key={p.projectId} className="hoverable" style={{ cursor: 'pointer' }} onClick={() => setSelectedProject(p)}>
+                            <tr key={p.projectId} className="financialProjectRow" style={{ cursor: 'pointer' }} onClick={() => setSelectedProject(p)}>
                               <td style={{ paddingRight: 48 }}><Link to="#" onClick={e => e.preventDefault()}>{p.projectName}</Link></td>
                               <td>{p.region || '—'}</td>
                               <td>{p.contractNumber}</td>

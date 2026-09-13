@@ -128,6 +128,26 @@ const Protected = ({ perm, children }: { perm?: string; children: ReactNode }) =
   return <>{children}</>;
 };
 
+const OfflineBanner = () => {
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  useEffect(() => {
+    const onOnline = () => setIsOffline(false);
+    const onOffline = () => setIsOffline(true);
+    window.addEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+    return () => {
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('offline', onOffline);
+    };
+  }, []);
+  if (!isOffline) return null;
+  return (
+    <div style={{ background: '#f59e0b', color: '#fff', padding: '0.5rem', textAlign: 'center', fontWeight: 'bold' }}>
+      أنت تتصفح في وضع عدم الاتصال (Offline). بعض البيانات قد تكون غير متوفرة.
+    </div>
+  );
+};
+
 const Shell = () => (
   <div className="shell">
     <Sidebar />
@@ -137,6 +157,7 @@ const Shell = () => (
         <NotificationBell />
         <ThemeToggle />
       </header>
+      <OfflineBanner />
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Protected><DashboardPage /></Protected>} />

@@ -3,7 +3,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "outDir": "dist",
-    "types": ["vite/client"]
+    "types": ["vite/client", "vite-plugin-pwa/client"]
   },
   "include": ["src"]
 }

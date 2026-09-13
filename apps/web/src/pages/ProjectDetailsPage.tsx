@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import type { Document, Item, Project, Site, StockTransaction, Warehouse } from '@cos/shared';
-import { Badge, toneForStatus, EmptyState } from '../components/ui';
+import { Badge, toneForStatus, EmptyState, BackButton } from '../components/ui';
 import { PreviewDocButton, DownloadDocButton } from '../components/ProtectedFileLink';
 import { ProjectBoqTab } from '../components/projects/ProjectBoqTab';
 import { ProjectIpcsTab } from '../components/projects/ProjectIpcsTab';
@@ -76,8 +76,8 @@ export const ProjectDetailsPage = () => {
     <div className="page">
       <div className="pageHead">
         <div>
-          <Link to="/projects" className="linkBtn small">← المشاريع</Link>
-          <h1>{project.projectName}</h1>
+          <BackButton />
+          <h1 style={{ marginTop: 8 }}>{project.projectName}</h1>
           <p>{project.projectCode} · {project.client}</p>
         </div>
         <Badge tone={toneForStatus(project.status)}>

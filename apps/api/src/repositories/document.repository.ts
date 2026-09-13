@@ -12,6 +12,7 @@ export class DocumentRepository extends PgBaseRepository<Document> {
   protected mapRowToEntity(row: any): Document {
     return {
       id: row.id,
+      folderId: row.folder_id,
       projectId: row.project_id,
       siteId: row.site_id,
       ipcId: row.ipc_id,
@@ -94,15 +95,38 @@ export class DocumentRepository extends PgBaseRepository<Document> {
     return docs.map((d) => ({ ...d, revisions: byDoc.get(d.id) ?? [] }));
   }
 
+  private async attachLinks(docs: Document[]): Promise<Document[]> {
+    if (!docs.length) return docs;
+    const result = await pool.query(
+      `SELECT * FROM document_links WHERE document_id = ANY($1) ORDER BY created_at ASC`,
+      [docs.map((d) => d.id)]
+    );
+    const byDoc = new Map<string, any[]>();
+    for (const row of result.rows) {
+      const list = byDoc.get(row.document_id) ?? [];
+      list.push({
+        id: row.id,
+        documentId: row.document_id,
+        entityType: row.entity_type,
+        entityId: row.entity_id,
+        createdAt: row.created_at,
+      });
+      byDoc.set(row.document_id, list);
+    }
+    return docs.map((d) => ({ ...d, links: byDoc.get(d.id) ?? [] }));
+  }
+
   override async list(): Promise<Document[]> {
     const result = await pool.query(`SELECT * FROM documents`);
-    return this.attachRevisions(result.rows.map(this.mapRowToEntity.bind(this)));
+    const withRevisions = await this.attachRevisions(result.rows.map(this.mapRowToEntity.bind(this)));
+    return this.attachLinks(withRevisions);
   }
 
   override async findById(id: string): Promise<Document | undefined> {
     const result = await pool.query(`SELECT * FROM documents WHERE id = $1`, [id]);
     if (result.rows.length === 0) return undefined;
-    const [doc] = await this.attachRevisions([this.mapRowToEntity(result.rows[0])]);
+    const withRevisions = await this.attachRevisions([this.mapRowToEntity(result.rows[0])]);
+    const [doc] = await this.attachLinks(withRevisions);
     return doc;
   }
 
@@ -111,23 +135,22 @@ export class DocumentRepository extends PgBaseRepository<Document> {
     const now = nowIso();
     await pool.query(
       `INSERT INTO documents (
-        id, project_id, site_id, ipc_id, title, document_number, category, document_type,
+        id, folder_id, project_id, site_id, ipc_id, title, document_number, category, document_type,
         file_name, file_extension, file_size, file_path, revision, document_date,
         uploaded_by, status, revisions, notes, tags, created_at, updated_at
       )
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)`,
       [
-        id, input.projectId || null, input.siteId || null, input.ipcId || null, input.title, input.documentNumber || null,
+        id, input.folderId || null, input.projectId || null, input.siteId || null, input.ipcId || null, input.title, input.documentNumber || null,
         input.category, input.documentType ?? '', input.fileName, input.fileExtension ?? '', input.fileSize ?? 0,
         input.filePath, input.revision || '00', input.documentDate || null, input.uploadedBy || null,
         input.status ?? 'draft', JSON.stringify(input.revisions || []), input.notes || null, input.tags || [],
         now, now
       ]
     );
-    // Canonical store: revision rows in document_revisions (the revisions
-    // JSONB above is kept as a mirror only).
     await this.upsertRevisionRows(id, input.revisions ?? [], now);
-    const [doc] = await this.attachRevisions([{ ...input, id, createdAt: now, updatedAt: now }]);
+    const withRevisions = await this.attachRevisions([{ ...input, id, createdAt: now, updatedAt: now }]);
+    const [doc] = await this.attachLinks(withRevisions);
     return doc;
   }
 
@@ -136,6 +159,7 @@ export class DocumentRepository extends PgBaseRepository<Document> {
     const setClause: string[] = [];
     const params: any[] = [];
     
+    if (input.folderId !== undefined) { params.push(input.folderId); setClause.push(`folder_id = $${params.length}`); }
     if (input.projectId !== undefined) { params.push(input.projectId); setClause.push(`project_id = $${params.length}`); }
     if (input.siteId !== undefined) { params.push(input.siteId); setClause.push(`site_id = $${params.length}`); }
     if (input.ipcId !== undefined) { params.push(input.ipcId); setClause.push(`ipc_id = $${params.length}`); }
@@ -170,7 +194,8 @@ export class DocumentRepository extends PgBaseRepository<Document> {
     // Canonical store: persist any new revision rows (idempotent); the
     // revisions JSONB set above stays as a mirror only.
     if (input.revisions !== undefined) await this.upsertRevisionRows(id, input.revisions, now);
-    const [doc] = await this.attachRevisions([this.mapRowToEntity(result.rows[0])]);
+    const withRevisions = await this.attachRevisions([this.mapRowToEntity(result.rows[0])]);
+    const [doc] = await this.attachLinks(withRevisions);
     return doc;
   }
 }

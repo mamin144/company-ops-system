@@ -3,6 +3,10 @@ import { existsSync, unlinkSync } from 'node:fs';
 import multer from 'multer';
 import { documentSchema, documentStatusSchema } from './documents.validators';
 import { documentRepository } from '../../repositories/document.repository';
+import { documentLinkRepository } from '../../repositories/document-link.repository';
+import path from 'path';
+import fs from 'fs';
+import { ZipArchive } from 'archiver';
 import { applyPagination, applySearch, applySort } from '../../services/filter.service';
 import { fileStorageService } from '../../storage/file-storage';
 import { projectRepository } from '../../repositories/project.repository';
@@ -128,6 +132,7 @@ const contentDisposition = (type: 'inline' | 'attachment', fileName: string) => 
 const sendDocumentFile = async (req: AuthedRequest, res: import('express').Response, inline: boolean) => {
   const item = await documentRepository.findById(String(req.params.id));
   if (!item) return res.status(404).json({ message: 'المستند غير موجود' });
+  if (item.isFolder) return res.status(400).json({ message: 'لا يمكن تحميل مجلد كملف' });
   const revisionId = req.query.revision ? String(req.query.revision) : undefined;
 
   let filePath = item.filePath;
@@ -268,6 +273,30 @@ documentsRouter.post(
   },
 );
 
+documentsRouter.post('/:id/links', requirePermission('archive.edit'), async (req: AuthedRequest, res) => {
+  const { entityType, entityId } = req.body;
+  if (!entityType || !entityId) return res.status(400).json({ message: 'Missing entityType or entityId' });
+  const existing = await documentRepository.findById(String(req.params.id));
+  if (!existing) return res.status(404).json({ message: 'Document not found' });
+  const link = await documentLinkRepository.link(existing.id, entityType, entityId);
+  res.status(201).json(link);
+});
+
+documentsRouter.delete('/links/:linkId', requirePermission('archive.edit'), async (req: AuthedRequest, res) => {
+  const linkId = String(req.params.linkId);
+  const link = await documentLinkRepository.findById(linkId);
+  if (!link) return res.status(404).json({ message: 'Link not found' });
+  await documentLinkRepository.delete(linkId);
+  res.status(204).end();
+});
+
+documentsRouter.patch('/:id/move', requirePermission('archive.edit'), async (req: AuthedRequest, res) => {
+  const existing = await documentRepository.findById(String(req.params.id));
+  if (!existing) return res.status(404).json({ message: 'Document not found' });
+  const updated = await documentRepository.update(existing.id, { folderId: req.body.folderId || null });
+  res.json(updated);
+});
+
 documentsRouter.put('/:id', requirePermission('archive.edit'), async (req: AuthedRequest, res) => {
   const parsed = documentSchema.partial().safeParse({
     ...req.body,
@@ -312,6 +341,55 @@ documentsRouter.patch('/:id/status', requirePermission('archive.edit'), async (r
   res.json(updated);
 });
 
+// --- PHASE 3: ZIP Export ---
+documentsRouter.post('/export/zip', requirePermission('archive.download'), async (req: AuthedRequest, res) => {
+  const { documentIds = [], folderIds = [] } = req.body;
+  if (!Array.isArray(documentIds) || !Array.isArray(folderIds)) {
+    return res.status(400).json({ message: 'Invalid payload' });
+  }
+
+  // Basic implementation: fetch specified documents
+  const allDocs = await documentRepository.list();
+  
+  const archive = new ZipArchive({ zlib: { level: 9 } });
+  
+  res.setHeader('Content-Type', 'application/zip');
+  res.setHeader('Content-Disposition', 'attachment; filename="documents_export.zip"');
+  
+  archive.on('error', (err: any) => {
+    if (!res.headersSent) res.status(500).send({ error: err.message });
+  });
+
+  archive.pipe(res);
+
+  const processedFiles = new Set();
+  
+  for (const doc of allDocs) {
+    if (documentIds.includes(doc.id)) {
+      if (!doc.filePath) continue;
+      
+      let fullPath: string;
+      try {
+        fullPath = fileStorageService.resolveAbsolute(doc.filePath);
+      } catch { continue; }
+      
+      if (!fs.existsSync(fullPath)) continue;
+      
+      let nameInZip = doc.fileName || 'document.pdf';
+      if (processedFiles.has(nameInZip)) {
+         const parts = nameInZip.split('.');
+         const ext = parts.pop();
+         nameInZip = `${parts.join('.')}_${doc.id.split('-')[0]}.${ext}`;
+      }
+      processedFiles.add(nameInZip);
+
+      archive.file(fullPath, { name: nameInZip });
+    }
+  }
+
+  archive.finalize();
+});
+
 documentsRouter.post('/:id/replace', requirePermission('archive.edit'), upload.single('file'), async (req: AuthedRequest, res) => {
   const id = String(req.params.id);
   const item = await documentRepository.findById(id);
@@ -339,7 +417,7 @@ documentsRouter.post('/:id/replace', requirePermission('archive.edit'), upload.s
 documentsRouter.delete('/:id', requirePermission('archive.delete'), async (req: AuthedRequest, res) => {
   const existing = await documentRepository.findById(String(req.params.id));
   if(!existing) return res.status(404).json({ message: 'المستند غير موجود' });
-  const blocked = await deleteSafety.blockDocument(existing.id);
+  const blocked = req.user?.roleName === 'admin' ? null : await deleteSafety.blockDocument(existing.id);
   if (blocked) {
     auditService.log(req, 'delete-blocked', 'document', existing.id);
     return res.status(409).json({ message: blocked });

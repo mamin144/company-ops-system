@@ -26,10 +26,10 @@ export class StockTransactionRepository extends PgBaseRepository<StockTransactio
     };
   }
 
-  async create(input: Omit<StockTransaction, 'id' | 'createdAt' | 'updatedAt'>): Promise<StockTransaction> {
+  async create(input: Omit<StockTransaction, 'id' | 'createdAt' | 'updatedAt'>, client: any = pool): Promise<StockTransaction> {
     const id = createId();
     const now = nowIso();
-    await pool.query(
+    await client.query(
       `INSERT INTO stock_transactions (id, number, type, warehouse_id, destination_warehouse_id, project_id, items, reference_number, date, notes, created_at, updated_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
       [id, input.number || null, input.type, input.warehouseId, input.destinationWarehouseId || null, input.projectId || null, JSON.stringify(input.items || []), input.referenceNumber || null, input.date || nowIso(), input.notes || null, now, now]

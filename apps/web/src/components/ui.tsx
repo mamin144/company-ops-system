@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { IconSearch } from './Icons';
 
 /* ---------- Toast ---------- */
@@ -46,7 +47,7 @@ export const Modal = ({ title, open, onClose, children, wide }: { title: string;
         </div>
         <div className="modal__body">{children}</div>
       </div>
-    </div>
+  </div>
   );
 };
 
@@ -118,3 +119,16 @@ export const SkeletonTable = ({ rows = 6 }: { rows?: number }) => (
     ))}
   </div>
 );
+
+/**
+ * Back button for INTERNAL pages only (detail/nested screens).
+ * Goes back one step in router history — never add to top-level pages.
+ */
+export const BackButton = ({ label = 'رجوع' }: { label?: string }) => {
+  const navigate = useNavigate();
+  return (
+    <button type="button" className="btn btn--ghost btn--sm" onClick={() => navigate(-1)}>
+      ← {label}
+    </button>
+  );
+};

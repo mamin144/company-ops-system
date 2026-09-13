@@ -25,7 +25,8 @@ $testDb = 'cos_restore_test'
 
 if (-not (Test-Path $BackupFile)) { throw "Backup file not found: $BackupFile" }
 
-docker exec $container dropdb -U $dbUser --if-exists $testDb
+$exists = docker exec $container psql -U $dbUser -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$testDb'"
+if ($exists -match '1') { docker exec $container dropdb -U $dbUser $testDb }
 docker exec $container createdb -U $dbUser -O $dbUser $testDb
 docker cp $BackupFile "${container}:/tmp/restore_test.dump"
 docker exec $container pg_restore -U $dbUser -d $testDb /tmp/restore_test.dump

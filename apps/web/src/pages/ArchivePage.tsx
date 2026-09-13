@@ -7,11 +7,14 @@ import type { Column } from '../components/DataTable';
 import { Badge, ConfirmDialog, Field, Modal, Select, TextArea, TextInput, SearchInput, useToast } from '../components/ui';
 import { EditDeleteActions } from '../components/DataTable';
 import { ImportExcelModal } from '../components/ImportExcelModal';
-import { IconDownload, IconEye, IconFile, IconPlus, IconReplace, IconUpload } from '../components/Icons';
+import { SmartImportModal } from '../components/SmartImportModal';
+import { IconDownload, IconEye, IconFile, IconPlus, IconReplace, IconUpload, IconLink } from '../components/Icons';
 import { PreviewDocButton, DownloadDocButton } from '../components/ProtectedFileLink';
-import { downloadDocument } from '../lib/api';
+import { downloadDocument, downloadZip } from '../lib/api';
 import { DocumentPreviewModal } from '../components/DocumentPreviewModal';
 import { QuickUploadModal } from '../components/QuickUploadModal';
+import { FolderTree } from '../components/FolderTree';
+import { DocumentLinksModal } from '../components/DocumentLinksModal';
 
 const STATUS_AR: Record<string, string> = {
   draft: 'مسودة', submitted: 'مقدمة', 'under-review': 'قيد المراجعة',
@@ -56,11 +59,26 @@ export const ArchivePage = () => {
   const [deleteTarget, setDeleteTarget] = useState<Document | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [quickUploadOpen, setQuickUploadOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [linksDoc, setLinksDoc] = useState<Document | null>(null);
   const [revisionsDoc, setRevisionsDoc] = useState<Document | null>(null);
   const [revisions, setRevisions] = useState<DocumentRevision[]>([]);
   const fileInput = useRef<HTMLInputElement>(null);
   const replaceInput = useRef<HTMLInputElement>(null);
   const revisionInput = useRef<HTMLInputElement>(null);
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
+  const handleDownloadZip = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      await downloadZip('/api/documents/export/zip', 'archive_export.zip', { documentIds: selectedIds });
+    } catch (e: any) {
+      alert(e.message || 'Error downloading ZIP');
+    }
+  };
 
   useEffect(() => {
     void api.get<{ items: Project[] }>('/api/projects?pageSize=200').then((r) => setProjects(Array.isArray(r.items) ? r.items : []));
@@ -162,6 +180,18 @@ export const ArchivePage = () => {
 
   const columns: Column<Document>[] = [
     {
+      key: 'select',
+      label: '',
+      sortable: false,
+      render: (d) => (
+        <input 
+          type="checkbox" 
+          checked={selectedIds.includes(d.id)} 
+          onChange={() => toggleSelect(d.id)} 
+        />
+      ),
+    },
+    {
       key: 'title',
       label: 'العنوان',
       sortable: true,
@@ -221,53 +251,85 @@ export const ArchivePage = () => {
     },
   ];
 
+  const handleDropDocument = async (folderId: string | null, documentId: string) => {
+    try {
+      await api.patch(`/api/documents/${documentId}/move`, { folderId });
+      void list.reload();
+    } catch (e: any) {
+      alert(e.message || 'Error moving document');
+    }
+  };
+
   return (
-    <div className="page">
-      <div className="pageHead">
-        <div><h1>الأرشيف</h1><p>إدارة مستندات المشاريع</p></div>
-        <div className="actions">
-          <SearchInput value={list.state.q} onChange={list.setQ} placeholder="بحث في المستندات…" />
-          <button className="btn btn--ghost" onClick={list.clearFilters}>مسح الفلاتر</button>
-          <button className="btn btn--ghost" onClick={() => void downloadDocument('/api/documents/export/xlsx', 'documents.xlsx')}><IconDownload size={16} /> تصدير Excel</button>
-          <button className="btn btn--ghost" title="استيراد بيانات وصفية فقط بدون الملفات" onClick={() => setImportOpen(true)}><IconUpload size={16} /> استيراد Excel</button>
-          <button className="btn btn--primary" onClick={openCreate}><IconPlus size={16} /> رفع مستند</button>
+    <div className="page" style={{ padding: 0, height: 'calc(100vh - 64px)', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', height: '100%' }}>
+        {/* Sidebar */}
+        <div style={{ width: 280, borderLeft: '1px solid var(--border)', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--surface)' }}>
+          <div style={{ padding: 16, borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 style={{ fontSize: 16, margin: 0 }}>المجلدات</h2>
+            <button className="btn btn--sm btn--ghost" title="مجلد جديد" onClick={() => alert('قريباً')}><IconPlus size={14} /></button>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            <FolderTree 
+              selectedId={f.folderId ?? null} 
+              onSelect={(id) => list.setFilter('folderId', id || '')}
+              onDropDocument={handleDropDocument}
+            />
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div className="pageHead" style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
+            <div><h1>الأرشيف</h1><p>إدارة مستندات المشاريع</p></div>
+            <div className="actions">
+              <SearchInput value={list.state.q} onChange={list.setQ} placeholder="بحث في المستندات…" />
+              {selectedIds.length > 0 && (
+                <button className="btn btn--primary" onClick={() => void handleDownloadZip()}>تحميل ZIP</button>
+              )}
+              <button className="btn btn--ghost" onClick={list.clearFilters}>مسح الفلاتر</button>
+              <button className="btn btn--ghost" onClick={() => void downloadDocument('/api/documents/export/xlsx', 'documents.xlsx')}><IconDownload size={16} /> تصدير</button>
+              <button className="btn btn--ghost" onClick={() => setImportOpen(true)}><IconUpload size={16} /> استيراد ذكي (Excel)</button>
+              <button className="btn btn--primary" onClick={openCreate}><IconPlus size={16} /> رفع مستند</button>
+            </div>
+          </div>
+
+          <div style={{ padding: '16px 24px', flex: 1, overflowY: 'auto' }}>
+            <div className="filtersRow" style={{ marginBottom: 16 }}>
+              <Select value={f.projectId ?? ''} onChange={(e) => list.setFilter('projectId', e.target.value)}>
+                <option value="">كل المشاريع</option>
+                {projects.map((p) => <option key={p.id} value={p.id}>{p.projectCode} — {p.projectName}</option>)}
+              </Select>
+              <Select value={f.category ?? ''} onChange={(e) => list.setFilter('category', e.target.value)}>
+                <option value="">كل التصنيفات</option>
+                {docCategories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
+              </Select>
+              <TextInput type="date" value={f.from ?? ''} onChange={(e) => list.setFilter('from', e.target.value)} title="من تاريخ" />
+              <TextInput type="date" value={f.to ?? ''} onChange={(e) => list.setFilter('to', e.target.value)} title="إلى تاريخ" />
+            </div>
+
+            <DataTable
+              rowProps={(row) => ({ draggable: true, onDragStart: (e) => e.dataTransfer.setData(`text/plain`, row.id) })}
+              columns={columns}
+              data={list.data}
+              loading={list.loading}
+              error={list.error}
+              onRetry={() => void list.reload()}
+              sortBy={list.state.sortBy}
+              sortDir={list.state.sortDir}
+              onSort={list.toggleSort}
+              onPage={list.setPage}
+              actions={(row) => (
+                <>
+                  <EditDeleteActions onEdit={() => openEdit(row)} onDelete={() => setDeleteTarget(row)} />
+                  <button className="iconBtn iconBtn--hover" title="إدارة الروابط" onClick={() => setLinksDoc(row)}><IconLink size={15} /></button>
+                  <button className="iconBtn iconBtn--hover" title="استبدال الملف" onClick={() => { setReplaceTarget(row); replaceInput.current?.click(); }}><IconReplace size={15} /></button>
+                </>
+              )}
+            />
+          </div>
         </div>
       </div>
-
-      <div className="filtersRow">
-        <Select value={f.projectId ?? ''} onChange={(e) => list.setFilter('projectId', e.target.value)}>
-          <option value="">كل المشاريع</option>
-          {projects.map((p) => <option key={p.id} value={p.id}>{p.projectCode} — {p.projectName}</option>)}
-        </Select>
-        <Select value={f.category ?? ''} onChange={(e) => list.setFilter('category', e.target.value)}>
-          <option value="">كل التصنيفات</option>
-          {docCategories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
-        </Select>
-        <Select value={f.documentType ?? ''} onChange={(e) => list.setFilter('documentType', e.target.value)}>
-          <option value="">كل الأنواع</option>
-          {docTypes.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
-        </Select>
-        <TextInput type="date" value={f.from ?? ''} onChange={(e) => list.setFilter('from', e.target.value)} title="من تاريخ" />
-        <TextInput type="date" value={f.to ?? ''} onChange={(e) => list.setFilter('to', e.target.value)} title="إلى تاريخ" />
-      </div>
-
-      <DataTable
-        columns={columns}
-        data={list.data}
-        loading={list.loading}
-        error={list.error}
-        onRetry={() => void list.reload()}
-        sortBy={list.state.sortBy}
-        sortDir={list.state.sortDir}
-        onSort={list.toggleSort}
-        onPage={list.setPage}
-        actions={(row) => (
-          <>
-            <EditDeleteActions onEdit={() => openEdit(row)} onDelete={() => setDeleteTarget(row)} />
-            <button className="iconBtn iconBtn--hover" title="استبدال الملف" onClick={() => { setReplaceTarget(row); replaceInput.current?.click(); }}><IconReplace size={15} /></button>
-          </>
-        )}
-      />
 
       <input
         ref={replaceInput}
@@ -362,9 +424,7 @@ export const ArchivePage = () => {
         onCancel={() => setDeleteTarget(null)}
       />
 
-      <ImportExcelModal
-        entity="documents"
-        title="بيانات المستندات"
+      <SmartImportModal
         open={importOpen}
         onClose={() => setImportOpen(false)}
         onDone={() => void list.reload()}
@@ -374,6 +434,17 @@ export const ArchivePage = () => {
         open={quickUploadOpen}
         onClose={() => setQuickUploadOpen(false)}
         onSuccess={() => void list.reload()}
+      />
+
+      <DocumentLinksModal
+        open={!!linksDoc}
+        onClose={() => setLinksDoc(null)}
+        document={linksDoc}
+        projects={projects}
+        onSuccess={() => {
+          setLinksDoc(null);
+          void list.reload();
+        }}
       />
     </div>
   );

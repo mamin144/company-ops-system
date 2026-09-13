@@ -153,10 +153,14 @@ stockRouter.delete(
   '/transactions/:id',
   requireAnyPermission('warehouse.edit', 'settings.manage'),
   async (req: AuthedRequest, res) => {
-    const existing = await stockTransactionRepository.findById(String(req.params.id));
-    if(!existing) return res.status(404).json({ message: 'الحركة غير موجودة' });
-    await stockTransactionRepository.delete(existing.id);
-    auditService.log(req, 'delete', 'stock-transaction', existing.id, existing);
-    res.status(204).end();
+    // FIX: Enforce immutable stock ledger — unconditionally.
+    // Deleting a transaction removes its quantities from the dynamic balance without an audit trail of the reversal,
+    // which can lead to negative balances and lost history. The 400 comes before the existence check on purpose:
+    // deletion is never a valid operation here, for missing ids no less than for existing ones. Correct mistakes
+    // with a reversing settlement/return movement instead.
+    auditService.log(req, 'delete-blocked', 'stock-transaction', String(req.params.id));
+    return res.status(400).json({ 
+      message: 'لا يمكن حذف حركات المخزون للحفاظ على سلامة البيانات. قم بإنشاء حركة تسوية أو إرجاع بدلاً من ذلك.' 
+    });
   },
 );

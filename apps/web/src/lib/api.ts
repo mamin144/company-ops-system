@@ -165,6 +165,20 @@ export const downloadDocument = async (path: string, fileName: string): Promise<
  * downloading the body. Used by DocumentPreviewModal to detect MIME type
  * before rendering the preview.
  */
+export const downloadZip = async (path: string, fileName: string, body: unknown): Promise<void> => {
+  const res = await withAuthRetry(() => rawFetch(path, { method: 'POST', body: JSON.stringify(body) }));
+  if (!res.ok) throw await parseError(res);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
+};
+
 export const apiHead = async (path: string): Promise<{ ok: boolean; status: number; contentType: string | null }> => {
   const res = await withAuthRetry(() => rawFetch(path, { method: 'HEAD' }));
   return {

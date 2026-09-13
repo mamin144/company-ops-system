@@ -21,6 +21,7 @@ export const DataTable = <T extends { id: string }>({
   onSort,
   onPage,
   actions,
+  rowProps,
 }: {
   columns: Column<T>[];
   data: Paged<T> | null;
@@ -32,6 +33,7 @@ export const DataTable = <T extends { id: string }>({
   onSort?: (key: string) => void;
   onPage?: (page: number) => void;
   actions?: (row: T) => ReactNode;
+  rowProps?: (row: T) => React.HTMLAttributes<HTMLTableRowElement>;
 }) => {
   if (loading && !data) return <SkeletonTable />;
   if (error && !data)
@@ -76,7 +78,7 @@ export const DataTable = <T extends { id: string }>({
               </tr>
             ) : (
               data.items.map((row) => (
-                <tr key={row.id}>
+                <tr key={row.id} {...(rowProps ? rowProps(row) : {})}>
                   {columns.map((c) => (
                     <td key={c.key}>{c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? '')}</td>
                   ))}

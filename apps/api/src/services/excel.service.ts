@@ -6,9 +6,38 @@ export interface ExcelPreviewResult {
   invalidRows: Array<{ rowNumber: number; errors: string[]; row: Record<string, unknown> }>;
 }
 
+export interface SheetPreview {
+  sheetName: string;
+  headers: string[];
+  rows: Record<string, unknown>[];
+  totalRows: number;
+}
+
 export class ExcelService {
   parseBuffer(buffer: Buffer) {
     return XLSX.read(buffer, { type: 'buffer' });
+  }
+
+  /** Return all sheet names from a workbook buffer. */
+  getSheetNames(buffer: Buffer): string[] {
+    const workbook = this.parseBuffer(buffer);
+    return workbook.SheetNames;
+  }
+
+  /**
+   * Parse a specific sheet by name (or the first sheet if omitted).
+   * Returns raw headers, rows, and total row count for smart import analysis.
+   */
+  previewSheet(buffer: Buffer, sheetName?: string): SheetPreview {
+    const workbook = this.parseBuffer(buffer);
+    const name = sheetName ?? workbook.SheetNames[0];
+    const sheet = workbook.Sheets[name];
+    if (!sheet) {
+      return { sheetName: name, headers: [], rows: [], totalRows: 0 };
+    }
+    const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: '' });
+    const headers = rows.length ? Object.keys(rows[0]) : [];
+    return { sheetName: name, headers, rows, totalRows: rows.length };
   }
 
   preview(buffer: Buffer, mapper: (row: Record<string, unknown>, rowNumber: number) => { value?: unknown; errors?: string[] }): ExcelPreviewResult {

@@ -93,11 +93,18 @@ export const DashboardPage = () => {
 
   return (
     <div className="page">
-      <div className="pageHead">
+      <div className="dashHero">
         <div>
           <h1>لوحة التحكم</h1>
           <p>{new Date().toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
         </div>
+        {stats ? (
+          <div className="dashStats">
+            <div className="dashStat"><b>{stats.projects}</b><span>المشاريع</span></div>
+            <div className="dashStat"><b>{stats.documents}</b><span>المستندات</span></div>
+            <div className="dashStat"><b>{stats.pendingMRs}</b><span>طلبات معلقة</span></div>
+          </div>
+        ) : null}
         <div className="actions">
           <Link to="/archive" className="btn btn--ghost">رفع مستند</Link>
           <Link to="/material-requests" className="btn btn--primary">طلبات المواد</Link>

@@ -189,6 +189,171 @@ importRouter.get('/history', requirePermission('settings.manage'), async (_req, 
   res.json([...(await importHistoryRepository.list())].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 100));
 });
 
+// ---------------------------------------------------------------------------
+// Smart Excel Recovery — flexible header matching, preview, and import
+// ---------------------------------------------------------------------------
+import { matchFields } from '../../services/smart-import/field-matcher.js';
+import { transformRow } from '../../services/smart-import/row-transformer.js';
+import { detectDuplicates } from '../../services/smart-import/duplicate-detector.js';
+
+/**
+ * Step 1 — Upload Excel, return sheet names + auto-matched field mappings.
+ */
+importRouter.post('/smart/analyze', upload.single('file'), requirePermission('archive.upload'), async (req: AuthedRequest, res) => {
+  if (!req.file) return res.status(400).json({ message: 'ملف Excel مطلوب' });
+  try {
+    const sheetNames = excelService.getSheetNames(req.file.buffer);
+    const selectedSheet = String(req.body?.sheetName ?? sheetNames[0]);
+    const { headers, rows, totalRows } = excelService.previewSheet(req.file.buffer, selectedSheet);
+    if (!headers.length) return res.status(400).json({ message: 'الشيت فارغ أو لا يحتوي على رؤوس أعمدة' });
+    const mapping = matchFields(headers, rows.slice(0, 10));
+    res.json({
+      sheetNames,
+      selectedSheet,
+      totalRows,
+      mapping,
+      sampleRows: rows.slice(0, 5),
+    });
+  } catch {
+    res.status(400).json({ message: 'تعذر قراءة ملف الإكسل' });
+  }
+});
+
+/**
+ * Step 2 — With confirmed mapping, transform rows and return preview + validation.
+ */
+importRouter.post('/smart/preview', upload.single('file'), requirePermission('archive.upload'), async (req: AuthedRequest, res) => {
+  if (!req.file) return res.status(400).json({ message: 'ملف Excel مطلوب' });
+  try {
+    let confirmedMapping: Array<{ excelHeader: string; systemField: string | null }> = [];
+    if (Array.isArray(req.body?.mapping)) {
+      confirmedMapping = req.body.mapping;
+    } else if (typeof req.body?.mapping === 'string') {
+      try {
+        confirmedMapping = JSON.parse(req.body.mapping);
+      } catch {}
+    }
+    const sheetName = String(req.body?.sheetName ?? '');
+    const { rows } = excelService.previewSheet(req.file.buffer, sheetName || undefined);
+    const projects = await projectRepository.list();
+    const existingDocs = await documentRepository.list();
+
+    const validRows: Record<string, unknown>[] = [];
+    const invalidRows: Array<{ rowNumber: number; errors: string[]; row: Record<string, unknown> }> = [];
+    const allWarnings: Array<{ rowNumber: number; warnings: string[] }> = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const { data, warnings } = transformRow(rows[i], {
+        mapping: confirmedMapping,
+        projects,
+        importedBy: req.user!.fullName ?? req.user!.username,
+      });
+
+      // Validate required fields
+      const errors: string[] = [];
+      if (!data.title || !String(data.title).trim()) errors.push('عنوان المستند مطلوب');
+      if (!data.category || !String(data.category).trim()) errors.push('التصنيف مطلوب');
+
+      if (errors.length) {
+        invalidRows.push({ rowNumber: i + 2, errors, row: data });
+      } else {
+        // Add file placeholders for metadata-only import
+        if (!data.fileName) data.fileName = `${String(data.title)}.xlsx`;
+        if (!data.fileExtension) data.fileExtension = 'xlsx';
+        if (!data.fileSize) data.fileSize = 0;
+        if (!data.filePath) data.filePath = '';
+        validRows.push(data);
+      }
+
+      if (warnings.length) {
+        allWarnings.push({ rowNumber: i + 2, warnings });
+      }
+    }
+
+    // Detect duplicates among valid rows
+    const duplicates = detectDuplicates(validRows, existingDocs);
+
+    res.json({ validRows, invalidRows, warnings: allWarnings, duplicates, totalRows: rows.length });
+  } catch {
+    res.status(400).json({ message: 'تعذر معالجة ملف الإكسل' });
+  }
+});
+
+/**
+ * Step 3 — Execute the import with pre-validated rows.
+ */
+importRouter.post('/smart/confirm', requirePermission('archive.upload'), async (req: AuthedRequest, res) => {
+  const rows = Array.isArray(req.body?.rows) ? req.body.rows : [];
+  const skipDuplicates = req.body?.skipDuplicates ?? true;
+  if (!rows.length) return res.status(400).json({ message: 'لا توجد صفوف صالحة للاستيراد' });
+
+  // If skipDuplicates, remove rows flagged as duplicates
+  const duplicateIndices = new Set<number>(
+    Array.isArray(req.body?.duplicateIndices) ? req.body.duplicateIndices : []
+  );
+
+  let imported = 0;
+  const failures: Array<{ index: number; errors: string[] }> = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    if (skipDuplicates && duplicateIndices.has(i)) continue;
+
+    const row = rows[i] as Record<string, unknown>;
+    try {
+      const parsed = documentSchema.safeParse({
+        projectId: row.projectId ?? '',
+        siteId: row.siteId ?? '',
+        ipcId: row.ipcId ?? '',
+        title: String(row.title ?? ''),
+        documentNumber: row.documentNumber ?? '',
+        category: String(row.category ?? ''),
+        documentType: row.documentType ?? '',
+        revision: row.revision ?? '',
+        documentDate: row.documentDate ?? '',
+        notes: row.notes ?? '',
+        tags: Array.isArray(row.tags) ? row.tags : [],
+      });
+
+      if (!parsed.success) {
+        failures.push({ index: i, errors: Object.values(parsed.error.flatten().fieldErrors).flat().map(String) });
+        continue;
+      }
+
+      await documentRepository.create({
+        ...parsed.data,
+        folderId: undefined,
+        fileName: String(row.fileName ?? `${parsed.data.title}.xlsx`),
+        fileExtension: String(row.fileExtension ?? 'xlsx'),
+        fileSize: Number(row.fileSize) || 0,
+        filePath: String(row.filePath ?? ''),
+        status: ((row.status as string) || 'draft') as import('@cos/shared').DocumentStatus,
+        revision: String(parsed.data.revision ?? '00'),
+        revisions: [],
+        uploadedBy: String(row.uploadedBy ?? req.user!.fullName ?? req.user!.username),
+      });
+      imported += 1;
+    } catch (e) {
+      failures.push({ index: i, errors: [e instanceof Error ? e.message : 'فشل الاستيراد'] });
+    }
+  }
+
+  // Log import history
+  await importHistoryRepository.create({
+    entity: 'documents',
+    fileName: String(req.body?.fileName ?? 'smart-import.xlsx'),
+    userId: req.user!.id,
+    username: req.user!.username,
+    date: nowIso(),
+    totalRows: imported + failures.length,
+    successfulRows: imported,
+    failedRows: failures.length,
+    errors: failures.slice(0, 50).map((f) => `صف ${f.index + 2}: ${f.errors.join('، ')}`),
+  });
+  auditService.log(req, 'smart-excel-import', 'documents', undefined, undefined, { imported, failed: failures.length });
+  res.json({ imported, failed: failures.length, failures });
+});
+
+
 importRouter.get('/:entity/template', async (req, res) => {
   const entity = String(req.params.entity);
   const template = templates[entity];
@@ -282,3 +447,4 @@ importRouter.post('/:entity/confirm', async (req: AuthedRequest, res) => {
   auditService.log(req, 'excel-import', entity, undefined, undefined, { imported, failed: failures.length });
   res.json({ imported, failed: failures.length, failures });
 });
+

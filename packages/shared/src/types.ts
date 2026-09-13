@@ -61,10 +61,29 @@ export interface DocumentRevision {
   notes?: string;
 }
 
+export interface DocumentLink {
+  id: Id;
+  documentId: Id;
+  entityType: string;
+  entityId: Id;
+  createdAt: string;
+}
+
+export interface Folder {
+  id: Id;
+  parentId?: Id;
+  name: string;
+  color?: string;
+  createdBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Document extends BaseEntity {
   projectId?: Id;
   siteId?: Id;
   ipcId?: Id;
+  folderId?: Id;
   title: string;
   documentNumber?: string;
   category: string;
@@ -73,11 +92,12 @@ export interface Document extends BaseEntity {
   fileExtension: string;
   fileSize: number;
   filePath: string;
-  revision?: string;
+  revision: string;
   documentDate?: string;
   uploadedBy?: string;
   status: DocumentStatus;
   revisions: DocumentRevision[];
+  links?: DocumentLink[];
   notes?: string;
   tags: string[];
 }
