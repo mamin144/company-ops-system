@@ -176,7 +176,9 @@ export interface MaterialRequest extends BaseEntity {
   notes?: string;
 }
 
-export type UserRoleName = 'admin' | 'management' | 'warehouse' | 'technical' | 'viewer';
+/** System roles are fixed literals; custom roles use any other identifier string. */
+export type SystemRoleName = 'admin' | 'management' | 'warehouse' | 'technical' | 'viewer';
+export type UserRoleName = SystemRoleName | (string & {});
 
 export interface Role extends BaseEntity {
   name: string;

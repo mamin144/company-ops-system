@@ -61,41 +61,114 @@ export const ItemsPage = () => {
   }, [deleteTarget, list, toast]);
 
   const columns: Column<Item>[] = [
-    { key: 'code', label: 'الكود', sortable: true },
+    {
+      key: 'code',
+      label: 'الكود',
+      sortable: true,
+      render: (it) => <span className="mono num bold">{it.code}</span>,
+    },
     { key: 'name', label: 'اسم الصنف', sortable: true },
-    { key: 'category', label: 'التصنيف' },
-    { key: 'unit', label: 'الوحدة' },
-    { key: 'brand', label: 'الماركة' },
-    { key: 'minimumStock', label: 'حد الأمان', render: (it) => (typeof it.minimumStock === 'number' ? it.minimumStock : '—') },
+    {
+      key: 'category',
+      label: 'التصنيف',
+      render: (it) => <span className="tag">{it.category}</span>,
+    },
+    { key: 'unit', label: 'الوحدة', render: (it) => <span className="small muted">{it.unit}</span> },
+    { key: 'brand', label: 'الماركة', render: (it) => it.brand || '—' },
+    {
+      key: 'minimumStock',
+      label: 'حد الأمان',
+      render: (it) =>
+        typeof it.minimumStock === 'number' ? (
+          <span className="num bold">{it.minimumStock}</span>
+        ) : (
+          '—'
+        ),
+    },
   ];
 
   return (
     <div className="page">
-      <div className="pageHead">
-        <div><h1>الأصناف</h1><p>أصناف المخزن ووحدات القياس</p></div>
+      <div className="invHeader">
+        <div className="invHeader__titleGroup">
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <h1>الأصناف</h1>
+              <span className="heroChip num">{list.data?.total ?? 0} صنف</span>
+            </div>
+            <p>دليل أصناف المواد والمهمات ووحدات القياس ومستويات الأمان</p>
+          </div>
+        </div>
         <div className="actions">
-          <SearchInput value={list.state.q} onChange={list.setQ} placeholder="بحث بالكود أو الاسم…" />
-          <button className="btn btn--ghost" onClick={list.clearFilters}>مسح الفلاتر</button>
-          <button className="btn btn--ghost" onClick={() => void downloadDocument('/api/items/export/xlsx', 'items.xlsx')}><IconDownload size={16} /> تصدير Excel</button>
-          <button className="btn btn--ghost" onClick={() => setImportOpen(true)}><IconUpload size={16} /> استيراد Excel</button>
-          <button className="btn btn--primary" onClick={openCreate}><IconPlus size={16} /> صنف جديد</button>
+          <button className="btn btn--ghost" onClick={() => void downloadDocument('/api/items/export/xlsx', 'items.xlsx')}>
+            <IconDownload size={16} /> تصدير Excel
+          </button>
+          <button className="btn btn--ghost" onClick={() => setImportOpen(true)}>
+            <IconUpload size={16} /> استيراد Excel
+          </button>
+          <button className="btn btn--primary" onClick={openCreate}>
+            <IconPlus size={16} /> صنف جديد
+          </button>
         </div>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={list.data}
-        loading={list.loading}
-        error={list.error}
-        onRetry={() => void list.reload()}
-        sortBy={list.state.sortBy}
-        sortDir={list.state.sortDir}
-        onSort={list.toggleSort}
-        onPage={list.setPage}
-        actions={(row) => (
-          <EditDeleteActions onEdit={() => openEdit(row)} onDelete={() => setDeleteTarget(row)} />
-        )}
-      />
+      <div className="invToolbar">
+        <SearchInput value={list.state.q} onChange={list.setQ} placeholder="بحث بالكود أو الاسم أو التصنيف…" />
+        <button className="btn btn--ghost" onClick={list.clearFilters}>مسح الفلاتر</button>
+      </div>
+
+      <div className="invTableDesktop">
+        <DataTable
+          columns={columns}
+          data={list.data}
+          loading={list.loading}
+          error={list.error}
+          onRetry={() => void list.reload()}
+          sortBy={list.state.sortBy}
+          sortDir={list.state.sortDir}
+          onSort={list.toggleSort}
+          onPage={list.setPage}
+          actions={(row) => (
+            <EditDeleteActions onEdit={() => openEdit(row)} onDelete={() => setDeleteTarget(row)} />
+          )}
+        />
+      </div>
+
+      {/* Responsive Mobile Item Cards */}
+      <div className="itemGrid">
+        {(list.data?.items ?? []).map((it) => (
+          <div className="itemCard" key={it.id}>
+            <div className="itemCard__top">
+              <div>
+                <h3 className="itemCard__title">{it.name}</h3>
+                <span className="itemCard__code num">{it.code}</span>
+              </div>
+              <span className="tag">{it.category}</span>
+            </div>
+            <div className="itemCard__meta">
+              <div className="itemCard__metaItem">
+                <span className="itemCard__metaLabel">الوحدة</span>
+                <span className="itemCard__metaValue">{it.unit}</span>
+              </div>
+              <div className="itemCard__metaItem">
+                <span className="itemCard__metaLabel">الماركة</span>
+                <span className="itemCard__metaValue">{it.brand || '—'}</span>
+              </div>
+              <div className="itemCard__metaItem">
+                <span className="itemCard__metaLabel">حد الأمان</span>
+                <span className="itemCard__metaValue num">{typeof it.minimumStock === 'number' ? it.minimumStock : '—'}</span>
+              </div>
+              <div className="itemCard__metaItem">
+                <span className="itemCard__metaLabel">نوع التتبع</span>
+                <span className="itemCard__metaValue">{it.trackingType === 'batch' ? 'تشغيلة' : it.trackingType === 'serial' ? 'مسلسل' : 'بدون'}</span>
+              </div>
+            </div>
+            <div className="itemCard__actions">
+              <EditDeleteActions onEdit={() => openEdit(it)} onDelete={() => setDeleteTarget(it)} />
+            </div>
+          </div>
+        ))}
+      </div>
 
       <Modal title={editing ? 'تعديل صنف' : 'صنف جديد'} open={formOpen} onClose={() => setFormOpen(false)}>
         <div className="formGrid">

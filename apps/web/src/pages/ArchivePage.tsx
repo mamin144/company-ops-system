@@ -8,20 +8,21 @@ import { Badge, ConfirmDialog, Field, Modal, Select, TextArea, TextInput, Search
 import { EditDeleteActions } from '../components/DataTable';
 import { ImportExcelModal } from '../components/ImportExcelModal';
 import { SmartImportModal } from '../components/SmartImportModal';
-import { IconDownload, IconEye, IconFile, IconPlus, IconReplace, IconUpload, IconLink } from '../components/Icons';
+import { IconDownload, IconEye, IconFile, IconPlus, IconReplace, IconUpload, IconLink, IconEdit, IconTrash } from '../components/Icons';
 import { PreviewDocButton, DownloadDocButton } from '../components/ProtectedFileLink';
 import { downloadDocument, downloadZip } from '../lib/api';
 import { DocumentPreviewModal } from '../components/DocumentPreviewModal';
 import { QuickUploadModal } from '../components/QuickUploadModal';
 import { FolderTree } from '../components/FolderTree';
 import { DocumentLinksModal } from '../components/DocumentLinksModal';
+import { useAuth } from '../context/AuthContext';
 
 const STATUS_AR: Record<string, string> = {
   draft: 'مسودة', submitted: 'مقدمة', 'under-review': 'قيد المراجعة',
   approved: 'معتمد', rejected: 'مرفوض', superseded: 'مُستبدل', archived: 'مؤرشف',
 };
 
-const STATUS_TONE: Record<string, string> = {
+const STATUS_TONE: Record<string, 'gray' | 'blue' | 'amber' | 'green' | 'red' | 'purple'> = {
   draft: 'gray', submitted: 'blue', 'under-review': 'amber', approved: 'green',
   rejected: 'red', superseded: 'purple', archived: 'gray',
 };
@@ -49,6 +50,7 @@ const fileIconKind = (ext: string) =>
 export const ArchivePage = () => {
   const list = usePagedList<Document>('/api/documents');
   const toast = useToast();
+  const { can } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [formOpen, setFormOpen] = useState(false);
@@ -63,6 +65,8 @@ export const ArchivePage = () => {
   const [linksDoc, setLinksDoc] = useState<Document | null>(null);
   const [revisionsDoc, setRevisionsDoc] = useState<Document | null>(null);
   const [revisions, setRevisions] = useState<DocumentRevision[]>([]);
+  const [mobileFolderOpen, setMobileFolderOpen] = useState(false);
+  const [isExportingZip, setIsExportingZip] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const replaceInput = useRef<HTMLInputElement>(null);
   const revisionInput = useRef<HTMLInputElement>(null);
@@ -73,10 +77,14 @@ export const ArchivePage = () => {
 
   const handleDownloadZip = async () => {
     if (selectedIds.length === 0) return;
+    setIsExportingZip(true);
     try {
       await downloadZip('/api/documents/export/zip', 'archive_export.zip', { documentIds: selectedIds });
+      toast('success', 'تم تنزيل ملف ZIP بنجاح');
     } catch (e: any) {
-      alert(e.message || 'Error downloading ZIP');
+      toast('error', e.message || 'خطأ أثناء تحميل ملف ZIP');
+    } finally {
+      setIsExportingZip(false);
     }
   };
 
@@ -116,6 +124,7 @@ export const ArchivePage = () => {
         if (!file) { toast('error', 'الرجاء اختيار ملف'); return; }
         const fd = new FormData();
         fd.append('file', file);
+        if (f.folderId) fd.append('folderId', f.folderId);
         Object.entries(form).forEach(([k, v]) => fd.append(k, v));
         await api.upload('/api/documents/upload', fd);
         toast('success', 'تم رفع المستند');
@@ -212,7 +221,7 @@ export const ArchivePage = () => {
       key: 'revision',
       label: 'الإصدار',
       render: (d) => (
-        <button className="linkBtn" onClick={() => openRevisions(d)} title="عرض الإصدارات">
+        <button className="linkBtn num" onClick={() => openRevisions(d)} title="عرض الإصدارات" style={{ fontWeight: 600 }}>
           {d.revision ?? '00'} ({d.revisions?.length ?? 1})
         </button>
       ),
@@ -221,32 +230,38 @@ export const ArchivePage = () => {
       key: 'status',
       label: 'الحالة',
       render: (d) => (
-        <Select
-          value={d.status}
-          style={{ minWidth: 110 }}
-          onChange={async (e) => {
-            try {
-              await api.patch(`/api/documents/${d.id}/status`, { status: e.target.value });
-              toast('success', 'تم تحديث حالة المستند');
-              void list.reload();
-            } catch (err) {
-              toast('error', err instanceof Error ? err.message : 'خطأ');
-            }
-          }}
-        >
-          {Object.entries(STATUS_AR).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-        </Select>
+        can('archive.edit') ? (
+          <Select
+            value={d.status}
+            style={{ minWidth: 105, padding: '4px 8px', fontSize: 12 }}
+            onChange={async (e) => {
+              try {
+                await api.patch(`/api/documents/${d.id}/status`, { status: e.target.value });
+                toast('success', 'تم تحديث حالة المستند');
+                void list.reload();
+              } catch (err) {
+                toast('error', err instanceof Error ? err.message : 'خطأ');
+              }
+            }}
+          >
+            {Object.entries(STATUS_AR).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+          </Select>
+        ) : (
+          <Badge tone={STATUS_TONE[d.status] || 'gray'}>{STATUS_AR[d.status] ?? d.status}</Badge>
+        )
       ),
     },
     { key: 'fileName', label: 'الملف' },
     {
       key: '_open',
-      label: 'عرض',
+      label: 'عرض وتحميل',
       render: (d) => (
-        <>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           <PreviewDocButton small documentId={d.id} fileName={d.fileName} />
-          <DownloadDocButton small documentId={d.id} fileName={d.fileName} />
-        </>
+          {can('archive.download') && (
+            <DownloadDocButton small documentId={d.id} fileName={d.fileName} />
+          )}
+        </div>
       ),
     },
   ];
@@ -260,56 +275,135 @@ export const ArchivePage = () => {
     }
   };
 
+  const selectedCount = selectedIds.length;
+
   return (
-    <div className="page" style={{ padding: 0, height: 'calc(100vh - 64px)', overflow: 'hidden' }}>
-      <div style={{ display: 'flex', height: '100%' }}>
-        {/* Sidebar */}
-        <div style={{ width: 280, borderLeft: '1px solid var(--border)', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--surface)' }}>
-          <div style={{ padding: 16, borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h2 style={{ fontSize: 16, margin: 0 }}>المجلدات</h2>
-            <button className="btn btn--sm btn--ghost" title="مجلد جديد" onClick={() => alert('قريباً')}><IconPlus size={14} /></button>
+    <div className="archiveWorkspace">
+      {/* Mobile Folder Backdrop */}
+      <div 
+        className={`archiveBackdrop ${mobileFolderOpen ? 'open' : ''}`} 
+        onClick={() => setMobileFolderOpen(false)} 
+      />
+
+      {/* Sidebar / Folders Panel */}
+      <aside className={`archiveSidebar ${mobileFolderOpen ? 'open' : ''}`} aria-label="شجرة المجلدات">
+        <div className="archiveSidebar__head">
+          <h2>المجلدات</h2>
+          <button 
+            className="btn btn--sm btn--ghost" 
+            onClick={() => setMobileFolderOpen(false)}
+            aria-label="إغلاق لوحة المجلدات"
+          >
+            ✕
+          </button>
+        </div>
+        <div className="archiveSidebar__body">
+          <FolderTree 
+            selectedId={f.folderId ?? null} 
+            onSelect={(id) => {
+              list.setFilter('folderId', id || '');
+              setMobileFolderOpen(false);
+            }}
+            onDropDocument={handleDropDocument}
+          />
+        </div>
+      </aside>
+
+      {/* Main Document Management Area */}
+      <main className="archiveMain">
+        <div className="archiveHeader">
+          <div className="archiveHeader__top">
+            <div className="archiveHeader__info">
+              <div>
+                <h1>الأرشيف والمستندات</h1>
+                <p>إدارة مستندات ومخططات المشاريع بصيغ متعددة مع تتبع كامل للإصدارات</p>
+              </div>
+              <div className="heroChip" style={{ marginInlineStart: 12 }}>
+                <b className="num">{list.data?.total ?? '—'}</b>
+                <span>مستند</span>
+              </div>
+            </div>
+
+            <div className="archiveHeader__actions">
+              <button
+                className="btn btn--ghost archiveFolderToggle"
+                onClick={() => setMobileFolderOpen(!mobileFolderOpen)}
+                aria-label="عرض لوحة المجلدات"
+              >
+                المجلدات
+              </button>
+              {can('archive.view') && (
+                <button 
+                  className="btn btn--ghost" 
+                  onClick={() => void downloadDocument('/api/documents/export/xlsx', 'documents.xlsx')}
+                >
+                  <IconDownload size={16} /> تصدير Excel
+                </button>
+              )}
+              {can('archive.upload') && (
+                <>
+                  <button className="btn btn--ghost" onClick={() => setImportOpen(true)}>
+                    <IconUpload size={16} /> استيراد ذكي
+                  </button>
+                  <button className="btn btn--primary" onClick={openCreate}>
+                    <IconPlus size={16} /> رفع مستند
+                  </button>
+                </>
+              )}
+            </div>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto' }}>
-            <FolderTree 
-              selectedId={f.folderId ?? null} 
-              onSelect={(id) => list.setFilter('folderId', id || '')}
-              onDropDocument={handleDropDocument}
+
+          <div className="archiveToolbar" role="search" aria-label="أدوات تصفية المستندات">
+            <div style={{ flex: 1, minWidth: 260 }}>
+              <SearchInput 
+                value={list.state.q} 
+                onChange={list.setQ} 
+                placeholder="بحث بالعنوان، رقم المستند، التصنيف، أو الوسوم…" 
+              />
+            </div>
+            <Select 
+              value={f.projectId ?? ''} 
+              onChange={(e) => list.setFilter('projectId', e.target.value)}
+              style={{ minWidth: 160 }}
+              aria-label="تصفية حسب المشروع"
+            >
+              <option value="">كل المشاريع</option>
+              {projects.map((p) => <option key={p.id} value={p.id}>{p.projectCode} — {p.projectName}</option>)}
+            </Select>
+            <Select 
+              value={f.category ?? ''} 
+              onChange={(e) => list.setFilter('category', e.target.value)}
+              style={{ minWidth: 140 }}
+              aria-label="تصفية حسب التصنيف"
+            >
+              <option value="">كل التصنيفات</option>
+              {docCategories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
+            </Select>
+            <TextInput 
+              type="date" 
+              value={f.from ?? ''} 
+              onChange={(e) => list.setFilter('from', e.target.value)} 
+              title="من تاريخ" 
+              aria-label="من تاريخ"
             />
+            <TextInput 
+              type="date" 
+              value={f.to ?? ''} 
+              onChange={(e) => list.setFilter('to', e.target.value)} 
+              title="إلى تاريخ" 
+              aria-label="إلى تاريخ"
+            />
+            {(list.state.q || Object.keys(list.state.filters).length > 0) && (
+              <button className="btn btn--ghost" onClick={list.clearFilters}>مسح الفلاتر</button>
+            )}
           </div>
         </div>
 
-        {/* Main Content */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <div className="pageHead" style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
-            <div><h1>الأرشيف</h1><p>إدارة مستندات المشاريع</p></div>
-            <div className="actions">
-              <SearchInput value={list.state.q} onChange={list.setQ} placeholder="بحث في المستندات…" />
-              {selectedIds.length > 0 && (
-                <button className="btn btn--primary" onClick={() => void handleDownloadZip()}>تحميل ZIP</button>
-              )}
-              <button className="btn btn--ghost" onClick={list.clearFilters}>مسح الفلاتر</button>
-              <button className="btn btn--ghost" onClick={() => void downloadDocument('/api/documents/export/xlsx', 'documents.xlsx')}><IconDownload size={16} /> تصدير</button>
-              <button className="btn btn--ghost" onClick={() => setImportOpen(true)}><IconUpload size={16} /> استيراد ذكي (Excel)</button>
-              <button className="btn btn--primary" onClick={openCreate}><IconPlus size={16} /> رفع مستند</button>
-            </div>
-          </div>
-
-          <div style={{ padding: '16px 24px', flex: 1, overflowY: 'auto' }}>
-            <div className="filtersRow" style={{ marginBottom: 16 }}>
-              <Select value={f.projectId ?? ''} onChange={(e) => list.setFilter('projectId', e.target.value)}>
-                <option value="">كل المشاريع</option>
-                {projects.map((p) => <option key={p.id} value={p.id}>{p.projectCode} — {p.projectName}</option>)}
-              </Select>
-              <Select value={f.category ?? ''} onChange={(e) => list.setFilter('category', e.target.value)}>
-                <option value="">كل التصنيفات</option>
-                {docCategories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
-              </Select>
-              <TextInput type="date" value={f.from ?? ''} onChange={(e) => list.setFilter('from', e.target.value)} title="من تاريخ" />
-              <TextInput type="date" value={f.to ?? ''} onChange={(e) => list.setFilter('to', e.target.value)} title="إلى تاريخ" />
-            </div>
-
+        <div className="archiveContent">
+          {/* Desktop Table */}
+          <div className="archiveTableDesktop">
             <DataTable
-              rowProps={(row) => ({ draggable: true, onDragStart: (e) => e.dataTransfer.setData(`text/plain`, row.id) })}
+              rowProps={(row) => ({ draggable: true, onDragStart: (e) => e.dataTransfer.setData('text/plain', row.id) })}
               columns={columns}
               data={list.data}
               loading={list.loading}
@@ -321,15 +415,117 @@ export const ArchivePage = () => {
               onPage={list.setPage}
               actions={(row) => (
                 <>
-                  <EditDeleteActions onEdit={() => openEdit(row)} onDelete={() => setDeleteTarget(row)} />
-                  <button className="iconBtn iconBtn--hover" title="إدارة الروابط" onClick={() => setLinksDoc(row)}><IconLink size={15} /></button>
-                  <button className="iconBtn iconBtn--hover" title="استبدال الملف" onClick={() => { setReplaceTarget(row); replaceInput.current?.click(); }}><IconReplace size={15} /></button>
+                  {can('archive.edit') && (
+                    <button type="button" className="iconBtn iconBtn--hover" title="تعديل" aria-label="تعديل" onClick={() => openEdit(row)}>
+                      <IconEdit size={15} />
+                    </button>
+                  )}
+                  {can('archive.delete') && (
+                    <button type="button" className="iconBtn iconBtn--hover iconBtn--danger" title="حذف" aria-label="حذف" onClick={() => setDeleteTarget(row)}>
+                      <IconTrash size={15} />
+                    </button>
+                  )}
+                  {can('archive.edit') && (
+                    <>
+                      <button className="iconBtn iconBtn--hover" title="إدارة الروابط" onClick={() => setLinksDoc(row)} aria-label="إدارة الروابط">
+                        <IconLink size={15} />
+                      </button>
+                      <button className="iconBtn iconBtn--hover" title="استبدال الملف" onClick={() => { setReplaceTarget(row); replaceInput.current?.click(); }} aria-label="استبدال الملف">
+                        <IconReplace size={15} />
+                      </button>
+                    </>
+                  )}
                 </>
               )}
             />
           </div>
+
+          {/* Mobile Document Cards */}
+          <div className="docGrid">
+            {(list.data?.items ?? []).map((doc) => (
+              <article key={doc.id} className="docCard">
+                <div className="docCard__top">
+                  <div className="docCard__identity">
+                    <input 
+                      type="checkbox" 
+                      checked={selectedIds.includes(doc.id)} 
+                      onChange={() => toggleSelect(doc.id)} 
+                      aria-label={`تحديد ${doc.title}`}
+                      style={{ marginTop: 3 }}
+                    />
+                    <IconFile kind={fileIconKind(doc.fileExtension)} size={22} />
+                    <div>
+                      <h3 className="docCard__title">{doc.title}</h3>
+                      <div className="docCard__tags">
+                        <Badge tone="blue">{doc.category}</Badge>
+                        <Badge tone={STATUS_TONE[doc.status] || 'gray'}>{STATUS_AR[doc.status] ?? doc.status}</Badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="docCard__meta">
+                  <div className="docCard__metaItem">
+                    <span className="docCard__metaLabel">رقم المستند</span>
+                    <span className="docCard__metaValue num">{doc.documentNumber || '—'}</span>
+                  </div>
+                  <div className="docCard__metaItem">
+                    <span className="docCard__metaLabel">الإصدار</span>
+                    <button className="linkBtn num" onClick={() => openRevisions(doc)} style={{ textAlign: 'start' }}>
+                      {doc.revision || '00'}
+                    </button>
+                  </div>
+                  <div className="docCard__metaItem">
+                    <span className="docCard__metaLabel">التاريخ</span>
+                    <span className="docCard__metaValue num">
+                      {doc.documentDate ? new Date(doc.documentDate).toLocaleDateString('ar-EG') : '—'}
+                    </span>
+                  </div>
+                  <div className="docCard__metaItem">
+                    <span className="docCard__metaLabel">الملف</span>
+                    <span className="docCard__metaValue text-muted" style={{ fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {doc.fileName}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="docCard__actions">
+                  <PreviewDocButton small documentId={doc.id} fileName={doc.fileName} />
+                  {can('archive.download') && (
+                    <DownloadDocButton small documentId={doc.id} fileName={doc.fileName} />
+                  )}
+                  {can('archive.edit') && (
+                    <button className="btn btn--sm btn--ghost" onClick={() => openEdit(doc)}>
+                      تعديل
+                    </button>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
-      </div>
+
+        {/* Floating Batch Action Bar */}
+        {selectedCount > 0 && (
+          <div className="archiveBatchBar" role="region" aria-label="الإجراءات المجمعة">
+            <span className="archiveBatchBar__count">
+              تم تحديد <b className="num">{selectedCount}</b> مستند
+            </span>
+            {can('archive.download') && (
+              <button 
+                className="btn btn--primary btn--sm" 
+                onClick={() => void handleDownloadZip()} 
+                disabled={isExportingZip}
+              >
+                <IconDownload size={14} /> {isExportingZip ? 'جارٍ التحميل…' : 'تحميل ZIP'}
+              </button>
+            )}
+            <button className="btn btn--ghost btn--sm" onClick={() => setSelectedIds([])}>
+              إلغاء التحديد
+            </button>
+          </div>
+        )}
+      </main>
 
       <input
         ref={replaceInput}
@@ -338,43 +534,54 @@ export const ArchivePage = () => {
         onChange={(e) => { const file2 = e.target.files?.[0]; if (file2 && replaceTarget) void doReplace(file2); e.target.value = ''; }}
       />
 
+      {/* Modern Revisions Modal */}
       <Modal title={`إصدارات المستند: ${revisionsDoc?.title ?? ''}`} open={!!revisionsDoc} onClose={() => setRevisionsDoc(null)} wide>
         <div className="stack">
           {revisions.length === 0 ? (
-            <p className="muted">لا توجد إصدارات مسجلة</p>
+            <p className="muted text-center" style={{ padding: 24 }}>لا توجد إصدارات مسجلة</p>
           ) : (
-            <table className="table table--flat">
-              <thead><tr><th>الإصدار</th><th>الملف</th><th>رفع بواسطة</th><th>التاريخ</th><th>ملاحظات</th><th></th></tr></thead>
-              <tbody>
-                {revisions.map((r) => (
-                  <tr key={r.id}>
-                    <td><Badge tone={r.revision === revisionsDoc?.revision ? 'green' : 'gray'}>{r.revision}</Badge></td>
-                    <td>{r.fileName}</td>
-                    <td>{r.uploadedBy ?? '—'}</td>
-                    <td>{new Date(r.uploadedAt).toLocaleDateString('ar-EG')}</td>
-                    <td className="small muted">{r.notes ?? '—'}</td>
-                    <td>
-                      {revisionsDoc ? (
-                        <>
-                          <PreviewDocButton small documentId={revisionsDoc.id} fileName={r.fileName} revision={r.id} />
+            <div className="revisionsTimeline">
+              {revisions.map((r) => {
+                const isCurrent = r.revision === revisionsDoc?.revision;
+                return (
+                  <div key={r.id} className={`revisionItem ${isCurrent ? 'current' : ''}`}>
+                    <Badge tone={isCurrent ? 'green' : 'gray'}>
+                      {isCurrent ? 'الحالي' : ''} {r.revision}
+                    </Badge>
+                    <div className="revisionItem__meta">
+                      <strong>{r.fileName}</strong>
+                      <div className="muted" style={{ fontSize: 12 }}>
+                        <span>رفع بواسطة: {r.uploadedBy ?? '—'}</span> &bull; 
+                        <span className="num" style={{ marginInlineStart: 4 }}>
+                          {new Date(r.uploadedAt).toLocaleDateString('ar-EG')}
+                        </span>
+                      </div>
+                      {r.notes ? <p className="muted" style={{ fontSize: 12, margin: '4px 0 0 0' }}>{r.notes}</p> : null}
+                    </div>
+                    {revisionsDoc ? (
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <PreviewDocButton small documentId={revisionsDoc.id} fileName={r.fileName} revision={r.id} />
+                        {can('archive.download') && (
                           <DownloadDocButton small documentId={revisionsDoc.id} fileName={r.fileName} revision={r.id} />
-                        </>
-                      ) : null}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
           )}
-          <input
-            type="file"
-            hidden
-            ref={revisionInput}
-            onChange={(e) => { const file2 = e.target.files?.[0]; if (file2) void uploadRevision(file2); e.target.value = ''; }}
-          />
-          <div>
-            <button className="btn btn--primary" onClick={() => revisionInput.current?.click()}>+ رفع إصدار جديد</button>
-          </div>
+          {can('archive.edit') && (
+            <div>
+              <input
+                type="file"
+                hidden
+                ref={revisionInput}
+                onChange={(e) => { const file2 = e.target.files?.[0]; if (file2) void uploadRevision(file2); e.target.value = ''; }}
+              />
+              <button className="btn btn--primary" onClick={() => revisionInput.current?.click()}>+ رفع إصدار جديد</button>
+            </div>
+          )}
         </div>
       </Modal>
 
@@ -434,6 +641,7 @@ export const ArchivePage = () => {
         open={quickUploadOpen}
         onClose={() => setQuickUploadOpen(false)}
         onSuccess={() => void list.reload()}
+        defaultFolderId={f.folderId ?? null}
       />
 
       <DocumentLinksModal

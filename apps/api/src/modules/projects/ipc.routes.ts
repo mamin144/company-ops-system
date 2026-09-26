@@ -4,8 +4,10 @@ import { ipcRepository, ipcItemRepository } from '../../repositories/ipc.reposit
 import { boqRepository } from '../../repositories/boq.repository';
 import { projectRepository } from '../../repositories/project.repository';
 import { deleteSafety } from '../../services/stock.service';
-import { requireAuth, requireAnyPermission } from '../../middleware/auth';
+import { requireAuth, requireAnyPermission, requireAnyProjectAccess, requestContext } from '../../middleware/auth';
 import type { AuthedRequest } from '../../middleware/auth';
+import { scopeFromParam } from '../../services/projectScope';
+import { can } from '../../services/authorization.service';
 import { auditService } from '../../services/audit.service';
 
 export const ipcRouter = Router({ mergeParams: true });
@@ -33,16 +35,23 @@ const ipcSchema = z.object({
 
 ipcRouter.use(requireAuth);
 
-ipcRouter.get('/', async (req, res) => {
+ipcRouter.get('/', async (req: AuthedRequest, res) => {
+  // Phase 5: collection scoped to the URL project (READ+); empty on denial.
+  const ctx = await requestContext(req);
   const projectId = String((req.params as any).projectId);
+  if (!can(ctx, 'projects.view', projectId)) return res.json([]);
   const items = (await ipcRepository.list()).filter((i: any) => i.projectId === projectId);
   items.sort((a, b) => a.ipcNumber - b.ipcNumber);
   res.json(items);
 });
 
-ipcRouter.get('/:id', async (req, res) => {
+ipcRouter.get('/:id', async (req: AuthedRequest, res) => {
   const ipc = await ipcRepository.findById(String(req.params.id));
   if (!ipc || ipc.projectId !== String((req.params as any).projectId))
+    return res.status(404).json({ message: 'المستخلص غير موجود' });
+  // Phase 5: row-level READ on the IPC's own project (hides existence).
+  const ctx = await requestContext(req);
+  if (!can(ctx, 'projects.view', ipc.projectId ?? undefined))
     return res.status(404).json({ message: 'المستخلص غير موجود' });
 
   const items = await ipcItemRepository.getByIpcId(ipc.id);
@@ -85,7 +94,7 @@ const checkIpcLines = (
   return null;
 };
 
-ipcRouter.post('/', requireAnyPermission('projects.edit', 'projects.create'), async (req: AuthedRequest, res) => {
+ipcRouter.post('/', requireAnyProjectAccess(['projects.edit', 'projects.create'], scopeFromParam()), async (req: AuthedRequest, res) => {
   const projectId = String((req.params as any).projectId);
   const parsed = ipcSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: 'بيانات غير صالحة', issues: parsed.error.flatten() });
@@ -148,7 +157,7 @@ ipcRouter.post('/', requireAnyPermission('projects.edit', 'projects.create'), as
   res.status(201).json(created);
 });
 
-ipcRouter.put('/:id', requireAnyPermission('projects.edit'), async (req: AuthedRequest, res) => {
+ipcRouter.put('/:id', requireAnyProjectAccess(['projects.edit'], scopeFromParam()), async (req: AuthedRequest, res) => {
   const parsed = ipcSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: 'بيانات غير صالحة', issues: parsed.error.flatten() });
   
@@ -216,7 +225,7 @@ ipcRouter.put('/:id', requireAnyPermission('projects.edit'), async (req: AuthedR
   res.json(updated);
 });
 
-ipcRouter.delete('/:id', requireAnyPermission('projects.edit'), async (req: AuthedRequest, res) => {
+ipcRouter.delete('/:id', requireAnyProjectAccess(['projects.edit'], scopeFromParam()), async (req: AuthedRequest, res) => {
   const existing = await ipcRepository.findById(String(req.params.id));
   if (!existing || existing.projectId !== String((req.params as any).projectId))
     return res.status(404).json({ message: 'المستخلص غير موجود' });

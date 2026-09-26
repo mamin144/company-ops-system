@@ -1,0 +1,73 @@
+[
+  {
+    "number": "GIN-2026-0001",
+    "type": "IN",
+    "warehouseId": "32ef0931-958f-4f03-ac11-f5b572fb29c2",
+    "projectId": "06adb20a-0db4-4aae-ae15-173b4ff7d733",
+    "items": [
+      {
+        "itemId": "4ac6cdfb-8e26-4546-a22a-20d148a1dbd9",
+        "quantity": 30,
+        "unitCost": 7
+      }
+    ],
+    "date": "2026-08-26",
+    "createdBy": "admin",
+    "id": "a2974f17-4458-4188-adf9-19434cff677d",
+    "createdAt": "2026-08-26T13:33:37.765Z",
+    "updatedAt": "2026-08-26T13:33:37.765Z"
+  },
+  {
+    "number": "TRF-2026-0001",
+    "type": "TRANSFER",
+    "warehouseId": "32ef0931-958f-4f03-ac11-f5b572fb29c2",
+    "destinationWarehouseId": "6016c4bf-a17c-4d15-8da8-91a671da77fe",
+    "projectId": "06adb20a-0db4-4aae-ae15-173b4ff7d733",
+    "items": [
+      {
+        "itemId": "4ac6cdfb-8e26-4546-a22a-20d148a1dbd9",
+        "quantity": 10
+      }
+    ],
+    "date": "2026-08-26",
+    "createdBy": "admin",
+    "id": "166fea8c-dd67-49fd-b9f2-8d49c12b130e",
+    "createdAt": "2026-08-26T13:33:37.783Z",
+    "updatedAt": "2026-08-26T13:33:37.783Z"
+  },
+  {
+    "number": "GIN-2026-0002",
+    "type": "IN",
+    "warehouseId": "26e7620f-897c-4627-bdef-9a7e37b4c0f1",
+    "items": [
+      {
+        "itemId": "ecf7b010-cc6f-43cf-aeef-2590dd784305",
+        "quantity": 2
+      }
+    ],
+    "date": "2026-08-26",
+    "createdBy": "admin",
+    "id": "63e86208-95bd-4340-b03c-0d535f07be02",
+    "createdAt": "2026-08-26T13:35:42.469Z",
+    "updatedAt": "2026-08-26T13:35:42.469Z"
+  },
+  {
+    "number": "GOUT-2026-0001",
+    "type": "OUT",
+    "warehouseId": "26e7620f-897c-4627-bdef-9a7e37b4c0f1",
+    "projectId": "802a97a8-cb32-4dc5-9dd9-513e4e73e366",
+    "items": [
+      {
+        "itemId": "ecf7b010-cc6f-43cf-aeef-2590dd784305",
+        "quantity": 2
+      }
+    ],
+    "referenceNumber": "MR-2026-0001",
+    "date": "2026-08-26",
+    "notes": "صرف مقابل طلب مواد MR-2026-0001",
+    "createdBy": "admin",
+    "id": "7b31c5fd-eca9-4589-83c6-25011b30b800",
+    "createdAt": "2026-08-26T13:35:42.756Z",
+    "updatedAt": "2026-08-26T13:35:42.756Z"
+  }
+]

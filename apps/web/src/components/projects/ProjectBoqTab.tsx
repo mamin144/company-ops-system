@@ -66,16 +66,22 @@ export const ProjectBoqTab = ({ projectId }: { projectId: string }) => {
 
   const total = items.reduce((sum, item) => sum + item.totalPrice, 0);
 
-  if (loading) return <div>جاري التحميل...</div>;
+  if (loading) return <div className="card skeletonCard" style={{ height: 180 }} />;
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <strong>إجمالي المقايسة: {total.toLocaleString()} جنيه</strong>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ fontSize: '15px' }}>
+          إجمالي المقايسة: <strong className="num" style={{ color: 'var(--primary)', fontSize: '18px' }}>{total.toLocaleString()}</strong> جنيه
+        </div>
         <Can perm="projects.edit">
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button className="btn btn--ghost" onClick={() => void downloadDocument(`/api/projects/${projectId}/boq/export/xlsx`, 'boq.xlsx')}>تصدير Excel</button>
-            <button className="btn btn--ghost" onClick={() => setImportOpen(true)}>استيراد Excel</button>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button className="btn btn--ghost" onClick={() => void downloadDocument(`/api/projects/${projectId}/boq/export/xlsx`, 'boq.xlsx')}>
+              تصدير Excel
+            </button>
+            <button className="btn btn--ghost" onClick={() => setImportOpen(true)}>
+              استيراد Excel
+            </button>
             <button className="btn btn--primary" onClick={() => { resetForm(); setIsAdding(!isAdding); }}>
               {isAdding ? 'إلغاء' : 'إضافة بند'}
             </button>
@@ -84,63 +90,69 @@ export const ProjectBoqTab = ({ projectId }: { projectId: string }) => {
       </div>
 
       {isAdding && (
-        <form onSubmit={handleAdd} className="card" style={{ marginBottom: 16 }}>
-          {error && <div className="alert alert--danger">{error}</div>}
+        <form onSubmit={handleAdd} className="card" style={{ padding: '20px' }}>
+          <h4 style={{ margin: '0 0 16px', fontSize: '16px' }}>{editingId ? 'تعديل بند بالمقايسة' : 'إضافة بند جديد'}</h4>
+          {error && <div className="alert alert--danger" style={{ marginBottom: '14px' }}>{error}</div>}
           <div className="formGrid">
             <div>
-              <label>رقم البند</label>
-              <input required value={newItem.itemCode} onChange={e => setNewItem({...newItem, itemCode: e.target.value})} />
+              <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>رقم البند *</label>
+              <input className="textInput" required value={newItem.itemCode} onChange={e => setNewItem({...newItem, itemCode: e.target.value})} placeholder="مثال: 1/1" />
             </div>
             <div>
-              <label>الوحدة</label>
-              <input required value={newItem.unit} onChange={e => setNewItem({...newItem, unit: e.target.value})} />
+              <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>الوحدة *</label>
+              <input className="textInput" required value={newItem.unit} onChange={e => setNewItem({...newItem, unit: e.target.value})} placeholder="متر، م2، م3، عدد..." />
             </div>
             <div>
-              <label>الكمية</label>
-              <input type="number" step="any" required min="0" value={newItem.quantity} onChange={e => setNewItem({...newItem, quantity: parseFloat(e.target.value)})} />
+              <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>الكمية *</label>
+              <input className="textInput num" type="number" step="any" required min="0" value={newItem.quantity || ''} onChange={e => setNewItem({...newItem, quantity: parseFloat(e.target.value) || 0})} />
             </div>
             <div>
-              <label>الفئة (سعر الوحدة)</label>
-              <input type="number" step="any" required min="0" value={newItem.unitPrice} onChange={e => setNewItem({...newItem, unitPrice: parseFloat(e.target.value)})} />
+              <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>الفئة (سعر الوحدة) *</label>
+              <input className="textInput num" type="number" step="any" required min="0" value={newItem.unitPrice || ''} onChange={e => setNewItem({...newItem, unitPrice: parseFloat(e.target.value) || 0})} />
             </div>
           </div>
-          <div style={{ marginTop: 12 }}>
-            <label>بيان الأعمال / الوصف</label>
-            <textarea required rows={2} value={newItem.description} onChange={e => setNewItem({...newItem, description: e.target.value})} />
+          <div style={{ marginTop: 14 }}>
+            <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>بيان الأعمال / الوصف *</label>
+            <textarea className="textInput" required rows={3} value={newItem.description} onChange={e => setNewItem({...newItem, description: e.target.value})} placeholder="تفاصيل ومواصفات البند التعاقدي" />
           </div>
-          <button type="submit" className="btn btn--primary" style={{ marginTop: 12 }}>{editingId ? 'حفظ التعديل' : 'حفظ البند'}</button>
+          <div style={{ marginTop: 16, display: 'flex', gap: '8px' }}>
+            <button type="submit" className="btn btn--primary">{editingId ? 'حفظ التعديل' : 'حفظ البند'}</button>
+            <button type="button" className="btn btn--ghost" onClick={resetForm}>إلغاء</button>
+          </div>
         </form>
       )}
 
       {items.length === 0 ? (
-        <EmptyState title="لا يوجد بنود مقايسة" />
+        <EmptyState title="لا توجد بنود مقايسة" hint="اضغط على زر إضافة بند أو استيراد Excel لإدراج مقايسة الأعمال" />
       ) : (
         <div className="tableWrap">
           <table className="table">
             <thead>
               <tr>
-                <th>رقم البند</th>
+                <th style={{ width: '100px' }}>رقم البند</th>
                 <th>بيان الأعمال</th>
-                <th>الوحدة</th>
-                <th>الكمية</th>
-                <th>الفئة</th>
-                <th>الإجمالي</th>
-                <th style={{ width: 60 }}></th>
+                <th style={{ width: '80px' }}>الوحدة</th>
+                <th style={{ width: '100px' }}>الكمية</th>
+                <th style={{ width: '110px' }}>الفئة</th>
+                <th style={{ width: '130px' }}>الإجمالي</th>
+                <th style={{ width: '80px' }}>الإجراءات</th>
               </tr>
             </thead>
             <tbody>
               {items.map(item => (
                 <tr key={item.id}>
-                  <td>{item.itemCode}</td>
+                  <td><strong className="num">{item.itemCode}</strong></td>
                   <td>{item.description}</td>
                   <td>{item.unit}</td>
-                  <td>{item.quantity.toLocaleString()}</td>
-                  <td>{item.unitPrice.toLocaleString()}</td>
-                  <td>{item.totalPrice.toLocaleString()}</td>
+                  <td className="num">{item.quantity.toLocaleString()}</td>
+                  <td className="num">{item.unitPrice.toLocaleString()}</td>
+                  <td><strong className="num">{item.totalPrice.toLocaleString()}</strong></td>
                   <td>
                     <Can perm="projects.edit">
-                      <button className="iconBtn" title="تعديل" onClick={() => openEdit(item)}>✎</button>
-                      <button className="iconBtn" style={{ color: 'var(--danger)' }} title="حذف" onClick={() => handleDelete(item.id)}>×</button>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        <button type="button" className="iconBtn" title="تعديل" onClick={() => openEdit(item)}>✎</button>
+                        <button type="button" className="iconBtn iconBtn--danger" title="حذف" onClick={() => handleDelete(item.id)}>×</button>
+                      </div>
                     </Can>
                   </td>
                 </tr>

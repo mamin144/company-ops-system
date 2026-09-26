@@ -10,13 +10,12 @@ export const ProjectIpcsTab = ({ projectId }: { projectId: string }) => {
   const [loading, setLoading] = useState(true);
   
   const [viewingIpc, setViewingIpc] = useState<Ipc & { items: IpcItem[] } | null>(null);
-  const [isAdding, setIsAdding] = useState(false);
 
   const load = () => {
     setLoading(true);
     Promise.all([
       api.get<Ipc[]>(`/api/projects/${projectId}/ipcs`),
-      api.get<BoqItem[]>(`/api/projects/${projectId}/boq`)
+      api.get<BoqItem[]>(`/api/projects/${projectId}/boq`),
     ]).then(([ipcRes, boqRes]) => {
       setIpcs(ipcRes);
       setBoq(boqRes);
@@ -26,14 +25,13 @@ export const ProjectIpcsTab = ({ projectId }: { projectId: string }) => {
   useEffect(() => { load(); }, [projectId]);
 
   const handleCreate = async () => {
-    // Basic auto-create draft
     try {
       const nextNumber = ipcs.length > 0 ? Math.max(...ipcs.map(i => i.ipcNumber)) + 1 : 1;
       const res = await api.post<Ipc>(`/api/projects/${projectId}/ipcs`, {
         ipcNumber: nextNumber,
         date: new Date().toISOString().split('T')[0],
         status: 'draft',
-        items: [] // Empty init
+        items: [],
       });
       load();
       handleView(res.id);
@@ -55,7 +53,6 @@ export const ProjectIpcsTab = ({ projectId }: { projectId: string }) => {
   const handleView = async (id: string) => {
     const res = await api.get<Ipc & { items: IpcItem[] }>(`/api/projects/${projectId}/ipcs/${id}`);
     setViewingIpc(res);
-    setIsAdding(false);
   };
 
   const handleSaveIpc = async (e: React.FormEvent) => {
@@ -67,7 +64,7 @@ export const ProjectIpcsTab = ({ projectId }: { projectId: string }) => {
         date: viewingIpc.date,
         status: viewingIpc.status,
         notes: viewingIpc.notes,
-        items: viewingIpc.items
+        items: viewingIpc.items,
       });
       setViewingIpc(null);
       load();
@@ -84,40 +81,47 @@ export const ProjectIpcsTab = ({ projectId }: { projectId: string }) => {
       items[idx].currentQuantity = currentQty;
     } else {
       items.push({
-        id: '', ipcId: viewingIpc.id, boqItemId: boqId,
-        previousQuantity: 0, currentQuantity: currentQty, totalQuantity: 0,
-        createdAt: '', updatedAt: ''
+        id: '',
+        ipcId: viewingIpc.id,
+        boqItemId: boqId,
+        previousQuantity: 0,
+        currentQuantity: currentQty,
+        totalQuantity: 0,
+        createdAt: '',
+        updatedAt: '',
       });
     }
     setViewingIpc({ ...viewingIpc, items });
   };
 
-  if (loading) return <div>جاري التحميل...</div>;
+  if (loading) return <div className="card skeletonCard" style={{ height: 180 }} />;
 
   if (viewingIpc) {
     return (
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-          <h3>مستخلص رقم {viewingIpc.ipcNumber}</h3>
-          <button className="btn btn--ghost" onClick={() => setViewingIpc(null)}>رجوع</button>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ margin: 0 }}>مستخلص رقم {viewingIpc.ipcNumber}</h3>
+          <button type="button" className="btn btn--ghost" onClick={() => setViewingIpc(null)}>
+            ← رجوع لقائمة المستخلصات
+          </button>
         </div>
-        <form onSubmit={handleSaveIpc} className="card">
+        <form onSubmit={handleSaveIpc} className="card" style={{ padding: '20px' }}>
           <div className="formGrid" style={{ marginBottom: 20 }}>
             <div>
-              <label>رقم المستخلص</label>
-              <input type="number" required value={viewingIpc.ipcNumber} onChange={e => setViewingIpc({...viewingIpc, ipcNumber: parseInt(e.target.value)})} />
+              <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>رقم المستخلص *</label>
+              <input className="textInput num" type="number" required value={viewingIpc.ipcNumber} onChange={e => setViewingIpc({...viewingIpc, ipcNumber: parseInt(e.target.value)})} />
             </div>
             <div>
-              <label>التاريخ</label>
-              <input type="date" required value={viewingIpc.date} onChange={e => setViewingIpc({...viewingIpc, date: e.target.value})} />
+              <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>التاريخ *</label>
+              <input className="textInput num" type="date" required value={viewingIpc.date} onChange={e => setViewingIpc({...viewingIpc, date: e.target.value})} />
             </div>
             <div>
-              <label>الخصومات</label>
-              <input type="number" step="any" value={viewingIpc.deductions || ''} onChange={e => setViewingIpc({...viewingIpc, deductions: parseFloat(e.target.value) || 0})} />
+              <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>إجمالي الخصومات والاستقطاعات</label>
+              <input className="textInput num" type="number" step="any" value={viewingIpc.deductions || ''} onChange={e => setViewingIpc({...viewingIpc, deductions: parseFloat(e.target.value) || 0})} />
             </div>
             <div>
-              <label>الحالة</label>
-              <select value={viewingIpc.status} onChange={e => setViewingIpc({...viewingIpc, status: e.target.value as any})}>
+              <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>حالة المستخلص</label>
+              <select className="selectInput" value={viewingIpc.status} onChange={e => setViewingIpc({...viewingIpc, status: e.target.value as any})}>
                 <option value="draft">مسودة</option>
                 <option value="submitted">مقدم</option>
                 <option value="approved">معتمد</option>
@@ -131,40 +135,39 @@ export const ProjectIpcsTab = ({ projectId }: { projectId: string }) => {
               <thead>
                 <tr>
                   <th>البند</th>
-                  <th>الفئة</th>
-                  <th>الكمية بالمقايسة</th>
-                  <th>كمية سابقة</th>
-                  <th>كمية حالية</th>
-                  <th>إجمالي المنفذ</th>
-                  <th>إجمالي القيمة</th>
+                  <th style={{ width: '90px' }}>الفئة</th>
+                  <th style={{ width: '110px' }}>الكمية بالتعاقد</th>
+                  <th style={{ width: '90px' }}>كمية سابقة</th>
+                  <th style={{ width: '100px' }}>كمية حالية</th>
+                  <th style={{ width: '100px' }}>إجمالي المنفذ</th>
+                  <th style={{ width: '120px' }}>إجمالي القيمة</th>
                 </tr>
               </thead>
               <tbody>
                 {boq.map(b => {
                   const it = viewingIpc.items.find(i => i.boqItemId === b.id);
                   const currentQty = it?.currentQuantity || 0;
-                  // To simplify UI without recalculating previous from scratch, we use the server's previousQuantity if exists.
-                  // But note: if the user edits previous IPCs, previousQuantity needs recalc on save.
                   const prevQty = it?.previousQuantity || 0;
                   const total = currentQty + prevQty;
                   const value = total * b.unitPrice;
                   
                   return (
                     <tr key={b.id}>
-                      <td>{b.itemCode} - {b.description}</td>
-                      <td>{b.unitPrice}</td>
-                      <td>{b.quantity} {b.unit}</td>
-                      <td>{prevQty}</td>
+                      <td><strong className="num">{b.itemCode}</strong> - {b.description}</td>
+                      <td className="num">{b.unitPrice.toLocaleString()}</td>
+                      <td className="num">{b.quantity.toLocaleString()} {b.unit}</td>
+                      <td className="num">{prevQty.toLocaleString()}</td>
                       <td>
                         <input 
                           type="number" step="any" min="0" 
-                          style={{ width: 80, padding: 4 }}
+                          className="textInput num"
+                          style={{ width: '90px', padding: '4px 8px' }}
                           value={currentQty || ''}
                           onChange={e => updateItemCurrentQty(b.id, parseFloat(e.target.value) || 0)}
                         />
                       </td>
-                      <td>{total}</td>
-                      <td>{value.toLocaleString()}</td>
+                      <td><strong className="num">{total.toLocaleString()}</strong></td>
+                      <td><strong className="num" style={{ color: 'var(--primary)' }}>{value.toLocaleString()}</strong></td>
                     </tr>
                   );
                 })}
@@ -179,41 +182,54 @@ export const ProjectIpcsTab = ({ projectId }: { projectId: string }) => {
   }
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 style={{ margin: 0 }}>مستخلصات المشروع</h3>
         <Can perm="projects.edit">
-          <button className="btn btn--primary" onClick={handleCreate}>إنشاء مستخلص جديد</button>
+          <button type="button" className="btn btn--primary" onClick={handleCreate}>
+            إنشاء مستخلص جديد
+          </button>
         </Can>
       </div>
 
       {ipcs.length === 0 ? (
-        <EmptyState title="لا يوجد مستخلصات" />
+        <EmptyState title="لا توجد مستخلصات" hint="اضغط على زر إنشاء مستخلص جديد لإصدار مستخلص أعمال جاري" />
       ) : (
         <div className="tableWrap">
           <table className="table">
             <thead>
               <tr>
-                <th>رقم المستخلص</th>
+                <th>المستخلص</th>
                 <th>التاريخ</th>
                 <th>الحالة</th>
-                <th>الصافي</th>
-                <th style={{ width: 100 }}></th>
+                <th>الصافي (جنيه)</th>
+                <th style={{ width: 120 }}>الإجراءات</th>
               </tr>
             </thead>
             <tbody>
               {ipcs.map(ipc => (
                 <tr key={ipc.id}>
-                  <td>مستخلص جارى {ipc.ipcNumber}</td>
-                  <td>{ipc.date}</td>
-                  <td><Badge tone={ipc.status === 'approved' ? 'green' : ipc.status === 'submitted' ? 'blue' : 'gray'}>{ipc.status}</Badge></td>
-                  <td>{ipc.netAmount?.toLocaleString() ?? 0}</td>
+                  <td><strong>مستخلص جاري {ipc.ipcNumber}</strong></td>
+                  <td className="num">{ipc.date}</td>
                   <td>
-                    <button className="btn btn--sm btn--ghost" onClick={() => handleView(ipc.id)}>عرض</button>
-                    {ipc.status === 'draft' ? (
-                      <Can perm="projects.edit">
-                        <button className="btn btn--sm btn--danger" style={{ marginRight: 4 }} onClick={() => handleDelete(ipc.id)}>حذف</button>
-                      </Can>
-                    ) : null}
+                    <Badge tone={ipc.status === 'approved' ? 'green' : ipc.status === 'submitted' ? 'blue' : 'gray'}>
+                      {{ draft: 'مسودة', submitted: 'مقدم', approved: 'معتمد', rejected: 'مرفوض' }[ipc.status] ?? ipc.status}
+                    </Badge>
+                  </td>
+                  <td><strong className="num">{ipc.netAmount?.toLocaleString() ?? 0}</strong></td>
+                  <td>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <button type="button" className="btn btn--sm btn--ghost" onClick={() => handleView(ipc.id)}>
+                        عرض
+                      </button>
+                      {ipc.status === 'draft' ? (
+                        <Can perm="projects.edit">
+                          <button type="button" className="btn btn--sm btn--danger" onClick={() => handleDelete(ipc.id)}>
+                            حذف
+                          </button>
+                        </Can>
+                      ) : null}
+                    </div>
                   </td>
                 </tr>
               ))}

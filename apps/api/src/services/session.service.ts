@@ -21,6 +21,23 @@ const store = new JsonStore<UserSession>(join(dataDir, 'sessions.json'));
 const DAY = 24 * 60 * 60 * 1000;
 const hashToken = (token: string) => createHash('sha256').update(token).digest('hex');
 
+const mapRow = (session: {
+  id: string; user_id: string; username: string; token_hash: string;
+  created_at: string; expires_at: string; revoked_at?: string;
+  ip_address?: string; user_agent?: string;
+}): UserSession => ({
+  id: session.id,
+  userId: session.user_id,
+  username: session.username,
+  tokenHash: session.token_hash,
+  createdAt: session.created_at,
+  expiresAt: session.expires_at,
+  revokedAt: session.revoked_at,
+  ipAddress: session.ip_address,
+  userAgent: session.user_agent,
+  rememberMe: true, // Approximation since not stored
+});
+
 export class SessionService {
   async create(user: { id: string; username: string }, rememberMe: boolean, ip?: string, userAgent?: string) {
     const { pool } = await import('../database/connection.js');
@@ -54,19 +71,17 @@ export class SessionService {
     const session = result.rows[0];
     if (!session || session.revoked_at) return null;
     if (new Date(session.expires_at).getTime() < Date.now()) return null;
-    
-    return {
-      id: session.id,
-      userId: session.user_id,
-      username: session.username,
-      tokenHash: session.token_hash,
-      createdAt: session.created_at,
-      expiresAt: session.expires_at,
-      revokedAt: session.revoked_at,
-      ipAddress: session.ip_address,
-      userAgent: session.user_agent,
-      rememberMe: true // Approximation since not stored
-    };
+    return mapRow(session);
+  }
+
+  /** Live session lookup by id for access-token validation (Phase 3). */
+  async findById(sessionId: string): Promise<UserSession | null> {
+    if (!sessionId) return null;
+    const { pool } = await import('../database/connection.js');
+    const result = await pool.query('SELECT * FROM sessions WHERE id = $1', [sessionId]);
+    const session = result.rows[0];
+    if (!session) return null;
+    return mapRow(session);
   }
 
   async rotate(sessionId: string): Promise<{ refreshToken: string } | null> {

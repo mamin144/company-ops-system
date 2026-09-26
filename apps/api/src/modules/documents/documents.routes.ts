@@ -12,8 +12,10 @@ import { fileStorageService } from '../../storage/file-storage';
 import { projectRepository } from '../../repositories/project.repository';
 import { ipcRepository } from '../../repositories/ipc.repository';
 import { excelService } from '../../services/excel.service';
-import { requireAuth, requirePermission } from '../../middleware/auth';
+import { requireAuth, requirePermission, requireProjectAccess, requestContext } from '../../middleware/auth';
 import type { AuthedRequest } from '../../middleware/auth';
+import { scopeDocumentRow, scopeFromBody, filterVisible, checkFilterProject } from '../../services/projectScope';
+import { can } from '../../services/authorization.service';
 import { auditService } from '../../services/audit.service';
 import { notificationService } from '../../services/notification.service';
 import { deleteSafety } from '../../services/stock.service';
@@ -63,10 +65,15 @@ const removeStoredFile = (relativePath?: string) => {  if (!relativePath) return
 export const documentsRouter = Router();
 documentsRouter.use(requireAuth);
 
-documentsRouter.get('/', requirePermission('archive.view'), async (req, res) => {
-  let items = await documentRepository.list();
+documentsRouter.get('/', requirePermission('archive.view'), async (req: AuthedRequest, res) => {
+  // Phase 5: backend-scoped to member projects (null-project rows stay visible).
+  const ctx = await requestContext(req);
+  if (req.query.projectId && !checkFilterProject(ctx, String(req.query.projectId), 'archive.view'))
+    return res.status(403).json({ message: 'ليس لديك صلاحية: archive.view' });
+  let items = filterVisible(ctx, await documentRepository.list(), (item) => item.projectId, 'archive.view');
   items = applySearch(items, String(req.query.q ?? ''), ['title', 'documentNumber', 'category', 'documentType', 'notes']);
   if (req.query.projectId) items = items.filter((item) => item.projectId === String(req.query.projectId));
+  if (req.query.folderId) items = items.filter((item) => item.folderId === String(req.query.folderId));
   if (req.query.siteId) items = items.filter((item) => item.siteId === String(req.query.siteId));
   if (req.query.category) items = items.filter((item) => item.category === String(req.query.category));
   if (req.query.documentType) items = items.filter((item) => item.documentType === String(req.query.documentType));
@@ -79,20 +86,21 @@ documentsRouter.get('/', requirePermission('archive.view'), async (req, res) => 
   res.json(applyPagination(items, Number(req.query.page ?? 1), Number(req.query.pageSize ?? 20)));
 });
 
-documentsRouter.get('/export/xlsx', requirePermission('archive.view'), async (_req, res) => {
-  const buffer = excelService.exportJson(await documentRepository.list(), 'Documents');
+documentsRouter.get('/export/xlsx', requirePermission('archive.view'), async (req: AuthedRequest, res) => {
+  const ctx = await requestContext(req);
+  const buffer = excelService.exportJson(filterVisible(ctx, await documentRepository.list(), (d) => d.projectId, 'archive.view'), 'Documents');
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('Content-Disposition', 'attachment; filename=documents.xlsx');
   res.send(buffer);
 });
 
-documentsRouter.get('/:id', requirePermission('archive.view'), async (req, res) => {
+documentsRouter.get('/:id', requireProjectAccess('archive.view', scopeDocumentRow(), { hideExistence: true }), async (req, res) => {
   const item = await documentRepository.findById(String(req.params.id));
   if (!item) return res.status(404).json({ message: 'المستند غير موجود' });
   res.json(item);
 });
 
-documentsRouter.get('/:id/revisions', requirePermission('archive.view'), async (req, res) => {
+documentsRouter.get('/:id/revisions', requireProjectAccess('archive.view', scopeDocumentRow(), { hideExistence: true }), async (req, res) => {
   const item = await documentRepository.findById(String(req.params.id));
   if (!item) return res.status(404).json({ message: 'المستند غير موجود' });
   // newest first for the register view
@@ -132,7 +140,11 @@ const contentDisposition = (type: 'inline' | 'attachment', fileName: string) => 
 const sendDocumentFile = async (req: AuthedRequest, res: import('express').Response, inline: boolean) => {
   const item = await documentRepository.findById(String(req.params.id));
   if (!item) return res.status(404).json({ message: 'المستند غير موجود' });
-  if (item.isFolder) return res.status(400).json({ message: 'لا يمكن تحميل مجلد كملف' });
+  // Phase 5: file access follows the document's project (view or download,
+  // mirroring the route-level any-download rule). Denial hides existence.
+  const ctx = await requestContext(req);
+  if (!(can(ctx, 'archive.view', item.projectId ?? undefined) || can(ctx, 'archive.download', item.projectId ?? undefined)))
+    return res.status(404).json({ message: 'المستند غير موجود' });
   const revisionId = req.query.revision ? String(req.query.revision) : undefined;
 
   let filePath = item.filePath;
@@ -185,7 +197,7 @@ function requireAnyDownloadPermission() {
   };
 }
 
-documentsRouter.post('/upload', requirePermission('archive.upload'), upload.single('file'), async (req: AuthedRequest, res) => {
+documentsRouter.post('/upload', requireProjectAccess('archive.upload', scopeFromBody()), upload.single('file'), async (req: AuthedRequest, res) => {
   if (!req.file) return res.status(400).json({ message: 'الملف مطلوب' });
   const body = { ...req.body, tags: parseTags(req.body.tags) };
   const parsed = documentSchema.safeParse(body);
@@ -214,6 +226,7 @@ documentsRouter.post('/upload', requirePermission('archive.upload'), upload.sing
 
   const created = await documentRepository.create({
     ...parsed.data,
+    folderId: parsed.data.folderId || undefined,
     projectId,
     siteId: parsed.data.siteId || undefined,
     ipcId,
@@ -236,7 +249,7 @@ documentsRouter.post('/upload', requirePermission('archive.upload'), upload.sing
 /** Upload a NEW revision — previous revision files are never destroyed. */
 documentsRouter.post(
   '/:id/revisions',
-  requirePermission('archive.edit'),
+  requireProjectAccess('archive.edit', scopeDocumentRow()),
   upload.single('file'),
   async (req: AuthedRequest, res) => {
     const item = await documentRepository.findById(String(req.params.id));
@@ -273,7 +286,7 @@ documentsRouter.post(
   },
 );
 
-documentsRouter.post('/:id/links', requirePermission('archive.edit'), async (req: AuthedRequest, res) => {
+documentsRouter.post('/:id/links', requireProjectAccess('archive.edit', scopeDocumentRow()), async (req: AuthedRequest, res) => {
   const { entityType, entityId } = req.body;
   if (!entityType || !entityId) return res.status(400).json({ message: 'Missing entityType or entityId' });
   const existing = await documentRepository.findById(String(req.params.id));
@@ -290,14 +303,14 @@ documentsRouter.delete('/links/:linkId', requirePermission('archive.edit'), asyn
   res.status(204).end();
 });
 
-documentsRouter.patch('/:id/move', requirePermission('archive.edit'), async (req: AuthedRequest, res) => {
+documentsRouter.patch('/:id/move', requireProjectAccess('archive.edit', scopeDocumentRow()), async (req: AuthedRequest, res) => {
   const existing = await documentRepository.findById(String(req.params.id));
   if (!existing) return res.status(404).json({ message: 'Document not found' });
   const updated = await documentRepository.update(existing.id, { folderId: req.body.folderId || null });
   res.json(updated);
 });
 
-documentsRouter.put('/:id', requirePermission('archive.edit'), async (req: AuthedRequest, res) => {
+documentsRouter.put('/:id', requireProjectAccess('archive.edit', scopeDocumentRow()), async (req: AuthedRequest, res) => {
   const parsed = documentSchema.partial().safeParse({
     ...req.body,
     tags: Array.isArray(req.body.tags) ? req.body.tags : parseTags(req.body.tags),
@@ -305,6 +318,12 @@ documentsRouter.put('/:id', requirePermission('archive.edit'), async (req: Authe
   if(!parsed.success) return res.status(400).json({ message: 'بيانات المستند غير صالحة', issues: parsed.error.flatten() });
   const existing = await documentRepository.findById(String(req.params.id));
   if (!existing) return res.status(404).json({ message: 'المستند غير موجود' });
+  // Cross-project move: WRITE on both sides (global edit already enforced).
+  if (parsed.data.projectId !== undefined && (parsed.data.projectId || undefined) !== (existing.projectId ?? undefined)) {
+    const ctx = await requestContext(req);
+    if (!can(ctx, 'archive.edit', parsed.data.projectId || undefined))
+      return res.status(403).json({ message: 'ليس لديك صلاحية: archive.edit' });
+  }
   // merge with existing links: a PUT that changes only one side must still
   // satisfy the cross-project rule against the other (stored) side
   const newProjectId = parsed.data.projectId !== undefined ? parsed.data.projectId || undefined : existing.projectId;
@@ -323,7 +342,7 @@ documentsRouter.put('/:id', requirePermission('archive.edit'), async (req: Authe
   res.json(updated);
 });
 
-documentsRouter.patch('/:id/status', requirePermission('archive.edit'), async (req: AuthedRequest, res) => {
+documentsRouter.patch('/:id/status', requireProjectAccess('archive.edit', scopeDocumentRow()), async (req: AuthedRequest, res) => {
   const parsedStatus = documentStatusSchema.safeParse(req.body);
   if(!parsedStatus.success) return res.status(400).json({ message: 'حالة غير صالحة' });
   const existing = await documentRepository.findById(String(req.params.id));
@@ -348,8 +367,9 @@ documentsRouter.post('/export/zip', requirePermission('archive.download'), async
     return res.status(400).json({ message: 'Invalid payload' });
   }
 
-  // Basic implementation: fetch specified documents
-  const allDocs = await documentRepository.list();
+  // Basic implementation: fetch specified documents, scoped to membership.
+  const ctx = await requestContext(req);
+  const allDocs = filterVisible(ctx, await documentRepository.list(), (d) => d.projectId, 'archive.view');
   
   const archive = new ZipArchive({ zlib: { level: 9 } });
   
@@ -390,7 +410,7 @@ documentsRouter.post('/export/zip', requirePermission('archive.download'), async
   archive.finalize();
 });
 
-documentsRouter.post('/:id/replace', requirePermission('archive.edit'), upload.single('file'), async (req: AuthedRequest, res) => {
+documentsRouter.post('/:id/replace', requireProjectAccess('archive.edit', scopeDocumentRow()), upload.single('file'), async (req: AuthedRequest, res) => {
   const id = String(req.params.id);
   const item = await documentRepository.findById(id);
   if (!item) return res.status(404).json({ message: 'المستند غير موجود' });
@@ -414,7 +434,7 @@ documentsRouter.post('/:id/replace', requirePermission('archive.edit'), upload.s
   res.json(updated);
 });
 
-documentsRouter.delete('/:id', requirePermission('archive.delete'), async (req: AuthedRequest, res) => {
+documentsRouter.delete('/:id', requireProjectAccess('archive.delete', scopeDocumentRow()), async (req: AuthedRequest, res) => {
   const existing = await documentRepository.findById(String(req.params.id));
   if(!existing) return res.status(404).json({ message: 'المستند غير موجود' });
   const blocked = req.user?.roleName === 'admin' ? null : await deleteSafety.blockDocument(existing.id);

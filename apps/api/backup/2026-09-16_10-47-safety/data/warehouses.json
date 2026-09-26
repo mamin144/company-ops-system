@@ -1,0 +1,32 @@
+[
+  {
+    "code": "WH-B1",
+    "name": "مخزن بروكسي",
+    "type": "central",
+    "status": "active",
+    "createdBy": "admin",
+    "id": "32ef0931-958f-4f03-ac11-f5b572fb29c2",
+    "createdAt": "2026-08-26T13:33:37.712Z",
+    "updatedAt": "2026-08-26T13:33:37.712Z"
+  },
+  {
+    "code": "WH-B2",
+    "name": "مخزن بروكسي 2",
+    "type": "site",
+    "status": "active",
+    "createdBy": "admin",
+    "id": "6016c4bf-a17c-4d15-8da8-91a671da77fe",
+    "createdAt": "2026-08-26T13:33:37.728Z",
+    "updatedAt": "2026-08-26T13:33:37.728Z"
+  },
+  {
+    "code": "WH-R",
+    "name": "مخزن",
+    "type": "central",
+    "status": "active",
+    "createdBy": "admin",
+    "id": "26e7620f-897c-4627-bdef-9a7e37b4c0f1",
+    "createdAt": "2026-08-26T13:35:42.421Z",
+    "updatedAt": "2026-08-26T13:35:42.421Z"
+  }
+]

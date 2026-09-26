@@ -31,32 +31,80 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
 
 /* ---------- Modal / Confirm ---------- */
 
-export const Modal = ({ title, open, onClose, children, wide }: { title: string; open: boolean; onClose: () => void; children: ReactNode; wide?: boolean }) => {
+export const Modal = ({
+  title,
+  open,
+  onClose,
+  children,
+  wide,
+}: {
+  title: string;
+  open: boolean;
+  onClose: () => void;
+  children: ReactNode;
+  wide?: boolean;
+}) => {
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    if (open) window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (open) {
+      window.addEventListener('keydown', onKey);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
   }, [open, onClose]);
+
   if (!open) return null;
+
   return (
-    <div className="overlay" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className={`modal ${wide ? 'modal--wide' : ''}`} role="dialog" aria-modal="true">
+    <div
+      className="overlay"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+      role="presentation"
+    >
+      <div
+        className={`modal ${wide ? 'modal--wide' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+      >
         <div className="modal__head">
-          <h2>{title}</h2>
-          <button className="iconBtn" onClick={onClose} aria-label="إغلاق">✕</button>
+          <h2 id="modal-title">{title}</h2>
+          <button
+            type="button"
+            className="iconBtn"
+            onClick={onClose}
+            aria-label="إغلاق النافذة"
+          >
+            ✕
+          </button>
         </div>
         <div className="modal__body">{children}</div>
       </div>
-  </div>
+    </div>
   );
 };
 
-export const ConfirmDialog = ({ open, text, onConfirm, onCancel }: { open: boolean; text: string; onConfirm: () => void; onCancel: () => void }) => (
+export const ConfirmDialog = ({
+  open,
+  text,
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean;
+  text: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) => (
   <Modal title="تأكيد العملية" open={open} onClose={onCancel}>
     <p className="confirmText">{text}</p>
     <div className="formActions">
-      <button className="btn btn--danger" onClick={onConfirm}>تأكيد</button>
-      <button className="btn btn--ghost" onClick={onCancel}>إلغاء</button>
+      <button type="button" className="btn btn--danger" onClick={onConfirm}>تأكيد</button>
+      <button type="button" className="btn btn--ghost" onClick={onCancel}>إلغاء</button>
     </div>
   </Modal>
 );
@@ -78,42 +126,78 @@ export const toneForKey = (key: string): BadgeTone =>
 
 /* ---------- Form fields ---------- */
 
-export const Field = ({ label, children }: { label: string; children: ReactNode }) => (
+export const Field = ({
+  label,
+  error,
+  hint,
+  children,
+}: {
+  label: string;
+  error?: string;
+  hint?: string;
+  children: ReactNode;
+}) => (
   <label className="field">
     <span className="field__label">{label}</span>
     {children}
+    {hint && !error && <span className="field__hint small muted">{hint}</span>}
+    {error && <span className="field__error small dangerText">{error}</span>}
   </label>
 );
 
-export const TextInput = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
-  <input className="input" {...props} />
+export const TextInput = ({ className = '', ...props }: React.InputHTMLAttributes<HTMLInputElement>) => (
+  <input className={`input ${className}`} {...props} />
 );
 
-export const SearchInput = ({ value, onChange, placeholder = 'بحث…' }: { value: string; onChange: (v: string) => void; placeholder?: string }) => (
-  <div className="searchBox">
+export const SearchInput = ({
+  value,
+  onChange,
+  placeholder = 'بحث…',
+  className = '',
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  className?: string;
+}) => (
+  <div className={`searchBox ${className}`}>
     <IconSearch size={16} />
-    <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
+    <input
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      aria-label={placeholder}
+    />
   </div>
 );
 
-export const Select = ({ children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) => (
-  <select className="input" {...props}>{children}</select>
+export const Select = ({ className = '', children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) => (
+  <select className={`input select ${className}`} {...props}>{children}</select>
 );
 
-export const TextArea = (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
-  <textarea className="input" rows={3} {...props} />
+export const TextArea = ({ className = '', ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
+  <textarea className={`input textarea ${className}`} rows={3} {...props} />
 );
 
-export const EmptyState = ({ title = 'لا توجد بيانات', hint }: { title?: string; hint?: string }) => (
-  <div className="emptyState">
-    <div className="emptyState__art" />
+export const EmptyState = ({
+  title = 'لا توجد بيانات',
+  hint,
+  action,
+}: {
+  title?: string;
+  hint?: string;
+  action?: ReactNode;
+}) => (
+  <div className="emptyState" role="status">
+    <div className="emptyState__art" aria-hidden="true" />
     <div className="emptyState__title">{title}</div>
     {hint ? <div className="emptyState__hint">{hint}</div> : null}
+    {action ? <div className="emptyState__action" style={{ marginTop: '12px' }}>{action}</div> : null}
   </div>
 );
 
 export const SkeletonTable = ({ rows = 6 }: { rows?: number }) => (
-  <div className="tableWrap skeletonTable">
+  <div className="tableWrap skeletonTable" aria-busy="true" aria-label="جاري التحميل">
     {Array.from({ length: rows }).map((_, i) => (
       <div key={i} className="skeletonRow"><span /><span /><span /><span /></div>
     ))}
@@ -132,3 +216,27 @@ export const BackButton = ({ label = 'رجوع' }: { label?: string }) => {
     </button>
   );
 };
+
+export const Button = ({
+  variant = 'primary',
+  size,
+  className = '',
+  busy = false,
+  disabled,
+  children,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: 'primary' | 'danger' | 'ghost';
+  size?: 'sm';
+  busy?: boolean;
+}) => (
+  <button
+    type={props.type || 'button'}
+    className={`btn btn--${variant} ${size === 'sm' ? 'btn--sm' : ''} ${busy ? 'btn--busy' : ''} ${className}`}
+    disabled={disabled || busy}
+    aria-busy={busy}
+    {...props}
+  >
+    {busy ? 'جاري التحميل…' : children}
+  </button>
+);

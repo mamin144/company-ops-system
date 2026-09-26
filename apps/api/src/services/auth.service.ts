@@ -6,7 +6,7 @@ import { dataDir } from '../shared/paths';
 import { createId } from '../shared/id';
 import { userRepository } from '../repositories/user.repository';
 import type { SafeUser } from '@cos/shared';
-import { permissionOf } from '@cos/shared';
+import { loadContext, effective } from './authorization.service';
 
 const JWT_SECRET_FILE = join(dataDir, '.jwt-secret');
 /** Access tokens are short-lived; persistence is handled by the refresh cookie. */
@@ -20,11 +20,14 @@ const getSecret = (): string => {
   return secret;
 };
 
+/**
+ * Minimal identity claims (Phase 3). Role, permissions and active-state are
+ * NEVER embedded: they are re-resolved server-side on every request, so
+ * permission changes take effect without waiting for token expiry.
+ */
 export interface JwtPayload {
   sub: string;
-  username: string;
-  roleName: string;
-  sid?: string;
+  sid: string;
 }
 
 export class AuthService {
@@ -53,7 +56,11 @@ export class AuthService {
     }
   }
 
-  toSafeUser(user: {
+  /**
+   * DB-backed safe-user projection (Phase 3). Permissions come from the
+   * central resolver (role + overrides), never from token claims.
+   */
+  async toSafeUser(user: {
     id: string;
     username: string;
     fullName: string;
@@ -61,7 +68,12 @@ export class AuthService {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
-  }): SafeUser & { permissions: string[] } {
+  }): Promise<SafeUser & { permissions: string[] }> {
+    const ctx = await loadContext(user.id);
+    const eff = effective(ctx);
+    const permissions = Object.entries(eff.permissions)
+      .filter(([, v]) => v)
+      .map(([k]) => k);
     return {
       id: user.id,
       username: user.username,
@@ -70,7 +82,7 @@ export class AuthService {
       isActive: user.isActive,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      permissions: permissionOf(user.roleName),
+      permissions,
     };
   }
 

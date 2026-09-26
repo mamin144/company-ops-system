@@ -1,0 +1,16 @@
+[
+  {
+    "entity": "documents",
+    "fileName": "sweep.xlsx",
+    "userId": "00000000-0000-0000-0000-000000000001",
+    "username": "admin",
+    "date": "2026-09-03T07:26:51.050Z",
+    "totalRows": 2,
+    "successfulRows": 2,
+    "failedRows": 0,
+    "errors": [],
+    "id": "37ac9e4a-8001-4fbe-ace8-9ce0070aa9a9",
+    "createdAt": "2026-09-03T07:26:51.050Z",
+    "updatedAt": "2026-09-03T07:26:51.050Z"
+  }
+]

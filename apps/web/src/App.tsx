@@ -11,6 +11,7 @@ import {
   IconStock,
   IconSun,
   IconWarehouse,
+  IconShield,
 } from './components/Icons';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -25,14 +26,28 @@ import { StockPage } from './pages/StockPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { MaterialRequestsPage } from './pages/MaterialRequestsPage';
 import { AuditPage } from './pages/AuditPage';
+import { AdminPage } from './pages/AdminPage';
 import { ProjectDetailsPage } from './pages/ProjectDetailsPage';
 import { FinancialsPage } from './pages/FinancialsPage';
 import { GlobalSearch } from './components/GlobalSearch';
+const ROLE_AR: Record<string, string> = { admin: 'مدير النظام', management: 'إدارة', warehouse: 'مخازن', technical: 'فني', viewer: 'مشاهدة' };
 import { NotificationBell } from './components/NotificationBell';
 
 const futureModules = ['المشتريات', 'الدفتر الفني'];
 
-const Sidebar = () => {
+import { IconMenu, IconClose } from './components/Icons';
+
+const Sidebar = ({
+  open,
+  onClose,
+  collapsed,
+  onToggleCollapse,
+}: {
+  open: boolean;
+  onClose: () => void;
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+}) => {
   const { user, can, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -45,55 +60,81 @@ const Sidebar = () => {
     { to: '/items', label: 'الأصناف', icon: <IconItems />, show: can('warehouse.view') },
     { to: '/stock', label: 'المخزون', icon: <IconStock />, show: can('warehouse.view') },
     { to: '/material-requests', label: 'طلبات المواد', icon: <IconItems />, show: can('materialRequests.view') },
+    { to: '/admin', label: 'الإدارة', icon: <IconShield />, show: can('users.manage') || can('roles.manage') || can('projects.access') },
   ];
 
   return (
-    <aside className="sidebar">
-      <div className="brand">
-        <div className="brand__logo">CO</div>
-        <div>
-          <div className="brand__title">نظام إدارة الشركة</div>
-          <div className="brand__subtitle">مقاولات وتشطيبات</div>
+    <>
+      <div
+        className={`sidebar__backdrop ${open ? 'sidebar__backdrop--visible' : ''}`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <aside className={`sidebar ${open ? 'sidebar--open' : ''}`} aria-label="القائمة الجانبية">
+        <div className="brand" style={{ justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <div className="brand__logo" onClick={onToggleCollapse} style={{ cursor: 'pointer' }} title={collapsed ? 'توسيع القائمة' : 'تصغير القائمة'}>CO</div>
+            <div>
+              <div className="brand__title">نظام إدارة الشركة</div>
+              <div className="brand__subtitle">مقاولات وتشطيبات</div>
+            </div>
+          </div>
         </div>
-      </div>
-      <nav className="nav">
-        {navItems.filter((n) => n.show).map((n) => (
-          <NavLink key={n.to} to={n.to} className={({ isActive }) => `navItem ${isActive ? 'active' : ''}`}>
-            {n.icon}
-            <span>{n.label}</span>
-          </NavLink>
-        ))}
-        {can('audit.view') ? (
-          <NavLink to="/audit" className={({ isActive }) => `navItem ${isActive ? 'active' : ''}`}>
+        <nav className="nav">
+          {navItems.filter((n) => n.show).map((n) => (
+            <NavLink
+              key={n.to}
+              to={n.to}
+              onClick={onClose}
+              title={n.label}
+              className={({ isActive }) => `navItem ${isActive ? 'active' : ''}`}
+            >
+              {n.icon}
+              <span>{n.label}</span>
+            </NavLink>
+          ))}
+          {can('audit.view') ? (
+            <NavLink
+              to="/audit"
+              onClick={onClose}
+              title="سجل التغييرات"
+              className={({ isActive }) => `navItem ${isActive ? 'active' : ''}`}
+            >
+              <IconSettings />
+              <span>سجل التغييرات</span>
+            </NavLink>
+          ) : null}
+          <NavLink
+            to="/settings"
+            onClick={onClose}
+            title="الإعدادات"
+            className={({ isActive }) => `navItem ${isActive ? 'active' : ''}`}
+          >
             <IconSettings />
-            <span>سجل التغييرات</span>
+            <span>الإعدادات</span>
           </NavLink>
-        ) : null}
-        <NavLink to="/settings" className={({ isActive }) => `navItem ${isActive ? 'active' : ''}`}>
-          <IconSettings />
-          <span>الإعدادات</span>
-        </NavLink>
 
-        <div className="navSection">وحدات قادمة</div>
-        {futureModules.map((m) => (
-          <span key={m} className="navItem navItem--disabled" title="قيد التطوير">{m}</span>
-        ))}
-      </nav>
+          <div className="navSection">وحدات قادمة</div>
+          {futureModules.map((m) => (
+            <span key={m} className="navItem navItem--disabled" title="قيد التطوير">{m}</span>
+          ))}
+        </nav>
 
-      <div className="sidebarUser">
-        <div className="small"><strong>{user?.fullName ?? user?.username}</strong></div>
-        <div className="muted small">{{ admin: 'مدير النظام', management: 'إدارة', warehouse: 'مخازن', technical: 'فني', viewer: 'مشاهدة' }[user?.roleName ?? 'viewer']}</div>
-        <button
-          className="btn btn--sm btn--ghost"
-          onClick={async () => {
-            await logout();
-            navigate('/login');
-          }}
-        >
-          تسجيل الخروج
-        </button>
-      </div>
-    </aside>
+        <div className="sidebarUser">
+          <div className="small"><strong>{user?.fullName ?? user?.username}</strong></div>
+          <div className="muted small">{ROLE_AR[user?.roleName ?? 'viewer'] ?? user?.roleName ?? ''}</div>
+          <button
+            className="btn btn--sm btn--ghost"
+            onClick={async () => {
+              await logout();
+              navigate('/login');
+            }}
+          >
+            تسجيل الخروج
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };
 
@@ -103,8 +144,34 @@ const ThemeToggle = () => {
     document.documentElement.dataset.theme = dark ? 'dark' : 'light';
     localStorage.setItem('theme', dark ? 'dark' : 'light');
   }, [dark]);
+
+  useEffect(() => {
+    const handleThemeChange = (e: Event) => {
+      const customEvent = e as CustomEvent<'light' | 'dark'>;
+      if (customEvent.detail) {
+        setDark(customEvent.detail === 'dark');
+      } else {
+        setDark(localStorage.getItem('theme') === 'dark');
+      }
+    };
+    window.addEventListener('cos:theme-change', handleThemeChange);
+    window.addEventListener('storage', handleThemeChange);
+    return () => {
+      window.removeEventListener('cos:theme-change', handleThemeChange);
+      window.removeEventListener('storage', handleThemeChange);
+    };
+  }, []);
+
   return (
-    <button className="iconBtn themeToggle" onClick={() => setDark((d) => !d)} title={dark ? 'الوضع النهاري' : 'الوضع الليلي'}>
+    <button
+      className="iconBtn themeToggle"
+      onClick={() => {
+        const next = !dark;
+        setDark(next);
+        window.dispatchEvent(new CustomEvent('cos:theme-change', { detail: next ? 'dark' : 'light' }));
+      }}
+      title={dark ? 'الوضع النهاري' : 'الوضع الليلي'}
+    >
       {dark ? <IconSun /> : <IconMoon />}
     </button>
   );
@@ -148,34 +215,66 @@ const OfflineBanner = () => {
   );
 };
 
-const Shell = () => (
-  <div className="shell">
-    <Sidebar />
-    <main className="main">
-      <header className="topbar">
-        <GlobalSearch />
-        <NotificationBell />
-        <ThemeToggle />
-      </header>
-      <OfflineBanner />
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<Protected><DashboardPage /></Protected>} />
-        <Route path="/projects" element={<Protected perm="projects.view"><ProjectsPage /></Protected>} />
-        <Route path="/financials" element={<Protected perm="projects.view"><FinancialsPage /></Protected>} />
-        <Route path="/projects/:id" element={<Protected perm="projects.view"><ProjectDetailsPage /></Protected>} />
-        <Route path="/archive" element={<Protected perm="archive.view"><ArchivePage /></Protected>} />
-        <Route path="/warehouses" element={<Protected perm="warehouse.view"><WarehousesPage /></Protected>} />
-        <Route path="/items" element={<Protected perm="warehouse.view"><ItemsPage /></Protected>} />
-        <Route path="/stock" element={<Protected perm="warehouse.view"><StockPage /></Protected>} />
-        <Route path="/material-requests" element={<Protected perm="materialRequests.view"><MaterialRequestsPage /></Protected>} />
-        <Route path="/audit" element={<Protected perm="audit.view"><AuditPage /></Protected>} />
-        <Route path="/settings" element={<Protected><SettingsPage /></Protected>} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </main>
-  </div>
-);
+const Shell = () => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === '1');
+
+  const toggleCollapsed = () => {
+    setCollapsed((c) => {
+      const next = !c;
+      localStorage.setItem('sidebar_collapsed', next ? '1' : '0');
+      return next;
+    });
+  };
+
+  return (
+    <div className={`shell ${collapsed ? 'shell--collapsed' : ''}`}>
+      <Sidebar
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        collapsed={collapsed}
+        onToggleCollapse={toggleCollapsed}
+      />
+      <main className="main">
+        <header className="topbar" role="banner">
+          <div className="topbar__start">
+            <button
+              type="button"
+              className="menuBtn"
+              onClick={() => setDrawerOpen(true)}
+              aria-label="فتح القائمة الرئيسية"
+              title="القائمة"
+            >
+              <IconMenu size={20} />
+            </button>
+            <GlobalSearch />
+          </div>
+          <div className="topbar__end">
+            <NotificationBell />
+            <ThemeToggle />
+          </div>
+        </header>
+        <OfflineBanner />
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<Protected><DashboardPage /></Protected>} />
+          <Route path="/projects" element={<Protected perm="projects.view"><ProjectsPage /></Protected>} />
+          <Route path="/financials" element={<Protected perm="projects.view"><FinancialsPage /></Protected>} />
+          <Route path="/projects/:id" element={<Protected perm="projects.view"><ProjectDetailsPage /></Protected>} />
+          <Route path="/archive" element={<Protected perm="archive.view"><ArchivePage /></Protected>} />
+          <Route path="/warehouses" element={<Protected perm="warehouse.view"><WarehousesPage /></Protected>} />
+          <Route path="/items" element={<Protected perm="warehouse.view"><ItemsPage /></Protected>} />
+          <Route path="/stock" element={<Protected perm="warehouse.view"><StockPage /></Protected>} />
+          <Route path="/material-requests" element={<Protected perm="materialRequests.view"><MaterialRequestsPage /></Protected>} />
+          <Route path="/audit" element={<Protected perm="audit.view"><AuditPage /></Protected>} />
+          <Route path="/admin/*" element={<Protected><AdminPage /></Protected>} />
+          <Route path="/settings" element={<Protected><SettingsPage /></Protected>} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </main>
+    </div>
+  );
+};
 
 export const App = () => (
   <ErrorBoundary>

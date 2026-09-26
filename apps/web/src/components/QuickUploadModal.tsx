@@ -8,15 +8,17 @@ interface QuickUploadModalProps {
   onClose: () => void;
   onSuccess: () => void;
   defaultProjectId?: string; // If provided from Financials, pre-select it
+  defaultFolderId?: string | null;
 }
 
-export const QuickUploadModal = ({ open, onClose, onSuccess, defaultProjectId }: QuickUploadModalProps) => {
+export const QuickUploadModal = ({ open, onClose, onSuccess, defaultProjectId, defaultFolderId }: QuickUploadModalProps) => {
   const toast = useToast();
   const [projects, setProjects] = useState<Project[]>([]);
   const [ipcs, setIpcs] = useState<Ipc[]>([]);
   const [loadingIpcs, setLoadingIpcs] = useState(false);
   
   const [projectId, setProjectId] = useState(defaultProjectId || '');
+  const [folderId, setFolderId] = useState<string | null>(defaultFolderId || null);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('عقد');
   const [ipcId, setIpcId] = useState('');
@@ -31,6 +33,7 @@ export const QuickUploadModal = ({ open, onClose, onSuccess, defaultProjectId }:
       api.get<{ items: Project[] }>('/api/projects?pageSize=200')
          .then(r => setProjects(Array.isArray(r.items) ? r.items : []));
       setProjectId(defaultProjectId || '');
+      setFolderId(defaultFolderId || null);
       setTitle('');
       setCategory('عقد');
       setIpcId('');
@@ -38,7 +41,7 @@ export const QuickUploadModal = ({ open, onClose, onSuccess, defaultProjectId }:
       setNotes('');
       setFile(null);
     }
-  }, [open, defaultProjectId]);
+  }, [open, defaultProjectId, defaultFolderId]);
 
   useEffect(() => {
     if ((category === 'مستخلص' || category === 'استقطاع') && projectId) {
@@ -75,6 +78,7 @@ export const QuickUploadModal = ({ open, onClose, onSuccess, defaultProjectId }:
       fd.append('category', category);
       
       if (category !== 'ورق شركة') fd.append('projectId', projectId);
+      if (folderId) fd.append('folderId', folderId);
       if (ipcId) fd.append('ipcId', ipcId);
       if (documentDate) fd.append('documentDate', documentDate);
       if (notes) fd.append('notes', notes);

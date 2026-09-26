@@ -62,45 +62,113 @@ export const WarehousesPage = () => {
   }, [deleteTarget, list, toast]);
 
   const columns: Column<Warehouse>[] = [
-    { key: 'code', label: 'الكود', sortable: true },
+    {
+      key: 'code',
+      label: 'الكود',
+      sortable: true,
+      render: (w) => <span className="mono num bold">{w.code}</span>,
+    },
     { key: 'name', label: 'الاسم', sortable: true },
-    { key: 'type', label: 'النوع', render: (w) => <Badge tone={toneForStatus(w.type)}>{w.type === 'central' ? 'مخزن مركزي' : 'مخزن موقع'}</Badge> },
-    { key: 'location', label: 'الموقع' },
-    { key: 'status', label: 'الحالة', render: (w) => <Badge tone={toneForStatus(w.status)}>{w.status === 'active' ? 'نشط' : 'غير نشط'}</Badge> },
+    {
+      key: 'type',
+      label: 'النوع',
+      render: (w) => (
+        <Badge tone={toneForStatus(w.type)}>
+          {w.type === 'central' ? 'مخزن مركزي' : 'مخزن موقع'}
+        </Badge>
+      ),
+    },
+    { key: 'location', label: 'الموقع', render: (w) => w.location || '—' },
+    {
+      key: 'status',
+      label: 'الحالة',
+      render: (w) => (
+        <Badge tone={toneForStatus(w.status)}>
+          {w.status === 'active' ? 'نشط' : 'غير نشط'}
+        </Badge>
+      ),
+    },
   ];
 
   return (
     <div className="page">
-      <div className="pageHead">
-        <div><h1>المخازن</h1><p>المخازن المركزية ومخازن المواقع</p></div>
+      <div className="invHeader">
+        <div className="invHeader__titleGroup">
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <h1>المخازن</h1>
+              <span className="heroChip num">{list.data?.total ?? 0} مخزن</span>
+            </div>
+            <p>إدارة المخازن المركزية ومخازن المواقع والمشاريع</p>
+          </div>
+        </div>
         <div className="actions">
-          <Select value={list.state.filters.type ?? ''} onChange={(e) => list.setFilter('type', e.target.value)}>
-            <option value="">كل الأنواع</option>
-            <option value="central">مخزن مركزي</option>
-            <option value="site">مخزن موقع</option>
-          </Select>
-          <SearchInput value={list.state.q} onChange={list.setQ} />
-          <button className="btn btn--ghost" onClick={list.clearFilters}>مسح الفلاتر</button>
-          <button className="btn btn--ghost" onClick={() => void downloadDocument('/api/warehouses/export/xlsx', 'warehouses.xlsx')}><IconDownload size={16} /> تصدير Excel</button>
-          <button className="btn btn--ghost" onClick={() => setImportOpen(true)}><IconUpload size={16} /> استيراد Excel</button>
-          <button className="btn btn--primary" onClick={openCreate}><IconPlus size={16} /> مخزن جديد</button>
+          <button className="btn btn--ghost" onClick={() => void downloadDocument('/api/warehouses/export/xlsx', 'warehouses.xlsx')}>
+            <IconDownload size={16} /> تصدير Excel
+          </button>
+          <button className="btn btn--ghost" onClick={() => setImportOpen(true)}>
+            <IconUpload size={16} /> استيراد Excel
+          </button>
+          <button className="btn btn--primary" onClick={openCreate}>
+            <IconPlus size={16} /> مخزن جديد
+          </button>
         </div>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={list.data}
-        loading={list.loading}
-        error={list.error}
-        onRetry={() => void list.reload()}
-        sortBy={list.state.sortBy}
-        sortDir={list.state.sortDir}
-        onSort={list.toggleSort}
-        onPage={list.setPage}
-        actions={(row) => (
-          <EditDeleteActions onEdit={() => openEdit(row)} onDelete={() => setDeleteTarget(row)} />
-        )}
-      />
+      <div className="invToolbar">
+        <Select value={list.state.filters.type ?? ''} onChange={(e) => list.setFilter('type', e.target.value)}>
+          <option value="">كل الأنواع</option>
+          <option value="central">مخزن مركزي</option>
+          <option value="site">مخزن موقع</option>
+        </Select>
+        <SearchInput value={list.state.q} onChange={list.setQ} placeholder="بحث بالكود أو الاسم أو الموقع…" />
+        <button className="btn btn--ghost" onClick={list.clearFilters}>مسح الفلاتر</button>
+      </div>
+
+      <div className="invTableDesktop">
+        <DataTable
+          columns={columns}
+          data={list.data}
+          loading={list.loading}
+          error={list.error}
+          onRetry={() => void list.reload()}
+          sortBy={list.state.sortBy}
+          sortDir={list.state.sortDir}
+          onSort={list.toggleSort}
+          onPage={list.setPage}
+          actions={(row) => (
+            <EditDeleteActions onEdit={() => openEdit(row)} onDelete={() => setDeleteTarget(row)} />
+          )}
+        />
+      </div>
+
+      {/* Responsive Mobile Warehouse Cards */}
+      <div className="whGrid">
+        {(list.data?.items ?? []).map((w) => (
+          <div className="whCard" key={w.id}>
+            <div className="whCard__top">
+              <div className="whCard__titleGroup">
+                <h3 className="whCard__title">{w.name}</h3>
+                <span className="whCard__code num">{w.code}</span>
+              </div>
+              <Badge tone={toneForStatus(w.status)}>{w.status === 'active' ? 'نشط' : 'غير نشط'}</Badge>
+            </div>
+            <div className="whCard__meta">
+              <div className="whCard__metaItem">
+                <span className="whCard__metaLabel">النوع</span>
+                <span className="whCard__metaValue">{w.type === 'central' ? 'مخزن مركزي' : 'مخزن موقع'}</span>
+              </div>
+              <div className="whCard__metaItem">
+                <span className="whCard__metaLabel">الموقع</span>
+                <span className="whCard__metaValue">{w.location || '—'}</span>
+              </div>
+            </div>
+            <div className="whCard__actions">
+              <EditDeleteActions onEdit={() => openEdit(w)} onDelete={() => setDeleteTarget(w)} />
+            </div>
+          </div>
+        ))}
+      </div>
 
       <Modal title={editing ? 'تعديل مخزن' : 'مخزن جديد'} open={formOpen} onClose={() => setFormOpen(false)}>
         <div className="formGrid">

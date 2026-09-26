@@ -4,16 +4,22 @@ import { applyPagination, applySearch, applySort } from '../../services/filter.s
 import { warehouseSchema } from './warehouses.validators';
 import { projectRepository } from '../../repositories/project.repository';
 import { excelService } from '../../services/excel.service';
-import { requireAuth, requirePermission } from '../../middleware/auth';
+import { requireAuth, requirePermission, requireProjectAccess, requestContext } from '../../middleware/auth';
 import type { AuthedRequest } from '../../middleware/auth';
+import { scopeWarehouseRow, scopeFromBody, filterVisible, checkFilterProject } from '../../services/projectScope';
+import { can } from '../../services/authorization.service';
 import { auditService } from '../../services/audit.service';
 import { deleteSafety } from '../../services/stock.service';
 
 export const warehousesRouter = Router();
 warehousesRouter.use(requireAuth);
 
-warehousesRouter.get('/', requirePermission('warehouse.view'), async (req, res) => {
-  let items = await warehouseRepository.list();
+warehousesRouter.get('/', requirePermission('warehouse.view'), async (req: AuthedRequest, res) => {
+  // Phase 5: backend-scoped to member projects (null-project rows stay visible).
+  const ctx = await requestContext(req);
+  if (req.query.projectId && !checkFilterProject(ctx, String(req.query.projectId), 'warehouse.view'))
+    return res.status(403).json({ message: 'ليس لديك صلاحية: warehouse.view' });
+  let items = filterVisible(ctx, await warehouseRepository.list(), (item) => item.projectId, 'warehouse.view');
   items = applySearch(items, String(req.query.q ?? ''), ['code', 'name', 'location', 'notes']);
   if (req.query.projectId) items = items.filter((item) => item.projectId === String(req.query.projectId));
   if (req.query.type) items = items.filter((item) => item.type === String(req.query.type));
@@ -26,34 +32,39 @@ warehousesRouter.get('/', requirePermission('warehouse.view'), async (req, res) 
   );
 });
 
-warehousesRouter.get('/export/xlsx', requirePermission('reports.view'), async (_req, res) => {
-  const buffer = excelService.exportJson(await warehouseRepository.list(), 'Warehouses');
+warehousesRouter.get('/export/xlsx', requirePermission('reports.view'), async (req: AuthedRequest, res) => {
+  const ctx = await requestContext(req);
+  const buffer = excelService.exportJson(filterVisible(ctx, await warehouseRepository.list(), (w) => w.projectId, 'warehouse.view'), 'Warehouses');
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('Content-Disposition', 'attachment; filename=warehouses.xlsx');
   res.send(buffer);
 });
 
-warehousesRouter.post('/', requirePermission('warehouse.create'), async (req: AuthedRequest, res) => {
+warehousesRouter.post('/', requireProjectAccess('warehouse.create', scopeFromBody()), async (req: AuthedRequest, res) => {
   const parsed = warehouseSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: 'بيانات المخزن غير صالحة', issues: parsed.error.flatten() });
-  if (parsed.data.projectId && !await projectRepository.findById(parsed.data.projectId))
-    return res.status(400).json({ message: 'المشروع غير موجود' });
   const created = await warehouseRepository.create({ ...parsed.data, projectId: parsed.data.projectId || undefined, createdBy: req.user!.username });
   auditService.log(req, 'create', 'warehouse', created.id, undefined, created);
   res.status(201).json(created);
 });
 
-warehousesRouter.put('/:id', requirePermission('warehouse.edit'), async (req: AuthedRequest, res) => {
+warehousesRouter.put('/:id', requireProjectAccess('warehouse.edit', scopeWarehouseRow()), async (req: AuthedRequest, res) => {
   const parsed = warehouseSchema.partial().safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: 'بيانات المخزن غير صالحة', issues: parsed.error.flatten() });
   const existing = await warehouseRepository.findById(String(req.params.id));
   if (!existing) return res.status(404).json({ message: 'المخزن غير موجود' });
+  // Cross-project move: WRITE on both sides (global edit already enforced).
+  if (parsed.data.projectId && parsed.data.projectId !== existing.projectId) {
+    const ctx = await requestContext(req);
+    if (!can(ctx, 'warehouse.edit', parsed.data.projectId))
+      return res.status(403).json({ message: 'ليس لديك صلاحية: warehouse.edit' });
+  }
   const updated = await warehouseRepository.update(existing.id, { ...parsed.data, projectId: parsed.data.projectId || undefined });
   auditService.log(req, 'update', 'warehouse', existing.id, existing, updated);
   res.json(updated);
 });
 
-warehousesRouter.delete('/:id', requirePermission('warehouse.delete'), async (req: AuthedRequest, res) => {
+warehousesRouter.delete('/:id', requireProjectAccess('warehouse.delete', scopeWarehouseRow()), async (req: AuthedRequest, res) => {
   const id = String(req.params.id);
   const existing = await warehouseRepository.findById(id);
   if (!existing) return res.status(404).json({ message: 'المخزن غير موجود' });

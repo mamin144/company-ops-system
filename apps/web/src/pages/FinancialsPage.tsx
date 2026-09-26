@@ -226,22 +226,22 @@ export const FinancialsPage = () => {
           </div>
         </div>
       ) : (
-      <div className="card" style={{ padding: 0, overflowX: 'auto' }}>
-        <table className="table" style={{ minWidth: 800 + maxIpcCount * 200 }}>
+      <div className="finTableWrap">
+        <table className="table finTable" style={{ minWidth: 800 + maxIpcCount * 200 }}>
           <thead>
             <tr>
-              <th style={{ width: 200 }}>اسم المشروع</th>
-              <th style={{ width: 100 }}>المنطقة</th>
-              <th style={{ width: 80 }}>رقم العقد</th>
-              <th style={{ width: 80 }}>الحالة</th>
-              <th style={{ width: 120 }}>المقايسة</th>
+              <th style={{ width: 220 }}>اسم المشروع</th>
+              <th style={{ width: 110 }}>المنطقة</th>
+              <th style={{ width: 90 }}>رقم العقد</th>
+              <th style={{ width: 90 }}>الحالة</th>
+              <th style={{ width: 130 }}>المقايسة (جنيه)</th>
               {Array.from({ length: maxIpcCount }, (_, i) => (
                 <React.Fragment key={i}>
                   <th>جاري {i + 1}</th>
                   <th>استقطاع {i + 1}</th>
                 </React.Fragment>
               ))}
-              <th>📎</th>
+              <th style={{ width: 60 }} title="المستندات المرفقة">المرفقات</th>
             </tr>
           </thead>
           <tbody>
@@ -312,27 +312,28 @@ export const FinancialsPage = () => {
 };
 
 const KpiCard = ({ label, value, color }: { label: string; value: string; color?: string }) => (
-  <div className="card" style={{ textAlign: 'center', padding: 16 }}>
-    <div className="muted small">{label}</div>
-    <div style={{ fontSize: 22, fontWeight: 'bold', color: color || 'inherit', marginTop: 4 }}>{value}</div>
+  <div className="finMetricCard">
+    <div className="finMetricCard__label">{label}</div>
+    <div className="finMetricCard__value" style={{ color: color || 'inherit' }}>{value}</div>
   </div>
 );
 
 const DocGroup = ({ title, docs }: { title: string; docs: LinkedDoc[] }) => (
-  <div className="card" style={{ padding: 12 }}>
-    <strong>{title}</strong>
-    {docs.length === 0 ? <p className="muted small">لا يوجد</p> : (
-      <ul style={{ listStyle: 'none', padding: 0, marginTop: 8 }}>
+  <div className="card" style={{ padding: 16 }}>
+    <strong style={{ fontSize: '14px', display: 'block', marginBottom: '8px' }}>{title}</strong>
+    {docs.length === 0 ? <p className="muted small">لا توجد ملفات</p> : (
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
         {docs.map(d => (
-          <li key={d.id} style={{ marginBottom: 4 }}>
-            <PreviewDocButton documentId={d.id} fileName={d.fileName} small /> <DownloadDocButton documentId={d.id} fileName={d.fileName} small /> <span className="small muted">{d.title}</span>
+          <li key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+            <PreviewDocButton documentId={d.id} fileName={d.fileName} small />
+            <DownloadDocButton documentId={d.id} fileName={d.fileName} small />
+            <span>{d.title}</span>
           </li>
         ))}
       </ul>
     )}
   </div>
 );
-
 
 const ProjectDetailView = ({ p, onBack, onReload }: { p: ProjectFinancial, onBack: () => void, onReload: () => void }) => {
   const [tab, setTab] = useState<'boq' | 'ipcs' | 'docs'>('boq');
@@ -348,16 +349,19 @@ const ProjectDetailView = ({ p, onBack, onReload }: { p: ProjectFinancial, onBac
   const lastIpc = p.ipcs.length > 0 ? p.ipcs[p.ipcs.length - 1] : null;
 
   return (
-    <div className="page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <h1>{p.projectName}</h1>
+    <div className="page projectWorkspace">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <button type="button" className="btn btn--ghost btn--sm" onClick={onBack} style={{ marginBottom: '8px' }}>
+            ← رجوع لقائمة الموقف المالي
+          </button>
+          <h1 style={{ margin: 0 }}>{p.projectName}</h1>
+          <p className="muted small" style={{ margin: '4px 0 0' }}>كود المشروع: <strong className="num">{p.projectCode}</strong> · العميل: {p.client}</p>
         </div>
-        <button className="btn btn--ghost" onClick={onBack}>← رجوع</button>
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 24 }}>
+      <div className="finKpiGrid">
         <KpiCard label="قيمة العقد (المقايسة)" value={boqTotal.toLocaleString()} />
         <KpiCard label="إجمالي المنفذ" value={totalExecuted.toLocaleString()} />
         <KpiCard label="إجمالي الاستقطاعات" value={totalDeductions.toLocaleString()} color="var(--danger)" />

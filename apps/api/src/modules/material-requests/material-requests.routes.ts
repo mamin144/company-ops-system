@@ -6,8 +6,10 @@ import { itemRepository } from '../../repositories/item.repository';
 import { projectRepository } from '../../repositories/project.repository';
 import { siteRepository } from '../../repositories/site.repository';
 import { warehouseRepository } from '../../repositories/warehouse.repository';
-import { requireAuth, requirePermission } from '../../middleware/auth';
+import { requireAuth, requirePermission, requireProjectAccess, requestContext } from '../../middleware/auth';
 import type { AuthedRequest } from '../../middleware/auth';
+import { scopeMaterialRequestRow, scopeFromBody, filterVisible, checkFilterProject } from '../../services/projectScope';
+import { can } from '../../services/authorization.service';
 import { auditService } from '../../services/audit.service';
 import { nextNumber } from '../../services/numbering.service';
 import { notificationService } from '../../services/notification.service';
@@ -42,20 +44,24 @@ const STATUS_AR: Record<string, string> = {
   closed: 'مغلقة',
 };
 
-materialRequestsRouter.get('/', async (req, res) => {
-  let items = await materialRequestRepository.list();
+materialRequestsRouter.get('/', async (req: AuthedRequest, res) => {
+  // Phase 5: backend-scoped to member projects (null-project rows stay visible).
+  const ctx = await requestContext(req);
+  if (req.query.projectId && !checkFilterProject(ctx, String(req.query.projectId), 'materialRequests.view'))
+    return res.status(403).json({ message: 'ليس لديك صلاحية: materialRequests.view' });
+  let items = filterVisible(ctx, await materialRequestRepository.list(), (m) => m.projectId, 'materialRequests.view');
   if (req.query.status) items = items.filter((m) => m.status === String(req.query.status));
   if (req.query.projectId) items = items.filter((m) => m.projectId === String(req.query.projectId));
   res.json([...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
 });
 
-materialRequestsRouter.get('/:id', async (req, res) => {
+materialRequestsRouter.get('/:id', requireProjectAccess('materialRequests.view', scopeMaterialRequestRow(), { hideExistence: true }), async (req, res) => {
   const item = await materialRequestRepository.findById(String(req.params.id));
   if (!item) return res.status(404).json({ message: 'طلب المواد غير موجود' });
   res.json(item);
 });
 
-materialRequestsRouter.post('/', requirePermission('materialRequests.create'), async (req: AuthedRequest, res) => {
+materialRequestsRouter.post('/', requireProjectAccess('materialRequests.create', scopeFromBody()), async (req: AuthedRequest, res) => {
   const parsed = mrSchema.safeParse({ ...req.body, status: undefined });
   if (!parsed.success) return res.status(400).json({ message: 'بيانات غير صالحة', issues: parsed.error.flatten() });
   const d = parsed.data;
@@ -83,7 +89,7 @@ materialRequestsRouter.post('/', requirePermission('materialRequests.create'), a
   res.status(201).json(created);
 });
 
-materialRequestsRouter.post('/:id/submit', requirePermission('materialRequests.create'), async (req: AuthedRequest, res) => {
+materialRequestsRouter.post('/:id/submit', requireProjectAccess('materialRequests.create', scopeMaterialRequestRow()), async (req: AuthedRequest, res) => {
   const mr = await materialRequestRepository.findById(String(req.params.id));
   if (!mr) return res.status(404).json({ message: 'طلب المواد غير موجود' });
   if (mr.status !== 'draft') return res.status(409).json({ message: 'يمكن إرسال المسودة فقط' });
@@ -184,7 +190,7 @@ materialRequestsRouter.post('/:id/issue', requirePermission('materialRequests.is
  * Draft authors already hold `materialRequests.create` (same permission as
  * submit), so no new permission is introduced.
  */
-materialRequestsRouter.delete('/:id', requirePermission('materialRequests.create'), async (req: AuthedRequest, res) => {
+materialRequestsRouter.delete('/:id', requireProjectAccess('materialRequests.create', scopeMaterialRequestRow()), async (req: AuthedRequest, res) => {
   const existing = await materialRequestRepository.findById(String(req.params.id));
   if (!existing) return res.status(404).json({ message: 'طلب المواد غير موجود' });
   const blocked = await deleteSafety.blockMaterialRequest(existing.id);

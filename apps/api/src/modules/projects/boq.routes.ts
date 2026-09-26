@@ -4,8 +4,10 @@ import { boqRepository } from '../../repositories/boq.repository';
 import { projectRepository } from '../../repositories/project.repository';
 import { excelService } from '../../services/excel.service';
 import { deleteSafety } from '../../services/stock.service';
-import { requireAuth, requireAnyPermission } from '../../middleware/auth';
+import { requireAuth, requireAnyPermission, requireAnyProjectAccess, requestContext } from '../../middleware/auth';
 import type { AuthedRequest } from '../../middleware/auth';
+import { scopeFromParam } from '../../services/projectScope';
+import { can } from '../../services/authorization.service';
 import { auditService } from '../../services/audit.service';
 
 export const boqRouter = Router({ mergeParams: true });
@@ -20,15 +22,18 @@ export const boqSchema = z.object({
 
 boqRouter.use(requireAuth);
 
-boqRouter.get('/', async (req, res) => {
+boqRouter.get('/', async (req: AuthedRequest, res) => {
+  // Phase 5: collection scoped to the URL project (READ+); empty on denial.
+  const ctx = await requestContext(req);
   const projectId = String((req.params as any).projectId);
+  if (!can(ctx, 'projects.view', projectId)) return res.json([]);
   const items = (await boqRepository.list()).filter((b: any) => b.projectId === projectId);
   // sort by itemCode logically
   items.sort((a, b) => a.itemCode.localeCompare(b.itemCode, undefined, { numeric: true }));
   res.json(items);
 });
 
-boqRouter.post('/', requireAnyPermission('projects.edit', 'projects.create'), async (req: AuthedRequest, res) => {
+boqRouter.post('/', requireAnyProjectAccess(['projects.edit', 'projects.create'], scopeFromParam()), async (req: AuthedRequest, res) => {
   const projectId = String((req.params as any).projectId);
   if (!await projectRepository.findById(projectId))
     return res.status(404).json({ message: 'المشروع غير موجود' });
@@ -44,7 +49,7 @@ boqRouter.post('/', requireAnyPermission('projects.edit', 'projects.create'), as
   res.status(201).json(created);
 });
 
-boqRouter.put('/:id', requireAnyPermission('projects.edit'), async (req: AuthedRequest, res) => {
+boqRouter.put('/:id', requireAnyProjectAccess(['projects.edit'], scopeFromParam()), async (req: AuthedRequest, res) => {
   const parsed = boqSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: 'بيانات غير صالحة', issues: parsed.error.flatten() });
 
@@ -58,7 +63,7 @@ boqRouter.put('/:id', requireAnyPermission('projects.edit'), async (req: AuthedR
   res.json(updated);
 });
 
-boqRouter.delete('/:id', requireAnyPermission('projects.edit'), async (req: AuthedRequest, res) => {
+boqRouter.delete('/:id', requireAnyProjectAccess(['projects.edit'], scopeFromParam()), async (req: AuthedRequest, res) => {
   const existing = await boqRepository.findById(String(req.params.id));
   if (!existing || existing.projectId !== String((req.params as any).projectId))
     return res.status(404).json({ message: 'البند غير موجود' });
@@ -73,7 +78,7 @@ boqRouter.delete('/:id', requireAnyPermission('projects.edit'), async (req: Auth
   res.status(204).end();
 });
 
-boqRouter.get('/export/xlsx', requireAnyPermission('projects.edit', 'projects.create'), async (req, res) => {
+boqRouter.get('/export/xlsx', requireAnyProjectAccess(['projects.edit', 'projects.create'], scopeFromParam()), async (req, res) => {
   const projectId = String((req.params as any).projectId);
   const items = (await boqRepository.list()).filter((b: any) => b.projectId === projectId);
   const buffer = excelService.exportJson(

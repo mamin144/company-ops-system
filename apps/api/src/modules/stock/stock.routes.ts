@@ -1,9 +1,12 @@
 import { Router } from 'express';
 import { stockTransactionSchema } from './stock.validators';
 import { stockTransactionRepository } from '../../repositories/stock-transaction.repository';
+import { warehouseRepository } from '../../repositories/warehouse.repository';
 import { itemRepository } from '../../repositories/item.repository';
-import { requireAuth, requirePermission, requireAnyPermission } from '../../middleware/auth';
+import { requireAuth, requirePermission, requireAnyPermission, requestContext } from '../../middleware/auth';
 import type { AuthedRequest } from '../../middleware/auth';
+import { can } from '../../services/authorization.service';
+import type { AuthzContext } from '../../services/authorization.service';
 import { auditService } from '../../services/audit.service';
 import { excelService } from '../../services/excel.service';
 import { stockService } from '../../services/stock.service';
@@ -56,7 +59,7 @@ const expandForExport = async (tx: any) => {
 export const stockRouter = Router();
 stockRouter.use(requireAuth);
 
-stockRouter.get('/overview', async (_req, res) => {
+stockRouter.get('/overview', requirePermission('warehouse.view'), async (_req, res) => {
   res.json({
     byWarehouse: await stockService.getCurrentStockByWarehouse(),
     totalByItem: await stockService.totalStockPerItem(),
@@ -65,12 +68,12 @@ stockRouter.get('/overview', async (_req, res) => {
   });
 });
 
-stockRouter.get('/history', async (req, res) => {
-  res.json(await listTxsPaged(req.query));
+stockRouter.get('/history', requirePermission('warehouse.view'), async (req: AuthedRequest, res) => {
+  res.json(await listTxsPaged(req.query, await requestContext(req), await warehouseProjectMap()));
 });
 
-stockRouter.get('/transactions', async (req, res) => {
-  res.json(await listTxsPaged(req.query));
+stockRouter.get('/transactions', requirePermission('warehouse.view'), async (req: AuthedRequest, res) => {
+  res.json(await listTxsPaged(req.query, await requestContext(req), await warehouseProjectMap()));
 });
 
 // keep legacy export path working
@@ -82,7 +85,17 @@ stockRouter.get('/export/xlsx', requirePermission('reports.view'), async (_req, 
   await sendExport(res);
 });
 
-async function applyTxFilters(query: Record<string, unknown>) {
+/** Warehouse → project map in one query (no per-row lookups). */
+async function warehouseProjectMap(): Promise<Map<string, string | null>> {
+  const whs = await warehouseRepository.list();
+  return new Map(whs.map((w: { id: string; projectId?: string | null }) => [w.id, w.projectId ?? null]));
+}
+
+async function applyTxFilters(
+  query: Record<string, unknown>,
+  ctx: AuthzContext | null,
+  whProject: Map<string, string | null>,
+) {
   let items = await Promise.all((await stockTransactionRepository.list()).map(expandForExport));
   const q = String(query.q ?? '').toLowerCase();
   if (q)
@@ -96,6 +109,21 @@ async function applyTxFilters(query: Record<string, unknown>) {
     items = items.filter((t) => t.warehouseId === String(query.warehouseId) || t.destinationWarehouseId === String(query.warehouseId));
   if (query.from) items = items.filter((t) => t.date >= String(query.from));
   if (query.to) items = items.filter((t) => t.date <= String(query.to));
+  // Phase 5: scope rows to member warehouse-projects (bypass sees all).
+  // can() is pure over the cached context — no per-row queries.
+  // Null context denies everything (fail closed); rows whose warehouse is
+  // gone fall back to the global gate (scope undeterminable, pre-existing data).
+  if (!ctx || !can(ctx, 'warehouse.view')) return [];
+  if (!can(ctx, 'projects.access')) {
+    const allowed = new Set(
+      (ctx.memberships ?? []).filter((m) => m.access !== 'NONE').map((m) => m.projectId),
+    );
+    items = items.filter((t) => {
+      const pid = (t.warehouseId ? whProject.get(t.warehouseId) ?? null : null)
+        ?? (t.destinationWarehouseId ? whProject.get(t.destinationWarehouseId) ?? null : null);
+      return !pid || allowed.has(pid);
+    });
+  }
   items.sort((a, b) =>
     String(a.date).localeCompare(String(b.date)) * ((query.sortDir as string) === 'asc' ? 1 : -1),
   );
@@ -103,8 +131,12 @@ async function applyTxFilters(query: Record<string, unknown>) {
 }
 
 /** Paged response shape — the same contract every list endpoint returns. */
-async function listTxsPaged(query: Record<string, unknown>) {
-  const items = await applyTxFilters(query);
+async function listTxsPaged(
+  query: Record<string, unknown>,
+  ctx: AuthzContext | null,
+  whProject: Map<string, string | null>,
+) {
+  const items = await applyTxFilters(query, ctx, whProject);
   const page = Math.max(1, Number(query.page ?? 1) || 1);
   const pageSize = Math.min(200, Math.max(1, Number(query.pageSize ?? 10) || 10));
   return {

@@ -8,9 +8,7 @@ export default defineConfig({
     testTimeout: 15000,
     env: {
       // Host-side access to the Dockerized PostgreSQL (compose publishes it
-      // on 127.0.0.1:5433; credentials mirror the root .env used by compose).
-      // NOTE: port 4000 is the API itself — never the database.
-      DATABASE_URL: 'postgresql://cos:cos-local-dev-password@localhost:5433/cos_db',
+      DATABASE_URL: process.env.DATABASE_URL || 'postgres://postgres:123@localhost:4000/cos_db',
     },
   },
 });

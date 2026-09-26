@@ -46,10 +46,11 @@ systemRouter.post('/backups/:name/restore', requirePermission('backup.manage'), 
 
 /* ---------- Global search ---------- */
 const searchSchema = z.object({ q: z.string() });
-systemRouter.get('/search', async (req, res) => {
+systemRouter.get('/search', async (req: AuthedRequest, res) => {
   const parsed = searchSchema.safeParse({ q: String(req.query.q ?? '') });
   if (!parsed.success || !parsed.data.q.trim()) return res.json({});
-  res.json(await globalSearch(parsed.data.q));
+  // Phase 5: hits are scoped to the caller's memberships server-side.
+  res.json(await globalSearch(parsed.data.q, req.user!.id));
 });
 
 /* ---------- Notifications ---------- */

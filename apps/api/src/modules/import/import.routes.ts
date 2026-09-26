@@ -12,8 +12,9 @@ import { documentSchema } from '../documents/documents.validators';
 import { boqSchema } from '../projects/boq.routes';
 import { boqRepository } from '../../repositories/boq.repository';
 import { documentRepository } from '../../repositories/document.repository';
-import { requireAuth, requirePermission } from '../../middleware/auth';
+import { requireAuth, requirePermission, requestContext } from '../../middleware/auth';
 import type { AuthedRequest } from '../../middleware/auth';
+import { can } from '../../services/authorization.service';
 import type { BoqItem } from '@cos/shared';
 import { auditService } from '../../services/audit.service';
 import { importHistoryRepository } from '../../repositories/import-history.repository';
@@ -294,11 +295,18 @@ importRouter.post('/smart/confirm', requirePermission('archive.upload'), async (
 
   let imported = 0;
   const failures: Array<{ index: number; errors: string[] }> = [];
+  const ctx = await requestContext(req);
 
   for (let i = 0; i < rows.length; i++) {
     if (skipDuplicates && duplicateIndices.has(i)) continue;
 
     const row = rows[i] as Record<string, unknown>;
+    // Phase 5: rows targeting a project require WRITE-level upload access there.
+    const smartPid = String(row.projectId ?? '');
+    if (smartPid && !can(ctx, 'archive.upload', smartPid)) {
+      failures.push({ index: i, errors: ['ليس لديك صلاحية على المشروع'] });
+      continue;
+    }
     try {
       const parsed = documentSchema.safeParse({
         projectId: row.projectId ?? '',
@@ -399,6 +407,7 @@ importRouter.post('/:entity/confirm', async (req: AuthedRequest, res) => {
   }[entity]!;
   // BOQ rows carry projectCode (human-friendly); resolve once per import.
   const boqProjects = entity === 'boq' ? await projectRepository.list() : [];
+  const ctx = await requestContext(req);
   let imported = 0;
   const failures: Array<{ index: number; errors: string[] }> = [];
   // Sequential awaits: repository creates are asynchronous (PostgreSQL), so
@@ -411,6 +420,15 @@ importRouter.post('/:entity/confirm', async (req: AuthedRequest, res) => {
       failures.push({ index, errors: mapped.errors ?? [] });
       continue;
     }
+    // Phase 5: rows targeting a project require sufficient access there.
+    // projectId-less rows and global-only operations keep the global gate.
+    if (entity === 'warehouses' || entity === 'documents') {
+      const pid = String((mapped.value as Record<string, unknown>).projectId ?? '');
+      if (pid && !can(ctx, perm, pid)) {
+        failures.push({ index, errors: ['ليس لديك صلاحية على المشروع'] });
+        continue;
+      }
+    }
     try {
       if (entity === 'boq') {
         const v = { ...(mapped.value as Record<string, unknown>) };
@@ -418,6 +436,11 @@ importRouter.post('/:entity/confirm', async (req: AuthedRequest, res) => {
         const project = boqProjects.find((p) => p.projectCode === projectCode);
         if (!project) {
           failures.push({ index, errors: [`المشروع غير موجود: ${projectCode}`] });
+          continue;
+        }
+        // Phase 5: BOQ lands in a project — require WRITE there.
+        if (!can(ctx, 'projects.edit', project.id)) {
+          failures.push({ index, errors: ['ليس لديك صلاحية على المشروع'] });
           continue;
         }
         delete v.projectCode;

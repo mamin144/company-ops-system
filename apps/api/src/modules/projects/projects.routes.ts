@@ -6,8 +6,9 @@ import { boqRepository } from '../../repositories/boq.repository';
 import { ipcRepository } from '../../repositories/ipc.repository';
 import { applyPagination, applySearch, applySort } from '../../services/filter.service';
 import { excelService } from '../../services/excel.service';
-import { requireAuth, requirePermission } from '../../middleware/auth';
+import { requireAuth, requirePermission, requireProjectAccess, requestContext } from '../../middleware/auth';
 import type { AuthedRequest } from '../../middleware/auth';
+import { scopeProjectRow, filterVisible, grantProjectAccess } from '../../services/projectScope';
 import { auditService } from '../../services/audit.service';
 import { deleteSafety } from '../../services/stock.service';
 import { pool } from '../../database/connection';
@@ -53,9 +54,11 @@ projectsRouter.get('/financials', requirePermission('projects.view'), async (req
   res.json(result.rows);
 });
 
-projectsRouter.get('/', requirePermission('projects.view'), async (req, res) => {
+projectsRouter.get('/', requirePermission('projects.view'), async (req: AuthedRequest, res) => {
+  // Phase 5: backend-scoped to member projects (NONE rows excluded).
+  const ctx = await requestContext(req);
   const items = applySort(
-    applySearch(await projectRepository.list(), String(req.query.q ?? ''), ['projectCode', 'projectName', 'client', 'mainContractor']),
+    applySearch(filterVisible(ctx, await projectRepository.list(), (p) => p.id, 'projects.view'), String(req.query.q ?? ''), ['projectCode', 'projectName', 'client', 'mainContractor']),
     String(req.query.sortBy ?? 'updatedAt'),
     (req.query.sortDir as 'asc' | 'desc') ?? 'desc',
   );
@@ -69,7 +72,21 @@ projectsRouter.get('/export/xlsx', requirePermission('reports.view'), async (_re
   res.send(buffer);
 });
 
-projectsRouter.get('/:id', requirePermission('projects.view'), async (req, res) => {
+projectsRouter.get('/:id/members', requirePermission('projects.access'), async (req, res) => {
+  const project = await projectRepository.findById(String(req.params.id));
+  if (!project) return res.status(404).json({ message: 'المشروع غير موجود' });
+  const rows = await pool.query(
+    `SELECT m.user_id, m.access, u.username, u.full_name
+     FROM project_members m JOIN users u ON u.id = m.user_id
+     WHERE m.project_id = $1 ORDER BY u.username`,
+    [project.id],
+  );
+  res.json(rows.rows.map((r: { user_id: string; access: string; username: string; full_name: string }) => ({
+    userId: r.user_id, username: r.username, fullName: r.full_name, access: r.access,
+  })));
+});
+
+projectsRouter.get('/:id', requireProjectAccess('projects.view', scopeProjectRow(), { hideExistence: true }), async (req, res) => {
   const item = await projectRepository.findById(String(req.params.id));
   if (!item) return res.status(404).json({ message: 'المشروع غير موجود' });
   res.json(item);
@@ -80,10 +97,19 @@ projectsRouter.post('/', requirePermission('projects.create'), async (req: Authe
   if (!parsed.success) return res.status(400).json({ message: 'بيانات المشروع غير صالحة', issues: parsed.error.flatten() });
   const created = await projectRepository.create({ ...parsed.data, createdBy: req.user!.username });
   auditService.log(req, 'create', 'project', created.id, undefined, created);
+  // Phase 5 §6: creator auto-grant DELETE (best-effort after a successful
+  // create — a failure here never rolls back the project; an admin repairs
+  // access via the project-access API).
+  try {
+    await grantProjectAccess(created.id, req.user!.id, 'DELETE', req.user!.username);
+    auditService.log(req, 'project-access-grant', 'project', created.id, undefined, { userId: req.user!.id, access: 'DELETE' });
+  } catch (e) {
+    auditService.log(req, 'project-access-grant-failed', 'project', created.id, undefined, { error: e instanceof Error ? e.message : String(e) });
+  }
   res.status(201).json(created);
 });
 
-projectsRouter.put('/:id', requirePermission('projects.edit'), async (req: AuthedRequest, res) => {
+projectsRouter.put('/:id', requireProjectAccess('projects.edit', scopeProjectRow()), async (req: AuthedRequest, res) => {
   const parsed = projectSchema.partial().safeParse(req.body);
   if(!parsed.success) return res.status(400).json({ message: 'بيانات المشروع غير صالحة', issues: parsed.error.flatten() });
   const existing = await projectRepository.findById(String(req.params.id));
@@ -93,7 +119,7 @@ projectsRouter.put('/:id', requirePermission('projects.edit'), async (req: Authe
   res.json(updated);
 });
 
-projectsRouter.delete('/:id', requirePermission('projects.delete'), async (req: AuthedRequest, res) => {
+projectsRouter.delete('/:id', requireProjectAccess('projects.delete', scopeProjectRow()), async (req: AuthedRequest, res) => {
   const id = String(req.params.id);
   const existing = await projectRepository.findById(id);
   if (!existing) return res.status(404).json({ message: 'المشروع غير موجود' });

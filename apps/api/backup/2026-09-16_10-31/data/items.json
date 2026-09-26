@@ -1,0 +1,24 @@
+[
+  {
+    "code": "IT-B1",
+    "name": "صنف بروكسي",
+    "category": "عام",
+    "unit": "وحدة",
+    "minimumStock": 5,
+    "createdBy": "admin",
+    "id": "4ac6cdfb-8e26-4546-a22a-20d148a1dbd9",
+    "createdAt": "2026-08-26T13:33:37.744Z",
+    "updatedAt": "2026-08-26T13:33:37.744Z"
+  },
+  {
+    "code": "IT-R",
+    "name": "صنف",
+    "category": "عام",
+    "unit": "وحدة",
+    "minimumStock": 3,
+    "createdBy": "admin",
+    "id": "ecf7b010-cc6f-43cf-aeef-2590dd784305",
+    "createdAt": "2026-08-26T13:35:42.441Z",
+    "updatedAt": "2026-08-26T13:35:42.441Z"
+  }
+]
