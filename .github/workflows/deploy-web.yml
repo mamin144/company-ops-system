@@ -33,11 +33,12 @@ jobs:
 
       - name: Build shared package
         run: npm run build --workspace @cos/shared
-
+        
       - name: Build web
         run: npm run build --workspace @cos/web
         env:
           NODE_ENV: production
+          VITE_API_URL: https://survival-nearly-concepts-supervisor.trycloudflare.com
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
