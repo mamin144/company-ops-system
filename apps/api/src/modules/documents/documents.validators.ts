@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const DOCUMENT_STATUSES = ['draft', 'submitted', 'under-review', 'approved', 'rejected', 'superseded', 'archived'] as const;
 
 export const documentSchema = z.object({
+  folderId: z.string().optional().or(z.literal('')),
   projectId: z.string().optional().or(z.literal('')),
   siteId: z.string().optional().or(z.literal('')),
   ipcId: z.string().optional().or(z.literal('')),

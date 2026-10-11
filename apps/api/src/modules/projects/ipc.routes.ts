@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { ipcRepository, ipcItemRepository } from '../../repositories/ipc.repository';
-import { boqRepository } from '../../repositories/boq.repository';
-import { projectRepository } from '../../repositories/project.repository';
-import { deleteSafety } from '../../services/stock.service';
-import { requireAuth, requireAnyPermission } from '../../middleware/auth';
-import type { AuthedRequest } from '../../middleware/auth';
-import { auditService } from '../../services/audit.service';
+import { ipcRepository, ipcItemRepository } from '../../repositories/ipc.repository.js';
+import { boqRepository } from '../../repositories/boq.repository.js';
+import { projectRepository } from '../../repositories/project.repository.js';
+import { deleteSafety } from '../../services/stock.service.js';
+import { requireAuth, requireAnyPermission, requireAnyProjectAccess, requestContext } from '../../middleware/auth.js';
+import type { AuthedRequest } from '../../middleware/auth.js';
+import { scopeFromParam } from '../../services/projectScope.js';
+import { can } from '../../services/authorization.service.js';
+import { auditService } from '../../services/audit.service.js';
 
 export const ipcRouter = Router({ mergeParams: true });
 
@@ -28,21 +30,30 @@ const ipcSchema = z.object({
   // projects validator): create falls back to column defaults, update skips.
   notes: z.string().optional().nullable().transform((v) => v ?? undefined),
   deductions: z.number().optional().nullable().transform((v) => v ?? undefined),
+  // قيمة المستخلص الإجمالية المباشرة — تُستخدم عند غياب بنود المقايسة
+  grossAmount: z.number().min(0).optional().nullable().transform((v) => v ?? undefined),
   items: z.array(ipcItemSchema).optional(),
 });
 
 ipcRouter.use(requireAuth);
 
-ipcRouter.get('/', async (req, res) => {
+ipcRouter.get('/', async (req: AuthedRequest, res) => {
+  // Phase 5: collection scoped to the URL project (READ+); empty on denial.
+  const ctx = await requestContext(req);
   const projectId = String((req.params as any).projectId);
+  if (!can(ctx, 'projects.view', projectId)) return res.json([]);
   const items = (await ipcRepository.list()).filter((i: any) => i.projectId === projectId);
   items.sort((a, b) => a.ipcNumber - b.ipcNumber);
   res.json(items);
 });
 
-ipcRouter.get('/:id', async (req, res) => {
+ipcRouter.get('/:id', async (req: AuthedRequest, res) => {
   const ipc = await ipcRepository.findById(String(req.params.id));
   if (!ipc || ipc.projectId !== String((req.params as any).projectId))
+    return res.status(404).json({ message: 'المستخلص غير موجود' });
+  // Phase 5: row-level READ on the IPC's own project (hides existence).
+  const ctx = await requestContext(req);
+  if (!can(ctx, 'projects.view', ipc.projectId ?? undefined))
     return res.status(404).json({ message: 'المستخلص غير موجود' });
 
   const items = await ipcItemRepository.getByIpcId(ipc.id);
@@ -85,7 +96,7 @@ const checkIpcLines = (
   return null;
 };
 
-ipcRouter.post('/', requireAnyPermission('projects.edit', 'projects.create'), async (req: AuthedRequest, res) => {
+ipcRouter.post('/', requireAnyProjectAccess(['projects.edit', 'projects.create'], scopeFromParam()), async (req: AuthedRequest, res) => {
   const projectId = String((req.params as any).projectId);
   const parsed = ipcSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: 'بيانات غير صالحة', issues: parsed.error.flatten() });
@@ -96,18 +107,22 @@ ipcRouter.post('/', requireAnyPermission('projects.edit', 'projects.create'), as
     return res.status(409).json({ message: 'رقم المستخلص مستخدم بالفعل في هذا المشروع' });
 
   // figure out previous quantities from past IPCs (same project, lower number)
+  // — only needed when BOQ lines are provided; otherwise the IPC carries a
+  // direct gross amount with no BOQ dependency at all.
   const boqs = await boqRepository.list();
   const boqMap = new Map(boqs.filter(b => b.projectId === projectId).map(b => [b.id, b]));
-  const pastItems = await Promise.all(
-    projectIpcs.filter((i: any) => i.ipcNumber < parsed.data.ipcNumber).map(i => ipcItemRepository.getByIpcId(i.id))
-  );
-  const flatPast = pastItems.flat();
-  const pastQtyOf = (boqItemId: string) =>
-    flatPast.filter(pi => pi.boqItemId === boqItemId).reduce((sum, pi) => sum + pi.currentQuantity, 0);
+  const hasLines = !!parsed.data.items?.length;
+  let pastQtyOf = (_boqItemId: string) => 0;
+  if (hasLines) {
+    const pastItems = await Promise.all(
+      projectIpcs.filter((i: any) => i.ipcNumber < parsed.data.ipcNumber).map(i => ipcItemRepository.getByIpcId(i.id))
+    );
+    const flatPast = pastItems.flat();
+    pastQtyOf = (boqItemId: string) =>
+      flatPast.filter(pi => pi.boqItemId === boqItemId).reduce((sum, pi) => sum + pi.currentQuantity, 0);
 
-  // validate lines BEFORE creating anything — no partially-created IPCs
-  if (parsed.data.items?.length) {
-    const err = checkIpcLines(parsed.data.items, boqMap, pastQtyOf);
+    // validate lines BEFORE creating anything — no partially-created IPCs
+    const err = checkIpcLines(parsed.data.items!, boqMap, pastQtyOf);
     if (err) return res.status(400).json({ message: err });
   }
 
@@ -118,12 +133,16 @@ ipcRouter.post('/', requireAnyPermission('projects.edit', 'projects.create'), as
     status: parsed.data.status,
     notes: parsed.data.notes,
     deductions: parsed.data.deductions,
+    grossAmount: parsed.data.grossAmount,
   });
 
-  let netAmount = 0;
+  // Executed (net) value: from BOQ lines when present, otherwise the direct
+  // gross minus deductions (الصافي = الإجمالي − الاستقطاعات).
+  let netAmount = Math.max(0, (parsed.data.grossAmount ?? 0) - (parsed.data.deductions ?? 0));
 
-  if (parsed.data.items && parsed.data.items.length > 0) {
-    for (const item of parsed.data.items) {
+  if (hasLines) {
+    netAmount = 0;
+    for (const item of parsed.data.items!) {
       const boq = boqMap.get(item.boqItemId)!;
 
       // Calculate previous qty
@@ -138,17 +157,17 @@ ipcRouter.post('/', requireAnyPermission('projects.edit', 'projects.create'), as
 
       netAmount += item.currentQuantity * boq.unitPrice;
     }
-
-    // update net amount
-    await ipcRepository.update(created.id, { netAmount });
-    created.netAmount = netAmount;
   }
+
+  // persist the executed value (from BOQ lines, or the direct gross amount)
+  await ipcRepository.update(created.id, { netAmount });
+  created.netAmount = netAmount;
 
   auditService.log(req, 'create', 'ipc', created.id, undefined, created);
   res.status(201).json(created);
 });
 
-ipcRouter.put('/:id', requireAnyPermission('projects.edit'), async (req: AuthedRequest, res) => {
+ipcRouter.put('/:id', requireAnyProjectAccess(['projects.edit'], scopeFromParam()), async (req: AuthedRequest, res) => {
   const parsed = ipcSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: 'بيانات غير صالحة', issues: parsed.error.flatten() });
   
@@ -169,16 +188,20 @@ ipcRouter.put('/:id', requireAnyPermission('projects.edit'), async (req: AuthedR
   const boqs = await boqRepository.list();
   const boqMap = new Map(boqs.filter(b => b.projectId === existing.projectId).map(b => [b.id, b]));
 
-  const pastItems = await Promise.all(
-    projectIpcs.filter((i: any) => i.ipcNumber < existing.ipcNumber).map(i => ipcItemRepository.getByIpcId(i.id))
-  );
-  const flatPast = pastItems.flat();
-  const pastQtyOf = (boqItemId: string) =>
-    flatPast.filter(pi => pi.boqItemId === boqItemId).reduce((sum, pi) => sum + pi.currentQuantity, 0);
+  // BOQ lines are optional: without them the IPC carries a direct gross
+  // amount with no BOQ dependency at all.
+  const hasLines = !!parsed.data.items?.length;
+  let pastQtyOf = (_boqItemId: string) => 0;
+  if (hasLines) {
+    const pastItems = await Promise.all(
+      projectIpcs.filter((i: any) => i.ipcNumber < existing.ipcNumber).map(i => ipcItemRepository.getByIpcId(i.id))
+    );
+    const flatPast = pastItems.flat();
+    pastQtyOf = (boqItemId: string) =>
+      flatPast.filter(pi => pi.boqItemId === boqItemId).reduce((sum, pi) => sum + pi.currentQuantity, 0);
 
-  // validate lines BEFORE writing anything
-  if (parsed.data.items) {
-    const err = checkIpcLines(parsed.data.items, boqMap, pastQtyOf);
+    // validate lines BEFORE writing anything
+    const err = checkIpcLines(parsed.data.items!, boqMap, pastQtyOf);
     if (err) return res.status(400).json({ message: err });
   }
 
@@ -188,12 +211,12 @@ ipcRouter.put('/:id', requireAnyPermission('projects.edit'), async (req: AuthedR
     status: parsed.data.status,
     notes: parsed.data.notes,
     deductions: parsed.data.deductions,
+    grossAmount: parsed.data.grossAmount,
   });
 
-  let netAmount = 0;
-
-  if (parsed.data.items) {
-    for (const item of parsed.data.items) {
+  if (hasLines) {
+    let netAmount = 0;
+    for (const item of parsed.data.items!) {
       const boq = boqMap.get(item.boqItemId)!;
 
       const prevQty = pastQtyOf(item.boqItemId);
@@ -209,6 +232,12 @@ ipcRouter.put('/:id', requireAnyPermission('projects.edit'), async (req: AuthedR
     }
 
     await ipcRepository.update(existing.id, { netAmount });
+  } else if (parsed.data.grossAmount !== undefined || parsed.data.deductions !== undefined) {
+    // direct amount, no BOQ lines: executed value follows gross minus deductions
+    // (falls back to stored values for whichever side wasn't sent)
+    const gross = parsed.data.grossAmount ?? existing.grossAmount ?? 0;
+    const ded = parsed.data.deductions ?? existing.deductions ?? 0;
+    await ipcRepository.update(existing.id, { netAmount: Math.max(0, gross - ded) });
   }
 
   const updated = await ipcRepository.findById(existing.id);
@@ -216,7 +245,7 @@ ipcRouter.put('/:id', requireAnyPermission('projects.edit'), async (req: AuthedR
   res.json(updated);
 });
 
-ipcRouter.delete('/:id', requireAnyPermission('projects.edit'), async (req: AuthedRequest, res) => {
+ipcRouter.delete('/:id', requireAnyProjectAccess(['projects.edit'], scopeFromParam()), async (req: AuthedRequest, res) => {
   const existing = await ipcRepository.findById(String(req.params.id));
   if (!existing || existing.projectId !== String((req.params as any).projectId))
     return res.status(404).json({ message: 'المستخلص غير موجود' });

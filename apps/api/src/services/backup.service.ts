@@ -1,7 +1,7 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
-import { dataDir, apiRoot } from '../shared/paths';
-import { storageDir } from '../shared/paths';
+import { dataDir, apiRoot } from '../shared/paths.js';
+import { storageDir } from '../shared/paths.js';
 
 export const backupRoot = join(apiRoot, 'backup');
 

@@ -1,8 +1,8 @@
 import { mkdirSync, existsSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { seedCategories, seedUnits } from './seed';
-import { seedUsersAndRoles } from './seed-users';
-import { dataDir, storageDir, tempDir } from '../shared/paths';
+import { seedCategories, seedUnits } from './seed.js';
+import { seedUsersAndRoles } from './seed-users.js';
+import { dataDir, storageDir, tempDir } from '../shared/paths.js';
 
 export const ensureDataDirectories = () => {
   [dataDir, storageDir, tempDir].forEach((dir) => mkdirSync(dir, { recursive: true }));

@@ -1,0 +1,36 @@
+// Permission catalog — MUST stay in sync with the backend vocabulary:
+// ALL_PERMISSIONS (@cos/shared) + roles.manage + projects.access + users.resetPassword.
+// Stale keys are rejected by the API with «صلاحية غير معروفة», so do NOT add
+// keys here without adding them backend-side first.
+export const PERMISSIONS_AR: Record<string, string> = {
+  'archive.view': 'عرض الأرشيف',
+  'archive.upload': 'رفع ملفات للأرشيف',
+  'archive.edit': 'تعديل ملفات الأرشيف',
+  'archive.delete': 'حذف ملفات الأرشيف',
+  'archive.download': 'تحميل ملفات الأرشيف',
+  'warehouse.view': 'عرض المخازن',
+  'warehouse.create': 'إنشاء مخازن',
+  'warehouse.edit': 'تعديل المخازن',
+  'warehouse.delete': 'حذف المخازن',
+  'warehouse.stock_in': 'إدخال مخزون',
+  'warehouse.stock_out': 'صرف مخزون',
+  'warehouse.transfer': 'نقل مخزون بين المخازن',
+  'warehouse.adjust': 'تسوية المخزون',
+  'warehouse.return': 'مرتجع المخزون',
+  'projects.view': 'عرض المشاريع',
+  'projects.create': 'إنشاء مشاريع',
+  'projects.edit': 'تعديل المشاريع',
+  'projects.delete': 'حذف المشاريع',
+  'materialRequests.view': 'عرض طلبات المواد',
+  'materialRequests.create': 'إنشاء طلبات المواد',
+  'materialRequests.approve': 'اعتماد طلبات المواد',
+  'materialRequests.issue': 'صرف طلبات المواد',
+  'reports.view': 'عرض التقارير',
+  'audit.view': 'عرض سجل التغييرات',
+  'settings.manage': 'إدارة الإعدادات',
+  'users.manage': 'إدارة المستخدمين',
+  'backup.manage': 'إدارة النسخ الاحتياطي',
+  'roles.manage': 'إدارة الأدوار',
+  'projects.access': 'إدارة صلاحيات المشاريع',
+  'users.resetPassword': 'إعادة تعيين كلمات المرور',
+};

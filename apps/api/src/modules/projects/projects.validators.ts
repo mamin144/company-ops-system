@@ -18,6 +18,8 @@ export const projectSchema = z.object({
   siteLocation: z.string().default(''),
   region: nullableText,
   contractNumber: z.string().default(''),
+  // قيمة العقد — مبلغ مباشر لا يعتمد على بنود المقايسة
+  contractValue: z.number().min(0).optional().nullable().transform((v) => v ?? undefined),
   startDate: z.string().optional().or(z.literal('')),
   endDate: z.string().optional().or(z.literal('')),
   status: z.enum(['planned', 'active', 'on-hold', 'completed', 'cancelled']),

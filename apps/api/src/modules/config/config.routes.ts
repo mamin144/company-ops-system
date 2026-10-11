@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { categoryRepository, unitRepository } from '../../repositories/config.repository';
-import { requireAuth } from '../../middleware/auth';
+import { categoryRepository, unitRepository } from '../../repositories/config.repository.js';
+import { requireAuth } from '../../middleware/auth.js';
 
 export const configRouter = Router();
 configRouter.use(requireAuth);

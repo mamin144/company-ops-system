@@ -1,5 +1,5 @@
 import type { CategoryOption, UnitOption } from '@cos/shared';
-import { PgBaseRepository } from './pg-base.repository';
+import { PgBaseRepository } from './pg-base.repository.js';
 
 export class CategoryRepository extends PgBaseRepository<CategoryOption> {
   constructor() {

@@ -1,0 +1,40 @@
+[
+  {
+    "number": "MR-2026-0001",
+    "projectId": "802a97a8-cb32-4dc5-9dd9-513e4e73e366",
+    "warehouseId": "26e7620f-897c-4627-bdef-9a7e37b4c0f1",
+    "status": "issued",
+    "items": [
+      {
+        "itemId": "ecf7b010-cc6f-43cf-aeef-2590dd784305",
+        "requestedQty": 2,
+        "issuedQty": 2
+      }
+    ],
+    "requestedBy": "admin",
+    "createdBy": "admin",
+    "id": "c5e9bafb-e67a-48c3-9cc7-a1141fd14f92",
+    "createdAt": "2026-08-26T13:35:42.689Z",
+    "updatedAt": "2026-08-26T13:35:42.759Z",
+    "reviewedBy": "admin"
+  },
+  {
+    "number": "MR-2026-0002",
+    "projectId": "481614bb-e513-48c1-94a2-20d84660f94e",
+    "warehouseId": "08e60292-b516-4b39-81ad-8c3ca50594fe",
+    "status": "issued",
+    "items": [
+      {
+        "itemId": "6735b1c0-685d-4d03-9769-9103de27a8a1",
+        "requestedQty": 2,
+        "issuedQty": 2
+      }
+    ],
+    "requestedBy": "admin",
+    "createdBy": "admin",
+    "id": "0e434f65-4bf8-4494-b50d-e9cdcd7dcc68",
+    "createdAt": "2026-08-26T13:38:21.332Z",
+    "updatedAt": "2026-08-26T13:38:21.418Z",
+    "reviewedBy": "admin"
+  }
+]

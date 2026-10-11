@@ -1,4 +1,4 @@
-import { createId } from '../shared/id';
+import { createId } from '../shared/id.js';
 
 export const seedCategories = () => [
   { id: createId(), code: 'contracts', name: 'Contracts', group: 'document-category', isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },

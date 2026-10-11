@@ -1,8 +1,8 @@
 import type { Ipc, IpcItem } from '@cos/shared';
-import { PgBaseRepository } from './pg-base.repository';
-import { pool } from '../database/connection';
-import { createId } from '../shared/id';
-import { nowIso } from '../shared/time';
+import { PgBaseRepository } from './pg-base.repository.js';
+import { pool } from '../database/connection.js';
+import { createId } from '../shared/id.js';
+import { nowIso } from '../shared/time.js';
 
 export class IpcRepository extends PgBaseRepository<Ipc> {
   constructor() {
@@ -19,6 +19,7 @@ export class IpcRepository extends PgBaseRepository<Ipc> {
       notes: row.notes,
       netAmount: Number(row.net_amount || 0),
       deductions: Number(row.deductions || 0),
+      grossAmount: Number(row.gross_amount ?? 0),
       createdAt: row.created_at,
       updatedAt: row.updated_at
     };
@@ -29,9 +30,9 @@ export class IpcRepository extends PgBaseRepository<Ipc> {
     const now = nowIso();
     
     await pool.query(
-      `INSERT INTO ipcs (id, project_id, ipc_number, date, status, notes, deductions, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-      [id, input.projectId, input.ipcNumber, input.date, input.status, input.notes || null, input.deductions || 0, now, now]
+      `INSERT INTO ipcs (id, project_id, ipc_number, date, status, notes, deductions, gross_amount, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      [id, input.projectId, input.ipcNumber, input.date, input.status, input.notes || null, input.deductions || 0, input.grossAmount || 0, now, now]
     );
     return { ...input, id, netAmount: 0, createdAt: now, updatedAt: now };
   }
@@ -47,6 +48,7 @@ export class IpcRepository extends PgBaseRepository<Ipc> {
     if (input.notes !== undefined) { params.push(input.notes); setClause.push(`notes = $${params.length}`); }
     if (input.netAmount !== undefined) { params.push(input.netAmount); setClause.push(`net_amount = $${params.length}`); }
     if (input.deductions !== undefined) { params.push(input.deductions); setClause.push(`deductions = $${params.length}`); }
+    if (input.grossAmount !== undefined) { params.push(input.grossAmount); setClause.push(`gross_amount = $${params.length}`); }
     
     if (setClause.length === 0) return this.findById(id);
     

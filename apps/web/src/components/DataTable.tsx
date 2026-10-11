@@ -51,7 +51,7 @@ export const DataTable = <T extends { id: string }>({
   const pages = Math.max(1, Math.ceil(data.total / data.pageSize));
 
   return (
-    <div className="tableWrap">
+    <div className="tableWrap" role="region" aria-label="جدول البيانات">
       <div className="tableScroll">
         <table className="table">
           <thead>
@@ -61,19 +61,27 @@ export const DataTable = <T extends { id: string }>({
                   key={c.key}
                   onClick={c.sortable && onSort ? () => onSort(c.key) : undefined}
                   className={c.sortable ? 'sortable' : undefined}
+                  aria-sort={sortBy === c.key ? (sortDir === 'asc' ? 'ascending' : 'descending') : undefined}
+                  scope="col"
                 >
-                  {c.label}
-                  {sortBy === c.key ? <span className="sortArrow">{sortDir === 'asc' ? '↑' : '↓'}</span> : null}
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <span>{c.label}</span>
+                    {sortBy === c.key ? (
+                      <span className="sortArrow" aria-hidden="true">
+                        {sortDir === 'asc' ? '▲' : '▼'}
+                      </span>
+                    ) : null}
+                  </div>
                 </th>
               ))}
-              {actions ? <th className="colActions">إجراءات</th> : null}
+              {actions ? <th className="colActions" scope="col">إجراءات</th> : null}
             </tr>
           </thead>
           <tbody>
             {data.items.length === 0 ? (
               <tr>
                 <td colSpan={columns.length + (actions ? 1 : 0)}>
-                  <EmptyState hint="جرّب تعديل البحث أو الفلاتر" />
+                  <EmptyState title="لا توجد نتائج" hint="جرّب تعديل البحث أو الفلاتر المعروضة" />
                 </td>
               </tr>
             ) : (
@@ -95,15 +103,33 @@ export const DataTable = <T extends { id: string }>({
           </tbody>
         </table>
       </div>
-      <div className="pager">
+      <div className="pager" role="navigation" aria-label="التنقل بين الصفحات">
         <span className="pager__info">
-          الإجمالي <strong>{data.total}</strong>
+          الإجمالي: <strong>{data.total}</strong> عنصر
         </span>
         {pages > 1 ? (
           <div className="pager__nav">
-            <button className="btn btn--sm btn--ghost" disabled={data.page <= 1} onClick={() => onPage?.(data.page - 1)}>السابق</button>
-            <span className="pager__page">صفحة {data.page} / {pages}</span>
-            <button className="btn btn--sm btn--ghost" disabled={data.page >= pages} onClick={() => onPage?.(data.page + 1)}>التالي</button>
+            <button
+              type="button"
+              className="btn btn--sm btn--ghost"
+              disabled={data.page <= 1}
+              onClick={() => onPage?.(data.page - 1)}
+              aria-label="الصفحة السابقة"
+            >
+              السابق
+            </button>
+            <span className="pager__page" aria-current="page">
+              صفحة {data.page} من {pages}
+            </span>
+            <button
+              type="button"
+              className="btn btn--sm btn--ghost"
+              disabled={data.page >= pages}
+              onClick={() => onPage?.(data.page + 1)}
+              aria-label="الصفحة التالية"
+            >
+              التالي
+            </button>
           </div>
         ) : null}
       </div>
@@ -113,7 +139,7 @@ export const DataTable = <T extends { id: string }>({
 
 export const EditDeleteActions = ({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) => (
   <>
-    <button className="iconBtn iconBtn--hover" title="تعديل" onClick={onEdit}><IconEdit size={15} /></button>
-    <button className="iconBtn iconBtn--hover iconBtn--danger" title="حذف" onClick={onDelete}><IconTrash size={15} /></button>
+    <button type="button" className="iconBtn iconBtn--hover" title="تعديل" aria-label="تعديل" onClick={onEdit}><IconEdit size={15} /></button>
+    <button type="button" className="iconBtn iconBtn--hover iconBtn--danger" title="حذف" aria-label="حذف" onClick={onDelete}><IconTrash size={15} /></button>
   </>
 );

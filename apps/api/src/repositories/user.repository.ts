@@ -1,8 +1,8 @@
 import type { User } from '@cos/shared';
-import { PgBaseRepository } from './pg-base.repository';
-import { pool } from '../database/connection';
-import { createId } from '../shared/id';
-import { nowIso } from '../shared/time';
+import { PgBaseRepository } from './pg-base.repository.js';
+import { pool } from '../database/connection.js';
+import { createId } from '../shared/id.js';
+import { nowIso } from '../shared/time.js';
 
 export class UserRepository extends PgBaseRepository<User> {
   constructor() {

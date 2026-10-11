@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { requireAuth, requirePermission } from '../../middleware/auth';
-import type { AuthedRequest } from '../../middleware/auth';import { auditLogRepository } from '../../repositories/audit-log.repository';
-import { backupService } from '../../services/backup.service';
-import { globalSearch } from '../../services/global-search.service';
-import { notificationService } from '../../services/notification.service';
-import { auditService } from '../../services/audit.service';
-import { applyPagination } from '../../services/filter.service';
+import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import type { AuthedRequest } from '../../middleware/auth.js';import { auditLogRepository } from '../../repositories/audit-log.repository.js';
+import { backupService } from '../../services/backup.service.js';
+import { globalSearch } from '../../services/global-search.service.js';
+import { notificationService } from '../../services/notification.service.js';
+import { auditService } from '../../services/audit.service.js';
+import { applyPagination } from '../../services/filter.service.js';
 import { z } from 'zod';
 
 export const systemRouter = Router();
@@ -46,10 +46,11 @@ systemRouter.post('/backups/:name/restore', requirePermission('backup.manage'), 
 
 /* ---------- Global search ---------- */
 const searchSchema = z.object({ q: z.string() });
-systemRouter.get('/search', async (req, res) => {
+systemRouter.get('/search', async (req: AuthedRequest, res) => {
   const parsed = searchSchema.safeParse({ q: String(req.query.q ?? '') });
   if (!parsed.success || !parsed.data.q.trim()) return res.json({});
-  res.json(await globalSearch(parsed.data.q));
+  // Phase 5: hits are scoped to the caller's memberships server-side.
+  res.json(await globalSearch(parsed.data.q, req.user!.id));
 });
 
 /* ---------- Notifications ---------- */

@@ -1,4 +1,4 @@
-import { pool } from './connection';
+import { pool } from './connection.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

@@ -1,6 +1,6 @@
-import { JsonStore } from '../storage/json-store';
-import { createId } from '../shared/id';
-import { nowIso } from '../shared/time';
+import { JsonStore } from '../storage/json-store.js';
+import { createId } from '../shared/id.js';
+import { nowIso } from '../shared/time.js';
 
 export interface EntityWithAudit {
   id: string;

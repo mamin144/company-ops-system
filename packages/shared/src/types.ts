@@ -23,6 +23,8 @@ export interface Project extends BaseEntity {
   siteLocation: string;
   region?: string;
   contractNumber: string;
+  /** قيمة العقد — تُدخل مباشرة ولا تعتمد على بنود المقايسة */
+  contractValue?: number;
   startDate?: string;
   endDate?: string;
   status: ProjectStatus;
@@ -176,7 +178,9 @@ export interface MaterialRequest extends BaseEntity {
   notes?: string;
 }
 
-export type UserRoleName = 'admin' | 'management' | 'warehouse' | 'technical' | 'viewer';
+/** System roles are fixed literals; custom roles use any other identifier string. */
+export type SystemRoleName = 'admin' | 'management' | 'warehouse' | 'technical' | 'viewer';
+export type UserRoleName = SystemRoleName | (string & {});
 
 export interface Role extends BaseEntity {
   name: string;
@@ -282,6 +286,8 @@ export interface Ipc extends BaseEntity {
   notes?: string;
   netAmount?: number;
   deductions?: number;
+  /** قيمة المستخلص الإجمالية — تُدخل مباشرة وتُستخدم عند غياب بنود المقايسة */
+  grossAmount?: number;
 }
 
 export interface IpcItem extends BaseEntity {

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "b539c982-fc6c-40b3-b8f7-bb96b17b97e8",
+    "type": "low-stock",
+    "title": "تنبيه مخزون منخفض: صنف",
+    "message": "الرصيد الحالي 2 وهو أقل من حد الأمان (3)",
+    "link": "/stock",
+    "entityId": "ecf7b010-cc6f-43cf-aeef-2590dd784305",
+    "readBy": [],
+    "createdAt": "2026-08-26T13:35:42.515Z"
+  },
+  {
+    "id": "7828b178-a62b-4bc8-95f0-463426f555f6",
+    "type": "material-request",
+    "title": "طلب مواد جديد MR-2026-0001",
+    "message": "admin أرسل طلب مواد للمراجعة",
+    "link": "/material-requests",
+    "entityId": "c5e9bafb-e67a-48c3-9cc7-a1141fd14f92",
+    "readBy": [],
+    "createdAt": "2026-08-26T13:35:42.710Z"
+  }
+]

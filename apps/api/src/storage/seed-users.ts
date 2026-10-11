@@ -1,9 +1,9 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { dataDir } from '../shared/paths';
+import { dataDir } from '../shared/paths.js';
 import type { Role, User } from '@cos/shared';
 import { ROLE_PERMISSIONS } from '@cos/shared';
-import { authService } from '../services/auth.service';
+import { authService } from '../services/auth.service.js';
 
 const ROLE_NAMES_AR: Record<string, string> = {
   admin: 'مدير النظام',

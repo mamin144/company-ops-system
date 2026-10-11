@@ -1,8 +1,8 @@
 import type { MaterialRequest } from '@cos/shared';
-import { PgBaseRepository } from './pg-base.repository';
-import { pool } from '../database/connection';
-import { createId } from '../shared/id';
-import { nowIso } from '../shared/time';
+import { PgBaseRepository } from './pg-base.repository.js';
+import { pool } from '../database/connection.js';
+import { createId } from '../shared/id.js';
+import { nowIso } from '../shared/time.js';
 
 export class MaterialRequestRepository extends PgBaseRepository<MaterialRequest> {
   constructor() {
@@ -22,8 +22,8 @@ export class MaterialRequestRepository extends PgBaseRepository<MaterialRequest>
       reviewedBy: row.reviewed_by,
       reviewNotes: row.review_notes,
       notes: row.notes,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at
+      createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
+      updatedAt: row.updated_at instanceof Date ? row.updated_at.toISOString() : row.updated_at
     };
   }
 

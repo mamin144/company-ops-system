@@ -1,12 +1,12 @@
-import type { AuthedRequest } from '../../middleware/auth';
+import type { AuthedRequest } from '../../middleware/auth.js';
 import type { SafeUser, StockTransaction, StockTransactionType } from '@cos/shared';
-import { stockTransactionRepository } from '../../repositories/stock-transaction.repository';
-import { itemRepository } from '../../repositories/item.repository';
-import { warehouseRepository } from '../../repositories/warehouse.repository';
-import { projectRepository } from '../../repositories/project.repository';
-import { nextNumber } from '../../services/numbering.service';
-import { notificationService } from '../../services/notification.service';
-import { stockService } from '../../services/stock.service';
+import { stockTransactionRepository } from '../../repositories/stock-transaction.repository.js';
+import { itemRepository } from '../../repositories/item.repository.js';
+import { warehouseRepository } from '../../repositories/warehouse.repository.js';
+import { projectRepository } from '../../repositories/project.repository.js';
+import { nextNumber } from '../../services/numbering.service.js';
+import { notificationService } from '../../services/notification.service.js';
+import { stockService } from '../../services/stock.service.js';
 
 const PREFIX: Record<StockTransactionType, string> = {
   IN: 'GIN',
@@ -53,7 +53,7 @@ export const createStockTransactionInternal = async (
   if (input.projectId && !await projectRepository.findById(input.projectId))
     throw Object.assign(new Error('المشروع غير موجود'), { status: 400 });
 
-  const client = await import('../../database/connection').then(m => m.pool.connect());
+  const client = await import('../../database/connection.js').then(m => m.pool.connect());
   
   try {
     await client.query('BEGIN');

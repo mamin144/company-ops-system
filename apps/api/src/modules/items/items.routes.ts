@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { itemRepository } from '../../repositories/item.repository';
-import { itemSchema } from '../warehouses/warehouses.validators';
-import { applyPagination, applySearch, applySort } from '../../services/filter.service';
-import { excelService } from '../../services/excel.service';
-import { requireAuth, requirePermission } from '../../middleware/auth';
-import type { AuthedRequest } from '../../middleware/auth';
-import { auditService } from '../../services/audit.service';
-import { deleteSafety } from '../../services/stock.service';
+import { itemRepository } from '../../repositories/item.repository.js';
+import { itemSchema } from '../warehouses/warehouses.validators.js';
+import { applyPagination, applySearch, applySort } from '../../services/filter.service.js';
+import { excelService } from '../../services/excel.service.js';
+import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import type { AuthedRequest } from '../../middleware/auth.js';
+import { auditService } from '../../services/audit.service.js';
+import { deleteSafety } from '../../services/stock.service.js';
 
 export const itemsRouter = Router();
 itemsRouter.use(requireAuth);

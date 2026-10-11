@@ -1,0 +1,113 @@
+[
+  {
+    "id": "d4d150ca-9c7f-406a-8b87-5e5bc2464115",
+    "username": "anonymous",
+    "action": "login",
+    "entity": "user",
+    "entityId": "user-admin",
+    "timestamp": "2026-08-26T13:40:57.641Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "9257c8a6-923c-4942-ac5c-3b4b6d21bfc2",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "document",
+    "entityId": "f2dc0049-7baa-4af7-8f97-fbe091c01c8a",
+    "newValue": {
+      "title": "cv",
+      "documentNumber": "001",
+      "category": "Contracts",
+      "documentType": "Contract",
+      "revision": "00",
+      "notes": "",
+      "tags": [],
+      "status": "draft",
+      "uploadedBy": "admin",
+      "fileName": "Mahmoud_Amin_CV.pdf",
+      "fileExtension": "pdf",
+      "fileSize": 185848,
+      "filePath": "documents\\unassigned\\Contracts\\1787751682995-5914ba4e-ef68-48a3-a4a9-9aa9c9771433.pdf",
+      "revisions": [
+        {
+          "id": "2146c361-d311-47fa-bcb5-a225398275b6",
+          "revision": "00",
+          "fileName": "Mahmoud_Amin_CV.pdf",
+          "fileExtension": "pdf",
+          "fileSize": 185848,
+          "uploadedBy": "admin",
+          "uploadedAt": "2026-08-26T13:41:22.996Z",
+          "notes": ""
+        }
+      ],
+      "createdBy": "admin",
+      "id": "f2dc0049-7baa-4af7-8f97-fbe091c01c8a",
+      "createdAt": "2026-08-26T13:41:22.996Z",
+      "updatedAt": "2026-08-26T13:41:22.996Z"
+    },
+    "timestamp": "2026-08-26T13:41:22.998Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "7f5c288a-c6ba-4135-87e9-2eea82295b34",
+    "username": "anonymous",
+    "action": "login",
+    "entity": "user",
+    "entityId": "user-admin",
+    "timestamp": "2026-08-29T09:05:58.656Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "80b3e778-b625-40a7-ad48-a3e2b51d435d",
+    "username": "anonymous",
+    "action": "login-failed",
+    "entity": "user",
+    "newValue": {
+      "username": "admin"
+    },
+    "timestamp": "2026-08-29T09:06:09.918Z",
+    "ipAddress": "::1"
+  },
+  {
+    "id": "74287dc5-45f9-469b-846a-8c4dfbd2aa53",
+    "userId": "user-admin",
+    "username": "admin",
+    "action": "create",
+    "entity": "document",
+    "entityId": "0b3227c9-d627-4cd6-93d4-69152cc2d79e",
+    "newValue": {
+      "title": "cv2",
+      "documentNumber": "002",
+      "category": "Contracts",
+      "documentType": "Contract",
+      "revision": "00",
+      "notes": "",
+      "tags": [],
+      "status": "draft",
+      "uploadedBy": "admin",
+      "fileName": "السيرة الذاتية - إسلام إمام حسن محمد أحمد.pdf",
+      "fileExtension": "pdf",
+      "fileSize": 339432,
+      "filePath": "documents\\unassigned\\Contracts\\1787994558725-b17d0dd0-f15e-42d9-8c72-88c6eae07ba1.pdf",
+      "revisions": [
+        {
+          "id": "1102b120-1280-447c-92a1-b755c66f4008",
+          "revision": "00",
+          "fileName": "السيرة الذاتية - إسلام إمام حسن محمد أحمد.pdf",
+          "fileExtension": "pdf",
+          "fileSize": 339432,
+          "uploadedBy": "admin",
+          "uploadedAt": "2026-08-29T09:09:18.726Z",
+          "notes": ""
+        }
+      ],
+      "createdBy": "admin",
+      "id": "0b3227c9-d627-4cd6-93d4-69152cc2d79e",
+      "createdAt": "2026-08-29T09:09:18.726Z",
+      "updatedAt": "2026-08-29T09:09:18.726Z"
+    },
+    "timestamp": "2026-08-29T09:09:18.728Z",
+    "ipAddress": "::1"
+  }
+]

@@ -1,7 +1,7 @@
 import type { Pool, PoolClient } from 'pg';
-import { pool } from '../database/connection';
-import { createId } from '../shared/id';
-import { nowIso } from '../shared/time';
+import { pool } from '../database/connection.js';
+import { createId } from '../shared/id.js';
+import { nowIso } from '../shared/time.js';
 
 export abstract class PgBaseRepository<T extends { id: string }> {
   constructor(protected readonly tableName: string) {}

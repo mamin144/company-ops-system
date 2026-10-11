@@ -1,7 +1,7 @@
 import { copyFileSync, existsSync, mkdirSync, renameSync, unlinkSync } from 'node:fs';
 import { basename, extname, isAbsolute, join, normalize, sep } from 'node:path';
-import { createId } from '../shared/id';
-import { storageDir } from '../shared/paths';
+import { createId } from '../shared/id.js';
+import { storageDir } from '../shared/paths.js';
 
 const safeSegment = (value: string) =>
   value

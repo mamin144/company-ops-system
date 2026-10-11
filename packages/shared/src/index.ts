@@ -1,3 +1,3 @@
-export * from './types';
-export * from './utils';
-export * from './permissions';
+export * from './types.js';
+export * from './utils.js';
+export * from './permissions.js';

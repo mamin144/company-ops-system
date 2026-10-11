@@ -1,6 +1,6 @@
 import type { DocumentLink } from '@cos/shared';
-import { PgBaseRepository } from './pg-base.repository';
-import { pool } from '../database/connection';
+import { PgBaseRepository } from './pg-base.repository.js';
+import { pool } from '../database/connection.js';
 
 export class DocumentLinkRepository extends PgBaseRepository<DocumentLink> {
   constructor() {

@@ -4,6 +4,10 @@ import { BrowserRouter } from 'react-router-dom';
 import { registerSW } from 'virtual:pwa-register';
 import { App } from './App';
 import './styles.css';
+import { initDensity } from './lib/density';
+
+// Restore persisted table density before first paint.
+initDensity();
 
 // Register service worker and handle updates
 const updateSW = registerSW({

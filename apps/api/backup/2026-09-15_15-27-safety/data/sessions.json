@@ -1,0 +1,24 @@
+[
+  {
+    "id": "50e194271c7a98a7379ef146",
+    "userId": "user-admin",
+    "username": "admin",
+    "tokenHash": "413de04d58743176b196c3e20028c6cb7c1ab90a2827280fd0c0a41db4121975",
+    "createdAt": "2026-08-26T13:40:57.639Z",
+    "expiresAt": "2026-08-27T13:42:33.078Z",
+    "ipAddress": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "rememberMe": false
+  },
+  {
+    "id": "c1db2ca16a73ad21d4a9dd2b",
+    "userId": "user-admin",
+    "username": "admin",
+    "tokenHash": "8a102cb3bb1b595a0b576f13cb3082efc0ba778f322d0eebe2c77bfa57c163e5",
+    "createdAt": "2026-08-29T09:05:58.653Z",
+    "expiresAt": "2026-08-30T09:05:58.653Z",
+    "ipAddress": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 Edg/151.0.0.0",
+    "rememberMe": false
+  }
+]

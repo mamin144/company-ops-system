@@ -1,8 +1,8 @@
 import type { Project } from '@cos/shared';
-import { PgBaseRepository } from './pg-base.repository';
-import { pool } from '../database/connection';
-import { createId } from '../shared/id';
-import { nowIso } from '../shared/time';
+import { PgBaseRepository } from './pg-base.repository.js';
+import { pool } from '../database/connection.js';
+import { createId } from '../shared/id.js';
+import { nowIso } from '../shared/time.js';
 
 export class ProjectRepository extends PgBaseRepository<Project> {
   constructor() {
@@ -20,6 +20,7 @@ export class ProjectRepository extends PgBaseRepository<Project> {
       siteLocation: row.site_location,
       region: row.region,
       contractNumber: row.contract_number,
+      contractValue: Number(row.contract_value ?? 0),
       startDate: row.start_date ? new Date(row.start_date).toISOString() : undefined,
       endDate: row.end_date ? new Date(row.end_date).toISOString() : undefined,
       status: row.status,
@@ -35,9 +36,9 @@ export class ProjectRepository extends PgBaseRepository<Project> {
     const id = createId();
     const now = nowIso();
     await pool.query(
-      `INSERT INTO projects (id, project_code, project_name, client, owner, main_contractor, site_location, region, contract_number, start_date, end_date, status, role, notes, created_by, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)`,
-      [id, input.projectCode, input.projectName, input.client ?? '', input.owner ?? '', input.mainContractor ?? '', input.siteLocation ?? '', input.region || null, input.contractNumber ?? '', input.startDate || null, input.endDate || null, input.status, input.role || null, input.notes || null, input.createdBy || null, now, now]
+      `INSERT INTO projects (id, project_code, project_name, client, owner, main_contractor, site_location, region, contract_number, contract_value, start_date, end_date, status, role, notes, created_by, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
+      [id, input.projectCode, input.projectName, input.client ?? '', input.owner ?? '', input.mainContractor ?? '', input.siteLocation ?? '', input.region || null, input.contractNumber ?? '', input.contractValue ?? 0, input.startDate || null, input.endDate || null, input.status, input.role || null, input.notes || null, input.createdBy || null, now, now]
     );
     return { ...input, id, createdAt: now, updatedAt: now };
   }
@@ -55,6 +56,7 @@ export class ProjectRepository extends PgBaseRepository<Project> {
     if (input.siteLocation !== undefined) { params.push(input.siteLocation); setClause.push(`site_location = $${params.length}`); }
     if (input.region !== undefined) { params.push(input.region); setClause.push(`region = $${params.length}`); }
     if (input.contractNumber !== undefined) { params.push(input.contractNumber); setClause.push(`contract_number = $${params.length}`); }
+    if (input.contractValue !== undefined) { params.push(input.contractValue); setClause.push(`contract_value = $${params.length}`); }
     if (input.startDate !== undefined) { params.push(input.startDate || null); setClause.push(`start_date = $${params.length}`); }
     if (input.endDate !== undefined) { params.push(input.endDate || null); setClause.push(`end_date = $${params.length}`); }
     if (input.status !== undefined) { params.push(input.status); setClause.push(`status = $${params.length}`); }

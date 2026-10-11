@@ -1,12 +1,12 @@
 import type { StockTransaction } from '@cos/shared';
-import { documentRepository } from '../repositories/document.repository';
-import { warehouseRepository } from '../repositories/warehouse.repository';
-import { itemRepository } from '../repositories/item.repository';
-import { projectRepository } from '../repositories/project.repository';
-import { siteRepository } from '../repositories/site.repository';
-import { stockTransactionRepository } from '../repositories/stock-transaction.repository';
-import { materialRequestRepository } from '../repositories/material-request.repository';
-import { ipcItemRepository, ipcRepository } from '../repositories/ipc.repository';
+import { documentRepository } from '../repositories/document.repository.js';
+import { warehouseRepository } from '../repositories/warehouse.repository.js';
+import { itemRepository } from '../repositories/item.repository.js';
+import { projectRepository } from '../repositories/project.repository.js';
+import { siteRepository } from '../repositories/site.repository.js';
+import { stockTransactionRepository } from '../repositories/stock-transaction.repository.js';
+import { materialRequestRepository } from '../repositories/material-request.repository.js';
+import { ipcItemRepository, ipcRepository } from '../repositories/ipc.repository.js';
 
 /** Expand a transaction into per-item lines (handles legacy single-item rows). */
 export const transactionLines = (tx: StockTransaction): Array<{ itemId: string; quantity: number; unitCost?: number }> => {

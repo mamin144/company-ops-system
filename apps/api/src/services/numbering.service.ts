@@ -1,4 +1,4 @@
-import { pool } from '../database/connection';
+import { pool } from '../database/connection.js';
 
 /**
  * Human-readable sequential numbers per prefix per year:

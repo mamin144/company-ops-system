@@ -4,7 +4,7 @@ import type { Item, Project, StockTransaction, Warehouse } from '@cos/shared';
 import { usePagedList } from '../hooks/usePagedList';
 import { DataTable } from '../components/DataTable';
 import type { Column } from '../components/DataTable';
-import { Badge, toneForKey, ConfirmDialog, Field, Modal, Select, TextArea, TextInput, SearchInput, useToast } from '../components/ui';
+import { Badge, StatusDot, toneForKey, ConfirmDialog, Field, Modal, Select, TextArea, TextInput, SearchInput, useToast } from '../components/ui';
 import { EditDeleteActions } from '../components/DataTable';
 import { ImportExcelModal } from '../components/ImportExcelModal';
 import { IconDownload, IconPlus, IconUpload } from '../components/Icons';
@@ -129,16 +129,59 @@ export const StockPage = () => {
 
   return (
     <div className="page">
-      <div className="pageHead">
-        <div><h1>المخزون</h1><p>حركة المخزون وأرصدة الأصناف</p></div>
-        <div className="actions">
-          <button className={`btn ${tab === 'history' ? 'btn--primary' : ''}`} onClick={() => setTab('history')}>سجل الحركات</button>
-          <button className={`btn ${tab === 'overview' ? 'btn--primary' : ''}`} onClick={() => setTab('overview')}>الأرصدة</button>
-          <button className={`btn ${tab === 'low' ? 'btn--primary' : ''}`} onClick={() => setTab('low')}>أصناف تحت الحد</button>
-          <button className="btn btn--ghost" onClick={() => void downloadDocument('/api/stock/transactions/export/xlsx', 'stock-transactions.xlsx')}><IconDownload size={16} /> تصدير Excel</button>
-          <button className="btn btn--ghost" onClick={() => setImportOpen(true)}><IconUpload size={16} /> استيراد Excel</button>
-          <button className="btn btn--primary" onClick={() => setFormOpen(true)}><IconPlus size={16} /> حركة جديدة</button>
+      <div className="invHeader">
+        <div className="invHeader__titleGroup">
+          <div>
+            <div className="invTitleRow">
+              <h1>إدارة المخزون</h1>
+              <span className="heroChip num">{list.data?.total ?? 0} حركة</span>
+            </div>
+            <p>متابعة حركة المخزون، التحويلات بين المخازن، ومراقبة أرصدة الأصناف</p>
+          </div>
         </div>
+        <div className="actions">
+          <button className="btn btn--ghost" onClick={() => void downloadDocument('/api/stock/transactions/export/xlsx', 'stock-transactions.xlsx')}>
+            <IconDownload size={16} /> تصدير Excel
+          </button>
+          <button className="btn btn--ghost" onClick={() => setImportOpen(true)}>
+            <IconUpload size={16} /> استيراد Excel
+          </button>
+          <button className="btn btn--primary" onClick={() => setFormOpen(true)}>
+            <IconPlus size={16} /> حركة جديدة
+          </button>
+        </div>
+      </div>
+
+      <div className="stockTabsNav" role="tablist">
+        <button
+          role="tab"
+          aria-selected={tab === 'history'}
+          className={`stockTabBtn ${tab === 'history' ? 'active' : ''}`}
+          onClick={() => setTab('history')}
+        >
+          سجل الحركات
+        </button>
+        <button
+          role="tab"
+          aria-selected={tab === 'overview'}
+          className={`stockTabBtn ${tab === 'overview' ? 'active' : ''}`}
+          onClick={() => setTab('overview')}
+        >
+          الأرصدة ومستويات المخزون
+        </button>
+        <button
+          role="tab"
+          aria-selected={tab === 'low'}
+          className={`stockTabBtn ${tab === 'low' ? 'active' : ''}`}
+          onClick={() => setTab('low')}
+        >
+          أصناف تحت حد الأمان
+          {overview && overview.lowStock.length > 0 ? (
+            <span className="badge badge--red num stockLowBadge">
+              {overview.lowStock.length}
+            </span>
+          ) : null}
+        </button>
       </div>
 
       {tab === 'history' ? (
@@ -169,8 +212,8 @@ export const StockPage = () => {
             columns={columns}
             data={list.data}
             loading={list.loading}
-        error={list.error}
-        onRetry={() => void list.reload()}
+            error={list.error}
+            onRetry={() => void list.reload()}
             sortBy={list.state.sortBy}
             sortDir={list.state.sortDir}
             onSort={list.toggleSort}
@@ -183,30 +226,52 @@ export const StockPage = () => {
       ) : null}
 
       {tab === 'overview' && overview ? (
-        <div className="stack">
-          <div className="cards">
+        <div className="stockWorkspace">
+          <div className="stockKpiGrid">
             {Object.entries(overview.summaryByType).map(([k, v]) => (
-              <div className="card" key={k}>
-                <div className="card__label">{typeLabels[k] ?? k}</div>
-                <div className="card__value">{v}</div>
+              <div className="stockKpiCard" key={k}>
+                <div className="stockKpiCard__label">{typeLabels[k] ?? k}</div>
+                <div className="stockKpiCard__val num">{v}</div>
               </div>
             ))}
           </div>
+
           {overview.byWarehouse.map(({ warehouse, items: whItems }) => {
             const nonZero = whItems.filter((x) => x.quantity !== 0);
             return (
-              <div className="tableWrap" key={warehouse.id}>
-                <h3 className="whTitle">{warehouse.name} ({warehouse.code})</h3>
-                <table className="table">
-                  <thead><tr><th>الكود</th><th>الصنف</th><th>الوحدة</th><th>الرصيد</th></tr></thead>
-                  <tbody>
-                    {nonZero.length === 0
-                      ? <tr><td colSpan={4} className="empty">لا توجد أرصدة</td></tr>
-                      : nonZero.map(({ item, quantity }) => (
-                        <tr key={item.id}><td>{item.code}</td><td>{item.name}</td><td>{item.unit}</td><td>{quantity}</td></tr>
-                      ))}
-                  </tbody>
-                </table>
+              <div className="stockWarehouseSection" key={warehouse.id}>
+                <div className="stockWarehouseHeader">
+                  <h3>{warehouse.name} ({warehouse.code})</h3>
+                  <Badge tone={warehouse.type === 'central' ? 'purple' : 'blue'}>
+                    {warehouse.type === 'central' ? 'مركزي' : 'موقع'}
+                  </Badge>
+                </div>
+                <div className="tableWrap tableWrap--bare">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>الكود</th>
+                        <th>الصنف</th>
+                        <th>الوحدة</th>
+                        <th>الرصيد المتوفر</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {nonZero.length === 0 ? (
+                        <tr><td colSpan={4} className="empty">لا توجد أرصدة مسجلة في هذا المخزن</td></tr>
+                      ) : (
+                        nonZero.map(({ item, quantity }) => (
+                          <tr key={item.id}>
+                            <td className="mono num">{item.code}</td>
+                            <td className="bold">{item.name}</td>
+                            <td className="small muted">{item.unit}</td>
+                            <td className="num bold">{quantity}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             );
           })}
@@ -214,17 +279,47 @@ export const StockPage = () => {
       ) : null}
 
       {tab === 'low' && overview ? (
-        <div className="tableWrap">
-          <table className="table">
-            <thead><tr><th>الكود</th><th>الصنف</th><th>الرصيد الحالي</th><th>حد الأمان</th></tr></thead>
-            <tbody>
-              {overview.lowStock.length === 0
-                ? <tr><td colSpan={4} className="empty">لا توجد أصناف تحت حد الأمان</td></tr>
-                : overview.lowStock.map(({ item, quantity }) => (
-                  <tr key={item.id}><td>{item.code}</td><td>{item.name}</td><td className="dangerText">{quantity}</td><td>{item.minimumStock}</td></tr>
-                ))}
-            </tbody>
-          </table>
+        <div className="stockWarehouseSection">
+          <div className="stockWarehouseHeader">
+            <h3>الأصناف تحت حد الأمان (مطلوب إعادة طلب)</h3>
+            {overview.lowStock.length > 0 ? (
+              <StatusDot tone="red">{overview.lowStock.length} صنف منخفض</StatusDot>
+            ) : (
+              <StatusDot tone="green">لا أصناف تحت الحد حالياً</StatusDot>
+            )}
+          </div>
+          <div className="tableWrap tableWrap--bare">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>الكود</th>
+                  <th>الصنف</th>
+                  <th>الوحدة</th>
+                  <th>الرصيد الحالي</th>
+                  <th>حد الأمان</th>
+                  <th>حالة المخزون</th>
+                </tr>
+              </thead>
+              <tbody>
+                {overview.lowStock.length === 0 ? (
+                  <tr><td colSpan={6} className="empty">ممتاز! لا توجد أصناف تحت حد الأمان حالياً</td></tr>
+                ) : (
+                  overview.lowStock.map(({ item, quantity }) => (
+                    <tr key={item.id}>
+                      <td className="mono num">{item.code}</td>
+                      <td className="bold">{item.name}</td>
+                      <td className="small muted">{item.unit}</td>
+                      <td className="num dangerHighlight">{quantity}</td>
+                      <td className="num bold">{item.minimumStock}</td>
+                      <td>
+                        <Badge tone="red">حرج</Badge>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : null}
 
@@ -259,12 +354,12 @@ export const StockPage = () => {
           <Field label="التاريخ *"><TextInput type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></Field>
         </div>
 
-        <div className="stack" style={{ marginTop: 14 }}>
+        <div className="stack stockLineStack">
           <strong className="small">الأصناف *</strong>
           {form.lines.map((line, idx) => (
-            <div className="filtersRow" key={idx} style={{ marginBottom: 0 }}>
+            <div className="filtersRow formLineRow" key={idx}>
               <Select
-                style={{ flex: 2 }}
+                className="formLineItem--wide"
                 value={line.itemId}
                 onChange={(e) => setForm({ ...form, lines: form.lines.map((l, i) => (i === idx ? { ...l, itemId: e.target.value } : l)) })}
               >

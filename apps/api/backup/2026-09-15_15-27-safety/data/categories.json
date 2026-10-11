@@ -1,0 +1,92 @@
+[
+  {
+    "id": "d29b4fef-5286-4f51-93c8-fb6cb8f7e4be",
+    "code": "contracts",
+    "name": "Contracts",
+    "group": "document-category",
+    "isActive": true,
+    "createdAt": "2026-08-26T13:40:47.410Z",
+    "updatedAt": "2026-08-26T13:40:47.410Z"
+  },
+  {
+    "id": "3e5d923f-2e25-4954-8ca3-f13bffad8976",
+    "code": "boq",
+    "name": "BOQ",
+    "group": "document-category",
+    "isActive": true,
+    "createdAt": "2026-08-26T13:40:47.410Z",
+    "updatedAt": "2026-08-26T13:40:47.410Z"
+  },
+  {
+    "id": "a2de8c7a-f747-44ef-9472-9ff6e0f7ad4d",
+    "code": "drawings",
+    "name": "Drawings",
+    "group": "document-category",
+    "isActive": true,
+    "createdAt": "2026-08-26T13:40:47.410Z",
+    "updatedAt": "2026-08-26T13:40:47.410Z"
+  },
+  {
+    "id": "adc7b739-9cf4-4c96-9092-a929486bcaa1",
+    "code": "correspondence",
+    "name": "Correspondence",
+    "group": "document-category",
+    "isActive": true,
+    "createdAt": "2026-08-26T13:40:47.410Z",
+    "updatedAt": "2026-08-26T13:40:47.410Z"
+  },
+  {
+    "id": "58eb3844-0633-409c-91d4-c80a28f68151",
+    "code": "reports",
+    "name": "Reports",
+    "group": "document-category",
+    "isActive": true,
+    "createdAt": "2026-08-26T13:40:47.410Z",
+    "updatedAt": "2026-08-26T13:40:47.410Z"
+  },
+  {
+    "id": "4bb7e922-8cf2-4bea-9790-585c2c27c9b7",
+    "code": "invoices",
+    "name": "Invoices",
+    "group": "document-category",
+    "isActive": true,
+    "createdAt": "2026-08-26T13:40:47.410Z",
+    "updatedAt": "2026-08-26T13:40:47.410Z"
+  },
+  {
+    "id": "12faab6c-1743-4a02-a08b-054969faf7b7",
+    "code": "technical-documents",
+    "name": "Technical Documents",
+    "group": "document-category",
+    "isActive": true,
+    "createdAt": "2026-08-26T13:40:47.410Z",
+    "updatedAt": "2026-08-26T13:40:47.410Z"
+  },
+  {
+    "id": "2d6d45c1-b717-40f6-a439-23694f1d70d7",
+    "code": "other",
+    "name": "Other",
+    "group": "document-category",
+    "isActive": true,
+    "createdAt": "2026-08-26T13:40:47.410Z",
+    "updatedAt": "2026-08-26T13:40:47.410Z"
+  },
+  {
+    "id": "8bbd05b3-05b0-47e6-b0fd-3a968eebd8e5",
+    "code": "doc-contract",
+    "name": "Contract",
+    "group": "document-type",
+    "isActive": true,
+    "createdAt": "2026-08-26T13:40:47.410Z",
+    "updatedAt": "2026-08-26T13:40:47.410Z"
+  },
+  {
+    "id": "7d9b97d9-715f-425b-a3a5-d06539bab610",
+    "code": "doc-drawing",
+    "name": "Drawing",
+    "group": "document-type",
+    "isActive": true,
+    "createdAt": "2026-08-26T13:40:47.410Z",
+    "updatedAt": "2026-08-26T13:40:47.410Z"
+  }
+]

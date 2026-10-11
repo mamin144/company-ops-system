@@ -1,7 +1,7 @@
 import type { AppNotification, NotificationType } from '@cos/shared';
-import { createId } from '../shared/id';
-import { nowIso } from '../shared/time';
-import { notificationRepository } from '../repositories/notification.repository';
+import { createId } from '../shared/id.js';
+import { nowIso } from '../shared/time.js';
+import { notificationRepository } from '../repositories/notification.repository.js';
 
 const MAX_NOTIFICATIONS = 2000;
 

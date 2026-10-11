@@ -1,9 +1,9 @@
 import type { Request } from 'express';
 import type { AuditLog } from '@cos/shared';
-import { createId } from '../shared/id';
-import { nowIso } from '../shared/time';
-import { auditLogRepository } from '../repositories/audit-log.repository';
-import type { AuthedRequest } from '../middleware/auth';
+import { createId } from '../shared/id.js';
+import { nowIso } from '../shared/time.js';
+import { auditLogRepository } from '../repositories/audit-log.repository.js';
+import type { AuthedRequest } from '../middleware/auth.js';
 
 const MAX_LOGS = 5000;
 
