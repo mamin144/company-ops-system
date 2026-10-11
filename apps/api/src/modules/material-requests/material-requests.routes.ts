@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import type { MaterialRequestLine } from '@cos/shared';
+<<<<<<< HEAD
 import { materialRequestRepository } from '../../repositories/material-request.repository.js';
 import { itemRepository } from '../../repositories/item.repository.js';
 import { projectRepository } from '../../repositories/project.repository.js';
@@ -15,6 +16,22 @@ import { nextNumber } from '../../services/numbering.service.js';
 import { notificationService } from '../../services/notification.service.js';
 import { deleteSafety, stockService } from '../../services/stock.service.js';
 import { createStockTransactionInternal } from '../stock/stock.factory.js';
+=======
+import { materialRequestRepository } from '../../repositories/material-request.repository';
+import { itemRepository } from '../../repositories/item.repository';
+import { projectRepository } from '../../repositories/project.repository';
+import { siteRepository } from '../../repositories/site.repository';
+import { warehouseRepository } from '../../repositories/warehouse.repository';
+import { requireAuth, requirePermission, requireProjectAccess, requestContext } from '../../middleware/auth';
+import type { AuthedRequest } from '../../middleware/auth';
+import { scopeMaterialRequestRow, scopeFromBody, filterVisible, checkFilterProject } from '../../services/projectScope';
+import { can } from '../../services/authorization.service';
+import { auditService } from '../../services/audit.service';
+import { nextNumber } from '../../services/numbering.service';
+import { notificationService } from '../../services/notification.service';
+import { deleteSafety, stockService } from '../../services/stock.service';
+import { createStockTransactionInternal } from '../stock/stock.factory';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
 const lineSchema = z.object({
   itemId: z.string().min(1),

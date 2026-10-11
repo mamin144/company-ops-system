@@ -64,8 +64,11 @@ export const ProjectIpcsTab = ({ projectId }: { projectId: string }) => {
         date: viewingIpc.date,
         status: viewingIpc.status,
         notes: viewingIpc.notes,
+<<<<<<< HEAD
         deductions: viewingIpc.deductions,
         grossAmount: viewingIpc.grossAmount,
+=======
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
         items: viewingIpc.items,
       });
       setViewingIpc(null);
@@ -118,6 +121,7 @@ export const ProjectIpcsTab = ({ projectId }: { projectId: string }) => {
               <input className="textInput num" type="date" required value={viewingIpc.date} onChange={e => setViewingIpc({...viewingIpc, date: e.target.value})} />
             </div>
             <div>
+<<<<<<< HEAD
               <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>قيمة المستخلص (إجمالي مباشر)</label>
               <input className="textInput num" type="number" min="0" step="any" value={viewingIpc.grossAmount ?? ''} onChange={e => setViewingIpc({...viewingIpc, grossAmount: parseFloat(e.target.value) || 0})} placeholder="تُستخدم عند غياب بنود المقايسة" />
             </div>
@@ -126,6 +130,12 @@ export const ProjectIpcsTab = ({ projectId }: { projectId: string }) => {
               <input className="textInput num" type="number" step="any" value={viewingIpc.deductions || ''} onChange={e => setViewingIpc({...viewingIpc, deductions: parseFloat(e.target.value) || 0})} />
             </div>
             <div>
+=======
+              <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>إجمالي الخصومات والاستقطاعات</label>
+              <input className="textInput num" type="number" step="any" value={viewingIpc.deductions || ''} onChange={e => setViewingIpc({...viewingIpc, deductions: parseFloat(e.target.value) || 0})} />
+            </div>
+            <div>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>حالة المستخلص</label>
               <select className="selectInput" value={viewingIpc.status} onChange={e => setViewingIpc({...viewingIpc, status: e.target.value as any})}>
                 <option value="draft">مسودة</option>

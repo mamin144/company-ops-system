@@ -51,6 +51,7 @@ export const useDashboardData = () => {
   const loadData = () => {
     setLoading(true);
     setError(null);
+<<<<<<< HEAD
     // Partial dashboard: only request what this user may see, and never let
     // one denied/failed request take down the sections they ARE allowed.
     // A 403 is a silent fallback; anything else counts as a real failure.
@@ -72,6 +73,17 @@ export const useDashboardData = () => {
       get<{ items: Document[] }>('archive.view', '/api/documents?pageSize=5&sortBy=updatedAt&sortDir=desc', { items: [] }),
       get<MaterialRequest[]>('materialRequests.view', '/api/material-requests', []),
       get<{ items: MovementRow[] }>('warehouse.view', '/api/stock/history?pageSize=6', { items: [] }),
+=======
+    Promise.all([
+      api.get<{ total: number }>('/api/projects?pageSize=1'),
+      api.get<{ total: number }>('/api/documents?pageSize=1'),
+      api.get<{ total: number }>('/api/warehouses?pageSize=1'),
+      api.get<{ total: number }>('/api/items?pageSize=1'),
+      api.get<Overview>('/api/stock/overview'),
+      api.get<{ items: Document[] }>('/api/documents?pageSize=5&sortBy=updatedAt&sortDir=desc'),
+      api.get<MaterialRequest[]>('/api/material-requests'),
+      api.get<{ items: MovementRow[] }>('/api/stock/history?pageSize=6'),
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
     ])
       .then(([p, d, w, i, s, docs, mrs, movements]) => {
         // Everything failed = real outage (server down) → show retry panel.
@@ -138,6 +150,7 @@ export const BarChart = ({
 export const DashboardPage = () => {
   const { stats, loading, error, reload } = useDashboardData();
   const { can } = useAuth();
+<<<<<<< HEAD
   const pendingCount = can('materialRequests.view') ? (stats?.pendingMRs ?? 0) : 0;
   const lowCount = can('warehouse.view') ? (stats?.lowStock ?? 0) : 0;
 
@@ -158,6 +171,28 @@ export const DashboardPage = () => {
             </span>
           </div>
           <h1>لوحة التحكم الرئيسية</h1>
+=======
+
+  return (
+    <div className="page dashboardPage">
+      {/* ============ Header Hero Banner ============ */}
+      <section className="dashHero" aria-label="موجز النظام">
+        <div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <span className="badge badge--blue" style={{ background: 'rgba(255,255,255,0.18)', color: '#fff' }}>
+              نظام العمليات والمستودعات
+            </span>
+          </div>
+          <h1>لوحة التحكم الرئيسية</h1>
+          <p>
+            {new Date().toLocaleDateString('ar-EG', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </p>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
         </div>
 
         {stats ? (
@@ -191,6 +226,7 @@ export const DashboardPage = () => {
         </div>
       </section>
 
+<<<<<<< HEAD
       {/* ============ Attention queue: real exceptions only, permission-gated ============ */}
       {stats && (can('materialRequests.view') || can('warehouse.view')) && (
         <section className="panel dashAttention" aria-label="يحتاج انتباهك">
@@ -226,6 +262,15 @@ export const DashboardPage = () => {
             {error}
           </div>
           <p className="muted small dashError__hint">
+=======
+      {/* ============ Error State ============ */}
+      {error && !stats && (
+        <div className="panel panel--alert" style={{ textAlign: 'center', padding: '36px 20px', marginBottom: '20px' }}>
+          <div className="emptyState__title" style={{ color: 'var(--danger)', marginBottom: '8px' }}>
+            {error}
+          </div>
+          <p className="muted small" style={{ marginBottom: '16px' }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
             تعذر الاتصال بالخادم لجلب إحصائيات النظام. تحقق من الاتصال ثم أعد المحاولة.
           </p>
           <button type="button" className="btn btn--primary" onClick={reload}>
@@ -244,8 +289,13 @@ export const DashboardPage = () => {
           </div>
           <div className="dashGrid">
             {Array.from({ length: 3 }).map((_, i) => (
+<<<<<<< HEAD
               <div className="panel dashSkeleton" key={i}>
                 <div className="skeletonRow dashSkeleton__row">
+=======
+              <div className="panel" key={i} style={{ height: '220px' }}>
+                <div className="skeletonRow" style={{ padding: 0 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                   <span />
                   <span />
                 </div>
@@ -321,6 +371,7 @@ export const DashboardPage = () => {
             {can('warehouse.view') && (
               stats.lowStock > 0 ? (
                 <Link
+<<<<<<< HEAD
                   className="card card--link card--alert dashKpi--span"
                   to="/stock"
                   aria-label={`أصناف تحت حد الأمان: ${stats.lowStock}`}
@@ -343,12 +394,34 @@ export const DashboardPage = () => {
                     <span className="dashKpi--span__title">حالة المخزون: مستقرة</span>
                     <span className="dashKpi--span__sub dashKpi--span__sub--ok">جميع الأرصدة فوق حد الأمان</span>
                   </span>
+=======
+                  className="card card--link card--alert"
+                  to="/stock"
+                  aria-label={`أصناف تحت حد الأمان: ${stats.lowStock}`}
+                >
+                  <div className="card__label">
+                    <IconAlert size={18} />
+                    <span>تنبيه حد الأمان</span>
+                  </div>
+                  <div className="card__value num">{stats.lowStock}</div>
+                  <div className="card__footer dangerText small">أصناف قاربت على النفاد</div>
+                </Link>
+              ) : (
+                <div className="card card--ok" aria-label="حالة المخزون: سليم ومستقر">
+                  <div className="card__label">
+                    <IconStock size={18} />
+                    <span>حالة المخزون</span>
+                  </div>
+                  <div className="card__value" style={{ fontSize: '24px', fontWeight: '700' }}>مستقر</div>
+                  <div className="card__footer small" style={{ color: 'var(--success)' }}>جميع الأرصدة فوق حد الأمان</div>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                 </div>
               )
             )}
           </ResponsiveGrid>
 
           {/* ============ Operational Grid (Panels) ============ */}
+<<<<<<< HEAD
           <div className="dashGrid dashGrid--spaced">
             {/* Chart: Stock Movements */}
             {can('warehouse.view') && stats.overview && (
@@ -361,6 +434,18 @@ export const DashboardPage = () => {
                     </Link>
                   }
                 />
+=======
+          <div className="dashGrid" style={{ marginTop: '20px' }}>
+            {/* Chart: Stock Movements */}
+            {can('warehouse.view') && stats.overview && (
+              <div className="panel dashboardPanel">
+                <div className="panel__head">
+                  <h3>حركة العمليات المخزنية</h3>
+                  <Link to="/stock" className="linkBtn" aria-label="عرض سجل حركة المخزون بالكامل">
+                    عرض السجل
+                  </Link>
+                </div>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                 <BarChart
                   data={Object.entries(stats.overview.summaryByType).map(([k, v]) => ({
                     label: TYPE_AR[k] ?? k,
@@ -374,6 +459,7 @@ export const DashboardPage = () => {
             {/* Recent Documents */}
             {can('archive.view') && (
               <div className="panel dashboardPanel">
+<<<<<<< HEAD
                 <SectionHead
                   title="أحدث المستندات المضافة"
                   actions={
@@ -384,6 +470,16 @@ export const DashboardPage = () => {
                 />
                 {stats.recentDocs.length === 0 ? (
                   <p className="muted small dashEmpty">لا توجد مستندات بعد.</p>
+=======
+                <div className="panel__head">
+                  <h3>أحدث المستندات المضافة</h3>
+                  <Link to="/archive" className="linkBtn" aria-label="الانتقال إلى الأرشيف">
+                    الأرشيف
+                  </Link>
+                </div>
+                {stats.recentDocs.length === 0 ? (
+                  <p className="muted small" style={{ padding: '16px 0' }}>لا توجد مستندات بعد.</p>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                 ) : (
                   <ul className="recentList" aria-label="قائمة أحدث المستندات">
                     {stats.recentDocs.map((doc) => (
@@ -407,6 +503,7 @@ export const DashboardPage = () => {
             {/* Recent Stock Movements */}
             {can('warehouse.view') && (
               <div className="panel dashboardPanel">
+<<<<<<< HEAD
                 <SectionHead
                   title="أحدث الحركات اليومية"
                   actions={
@@ -417,6 +514,16 @@ export const DashboardPage = () => {
                 />
                 {stats.recentMovements.length === 0 ? (
                   <p className="muted small dashEmpty">لا توجد حركات مخزنية مسجلة حديثاً.</p>
+=======
+                <div className="panel__head">
+                  <h3>أحدث الحركات اليومية</h3>
+                  <Link to="/stock" className="linkBtn" aria-label="الانتقال لإدارة المخزون">
+                    إدارة المخزون
+                  </Link>
+                </div>
+                {stats.recentMovements.length === 0 ? (
+                  <p className="muted small" style={{ padding: '16px 0' }}>لا توجد حركات مخزنية مسجلة حديثاً.</p>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                 ) : (
                   <ul className="recentList" aria-label="قائمة أحدث الحركات المخزنية">
                     {stats.recentMovements.map((t) => (
@@ -436,10 +543,17 @@ export const DashboardPage = () => {
 
           {/* Low Stock Alert Table */}
           {can('warehouse.view') && stats.overview && stats.overview.lowStock.length > 0 && (
+<<<<<<< HEAD
             <div className="panel panel--alert dashGrid--spaced">
               <div className="panel__head dashLowHead">
                 <div className="dashLowHead__title">
                   <IconAlert size={20} aria-hidden="true" />
+=======
+            <div className="panel panel--alert" style={{ marginTop: '20px' }}>
+              <div className="panel__head">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <IconAlert size={20} />
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                   <h3>تنبيه تشغيلي: أصناف تحت حد الأمان المطلوب</h3>
                 </div>
                 <Link to="/stock" className="linkBtn" aria-label="إدارة المخزون لمعالجة النواقص">

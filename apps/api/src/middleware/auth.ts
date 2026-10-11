@@ -1,10 +1,19 @@
 import type { NextFunction, Request, Response } from 'express';
+<<<<<<< HEAD
 import { authService } from '../services/auth.service.js';
 import { sessionService } from '../services/session.service.js';
 import { userRepository } from '../repositories/user.repository.js';
 import { loadContext, can } from '../services/authorization.service.js';
 import type { AuthzContext } from '../services/authorization.service.js';
 import type { ScopeResolver } from '../services/projectScope.js';
+=======
+import { authService } from '../services/auth.service';
+import { sessionService } from '../services/session.service';
+import { userRepository } from '../repositories/user.repository';
+import { loadContext, can } from '../services/authorization.service';
+import type { AuthzContext } from '../services/authorization.service';
+import type { ScopeResolver } from '../services/projectScope';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 import type { SafeUser } from '@cos/shared';
 
 export interface AuthedRequest extends Request {

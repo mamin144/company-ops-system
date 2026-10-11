@@ -6,7 +6,11 @@ import { dataDir } from '../shared/paths.js';
 import { createId } from '../shared/id.js';
 import { userRepository } from '../repositories/user.repository.js';
 import type { SafeUser } from '@cos/shared';
+<<<<<<< HEAD
 import { loadContext, effective } from './authorization.service.js';
+=======
+import { loadContext, effective } from './authorization.service';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
 const JWT_SECRET_FILE = join(dataDir, '.jwt-secret');
 /** Access tokens are short-lived; persistence is handled by the refresh cookie. */

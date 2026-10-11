@@ -23,6 +23,7 @@ test.describe('Phase 9: Admin UI and Authorization', () => {
     await page.goto('/admin/users');
     await expect(page.locator('table')).toBeVisible();
     
+<<<<<<< HEAD
     // Find the logged-in admin's own row and click Edit.
     // NOTE (test-only fix, Phase 5): a plain hasText:'admin' row locator also
     // matches user 'm.amin' (its role cell reads 'admin'), causing a strict-mode
@@ -31,6 +32,10 @@ test.describe('Phase 9: Admin UI and Authorization', () => {
     const adminRow = page.locator('tbody tr').filter({
       has: page.locator('td').nth(0).getByText('admin', { exact: true }),
     });
+=======
+    // Find the admin row and click Edit
+    const adminRow = page.locator('tr', { hasText: 'admin' });
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
     await adminRow.locator('button[title="تعديل"]').click();
     
     // Modal should open with self-security warning

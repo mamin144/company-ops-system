@@ -1,4 +1,5 @@
 import { Router } from 'express';
+<<<<<<< HEAD
 import { stockTransactionSchema } from './stock.validators.js';
 import { stockTransactionRepository } from '../../repositories/stock-transaction.repository.js';
 import { warehouseRepository } from '../../repositories/warehouse.repository.js';
@@ -10,6 +11,19 @@ import type { AuthzContext } from '../../services/authorization.service.js';
 import { auditService } from '../../services/audit.service.js';
 import { excelService } from '../../services/excel.service.js';
 import { stockService } from '../../services/stock.service.js';
+=======
+import { stockTransactionSchema } from './stock.validators';
+import { stockTransactionRepository } from '../../repositories/stock-transaction.repository';
+import { warehouseRepository } from '../../repositories/warehouse.repository';
+import { itemRepository } from '../../repositories/item.repository';
+import { requireAuth, requirePermission, requireAnyPermission, requestContext } from '../../middleware/auth';
+import type { AuthedRequest } from '../../middleware/auth';
+import { can } from '../../services/authorization.service';
+import type { AuthzContext } from '../../services/authorization.service';
+import { auditService } from '../../services/audit.service';
+import { excelService } from '../../services/excel.service';
+import { stockService } from '../../services/stock.service';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 import type { StockTransactionType } from '@cos/shared';
 import { createStockTransactionInternal } from './stock.factory.js';
 

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
+<<<<<<< HEAD
 import { siteRepository } from '../../repositories/site.repository.js';
 import { projectRepository } from '../../repositories/project.repository.js';
 import { requireAuth, requirePermission, requireProjectAccess, requestContext } from '../../middleware/auth.js';
@@ -7,6 +8,15 @@ import type { AuthedRequest } from '../../middleware/auth.js';
 import { scopeSiteRow, scopeFromBody, filterVisible, checkFilterProject } from '../../services/projectScope.js';
 import { can } from '../../services/authorization.service.js';
 import { auditService } from '../../services/audit.service.js';
+=======
+import { siteRepository } from '../../repositories/site.repository';
+import { projectRepository } from '../../repositories/project.repository';
+import { requireAuth, requirePermission, requireProjectAccess, requestContext } from '../../middleware/auth';
+import type { AuthedRequest } from '../../middleware/auth';
+import { scopeSiteRow, scopeFromBody, filterVisible, checkFilterProject } from '../../services/projectScope';
+import { can } from '../../services/authorization.service';
+import { auditService } from '../../services/audit.service';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
 const siteSchema = z.object({
   projectId: z.string().min(1),

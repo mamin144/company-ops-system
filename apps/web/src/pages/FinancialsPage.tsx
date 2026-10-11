@@ -364,7 +364,11 @@ const ProjectDetailView = ({ p, onBack, onReload }: { p: ProjectFinancial, onBac
 
       {/* KPI Cards */}
       <div className="finKpiGrid">
+<<<<<<< HEAD
         <KpiCard label="قيمة العقد" value={contractValue.toLocaleString()} />
+=======
+        <KpiCard label="قيمة العقد (المقايسة)" value={boqTotal.toLocaleString()} />
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
         <KpiCard label="إجمالي المنفذ" value={totalExecuted.toLocaleString()} />
         <KpiCard label="إجمالي الاستقطاعات" value={totalDeductions.toLocaleString()} color="var(--danger)" />
         <KpiCard label="صافي المحصّل" value={netCollected.toLocaleString()} color="var(--success)" />

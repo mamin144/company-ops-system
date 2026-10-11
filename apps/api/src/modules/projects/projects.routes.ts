@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
+<<<<<<< HEAD
 import { projectSchema } from './projects.validators.js';
 import { projectRepository } from '../../repositories/project.repository.js';
 import { boqRepository } from '../../repositories/boq.repository.js';
@@ -12,6 +13,20 @@ import { scopeProjectRow, filterVisible, grantProjectAccess } from '../../servic
 import { auditService } from '../../services/audit.service.js';
 import { deleteSafety } from '../../services/stock.service.js';
 import { pool } from '../../database/connection.js';
+=======
+import { projectSchema } from './projects.validators';
+import { projectRepository } from '../../repositories/project.repository';
+import { boqRepository } from '../../repositories/boq.repository';
+import { ipcRepository } from '../../repositories/ipc.repository';
+import { applyPagination, applySearch, applySort } from '../../services/filter.service';
+import { excelService } from '../../services/excel.service';
+import { requireAuth, requirePermission, requireProjectAccess, requestContext } from '../../middleware/auth';
+import type { AuthedRequest } from '../../middleware/auth';
+import { scopeProjectRow, filterVisible, grantProjectAccess } from '../../services/projectScope';
+import { auditService } from '../../services/audit.service';
+import { deleteSafety } from '../../services/stock.service';
+import { pool } from '../../database/connection';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
 import { boqRouter } from './boq.routes.js';
 import { ipcRouter } from './ipc.routes.js';

@@ -54,6 +54,7 @@ const Sidebar = ({
   const { user, can, logout } = useAuth();
   const navigate = useNavigate();
 
+<<<<<<< HEAD
   // Domain-grouped navigation (Command Deck: grouped mental models, not a flat list).
   // Visibility rules are unchanged — every item keeps its original permission gate.
   const navGroups: Array<{
@@ -143,13 +144,78 @@ const Sidebar = ({
             </div>
           );
         })}
+=======
+  const navItems = [
+    { to: '/dashboard', label: 'لوحة التحكم', icon: <IconDashboard />, show: true },
+    { to: '/projects', label: 'المشاريع', icon: <IconProjects />, show: can('projects.view') },
+    { to: '/financials', label: 'المقايسات والمستخلصات', icon: <IconProjects />, show: can('projects.view') },
+    { to: '/archive', label: 'الأرشيف', icon: <IconArchive />, show: can('archive.view') },
+    { to: '/warehouses', label: 'المخازن', icon: <IconWarehouse />, show: can('warehouse.view') },
+    { to: '/items', label: 'الأصناف', icon: <IconItems />, show: can('warehouse.view') },
+    { to: '/stock', label: 'المخزون', icon: <IconStock />, show: can('warehouse.view') },
+    { to: '/material-requests', label: 'طلبات المواد', icon: <IconItems />, show: can('materialRequests.view') },
+    { to: '/admin', label: 'الإدارة', icon: <IconShield />, show: can('users.manage') || can('roles.manage') || can('projects.access') },
+  ];
 
-        <div className="navSection">وحدات قادمة</div>
-        {futureModules.map((m) => (
-          <span key={m} className="navItem navItem--disabled" title="قيد التطوير">{m}</span>
-        ))}
-      </nav>
+  return (
+    <>
+      <div
+        className={`sidebar__backdrop ${open ? 'sidebar__backdrop--visible' : ''}`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <aside className={`sidebar ${open ? 'sidebar--open' : ''}`} aria-label="القائمة الجانبية">
+        <div className="brand" style={{ justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <div className="brand__logo" onClick={onToggleCollapse} style={{ cursor: 'pointer' }} title={collapsed ? 'توسيع القائمة' : 'تصغير القائمة'}>CO</div>
+            <div>
+              <div className="brand__title">نظام إدارة الشركة</div>
+              <div className="brand__subtitle">مقاولات وتشطيبات</div>
+            </div>
+          </div>
+        </div>
+        <nav className="nav">
+          {navItems.filter((n) => n.show).map((n) => (
+            <NavLink
+              key={n.to}
+              to={n.to}
+              onClick={onClose}
+              title={n.label}
+              className={({ isActive }) => `navItem ${isActive ? 'active' : ''}`}
+            >
+              {n.icon}
+              <span>{n.label}</span>
+            </NavLink>
+          ))}
+          {can('audit.view') ? (
+            <NavLink
+              to="/audit"
+              onClick={onClose}
+              title="سجل التغييرات"
+              className={({ isActive }) => `navItem ${isActive ? 'active' : ''}`}
+            >
+              <IconSettings />
+              <span>سجل التغييرات</span>
+            </NavLink>
+          ) : null}
+          <NavLink
+            to="/settings"
+            onClick={onClose}
+            title="الإعدادات"
+            className={({ isActive }) => `navItem ${isActive ? 'active' : ''}`}
+          >
+            <IconSettings />
+            <span>الإعدادات</span>
+          </NavLink>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
+          <div className="navSection">وحدات قادمة</div>
+          {futureModules.map((m) => (
+            <span key={m} className="navItem navItem--disabled" title="قيد التطوير">{m}</span>
+          ))}
+        </nav>
+
+<<<<<<< HEAD
       <div className="sidebarUser">
         <div className="small"><strong>{user?.fullName ?? user?.username}</strong></div>
         <div className="muted small">{ROLE_AR[user?.roleName ?? 'viewer'] ?? user?.roleName ?? ''}</div>
@@ -230,6 +296,23 @@ const AttentionBlock = ({ onNavigate }: { onNavigate: () => void }) => {
         </button>
       ) : null}
     </div>
+=======
+        <div className="sidebarUser">
+          <div className="small"><strong>{user?.fullName ?? user?.username}</strong></div>
+          <div className="muted small">{ROLE_AR[user?.roleName ?? 'viewer'] ?? user?.roleName ?? ''}</div>
+          <button
+            className="btn btn--sm btn--ghost"
+            onClick={async () => {
+              await logout();
+              navigate('/login');
+            }}
+          >
+            تسجيل الخروج
+          </button>
+        </div>
+      </aside>
+    </>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
   );
 };
 
@@ -312,8 +395,11 @@ const OfflineBanner = () => {
 
 const Shell = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+<<<<<<< HEAD
   const [cmdkOpen, setCmdkOpen] = useState(false);
   const { can } = useAuth();
+=======
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === '1');
 
   const toggleCollapsed = () => {
@@ -324,6 +410,7 @@ const Shell = () => {
     });
   };
 
+<<<<<<< HEAD
   // Global Ctrl+K / Cmd+K opens the command palette (same shortcut closes it).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -355,6 +442,8 @@ const Shell = () => {
     { to: '/settings', label: 'الإعدادات', group: 'النظام' },
   ];
 
+=======
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
   return (
     <div className={`shell ${collapsed ? 'shell--collapsed' : ''}`}>
       <Sidebar
@@ -371,12 +460,16 @@ const Shell = () => {
               className="menuBtn"
               onClick={() => setDrawerOpen(true)}
               aria-label="فتح القائمة الرئيسية"
+<<<<<<< HEAD
               aria-expanded={drawerOpen}
               aria-controls="app-sidebar"
+=======
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               title="القائمة"
             >
               <IconMenu size={20} />
             </button>
+<<<<<<< HEAD
             <button
               type="button"
               className="cmdkTrigger"
@@ -390,6 +483,8 @@ const Shell = () => {
               <span>أوامر وانتقال…</span>
               <span className="kbd">Ctrl K</span>
             </button>
+=======
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
             <GlobalSearch />
           </div>
           <div className="topbar__end">
@@ -397,7 +492,10 @@ const Shell = () => {
             <ThemeToggle />
           </div>
         </header>
+<<<<<<< HEAD
         <CommandPalette open={cmdkOpen} onClose={() => setCmdkOpen(false)} navItems={paletteNav} />
+=======
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
         <OfflineBanner />
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

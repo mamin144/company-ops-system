@@ -6,7 +6,11 @@ import { DataTable } from '../components/DataTable';
 import type { Column } from '../components/DataTable';
 import { Badge, ConfirmDialog, Field, Modal, Select, TextArea, TextInput, SearchInput, useToast } from '../components/ui';
 import { SmartImportModal } from '../components/SmartImportModal';
+<<<<<<< HEAD
 import { IconDownload, IconFile, IconPlus, IconReplace, IconUpload, IconLink, IconEdit, IconTrash } from '../components/Icons';
+=======
+import { IconDownload, IconEye, IconFile, IconPlus, IconReplace, IconUpload, IconLink, IconEdit, IconTrash } from '../components/Icons';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 import { PreviewDocButton, DownloadDocButton } from '../components/ProtectedFileLink';
 import { downloadDocument, downloadZip } from '../lib/api';
 import { DocumentPreviewModal } from '../components/DocumentPreviewModal';
@@ -62,6 +66,7 @@ export const ArchivePage = () => {
   const [revisionsDoc, setRevisionsDoc] = useState<Document | null>(null);
   const [revisions, setRevisions] = useState<DocumentRevision[]>([]);
   const [mobileFolderOpen, setMobileFolderOpen] = useState(false);
+<<<<<<< HEAD
   // Desktop: the folders panel can be collapsed via its ✕ button and reopened
   // via the "المجلدات" toggle. Persisted like the main sidebar. Scoped to
   // desktop via CSS so the mobile drawer behavior is untouched.
@@ -73,6 +78,8 @@ export const ArchivePage = () => {
     } catch { /* storage unavailable */ }
     if (!visible) setMobileFolderOpen(false);
   };
+=======
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
   const [isExportingZip, setIsExportingZip] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const replaceInput = useRef<HTMLInputElement>(null);
@@ -228,7 +235,11 @@ export const ArchivePage = () => {
       key: 'revision',
       label: 'الإصدار',
       render: (d) => (
+<<<<<<< HEAD
         <button className="linkBtn num revBtn" onClick={() => openRevisions(d)} title="عرض الإصدارات">
+=======
+        <button className="linkBtn num" onClick={() => openRevisions(d)} title="عرض الإصدارات" style={{ fontWeight: 600 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
           {d.revision ?? '00'} ({d.revisions?.length ?? 1})
         </button>
       ),
@@ -240,8 +251,12 @@ export const ArchivePage = () => {
         can('archive.edit') ? (
           <Select
             value={d.status}
+<<<<<<< HEAD
             className="statusSelect"
             aria-label={`حالة المستند ${d.title}`}
+=======
+            style={{ minWidth: 105, padding: '4px 8px', fontSize: 12 }}
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
             onChange={async (e) => {
               try {
                 await api.patch(`/api/documents/${d.id}/status`, { status: e.target.value });
@@ -264,7 +279,11 @@ export const ArchivePage = () => {
       key: '_open',
       label: 'عرض وتحميل',
       render: (d) => (
+<<<<<<< HEAD
         <div className="fileRowActions">
+=======
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
           <PreviewDocButton small documentId={d.id} fileName={d.fileName} />
           {can('archive.download') && (
             <DownloadDocButton small documentId={d.id} fileName={d.fileName} />
@@ -294,14 +313,23 @@ export const ArchivePage = () => {
       />
 
       {/* Sidebar / Folders Panel */}
+<<<<<<< HEAD
       <aside className={`archiveSidebar ${mobileFolderOpen ? 'open' : ''} ${folderHidden ? 'archiveSidebar--collapsed' : ''}`} aria-label="شجرة المجلدات">
+=======
+      <aside className={`archiveSidebar ${mobileFolderOpen ? 'open' : ''}`} aria-label="شجرة المجلدات">
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
         <div className="archiveSidebar__head">
           <h2>المجلدات</h2>
           <button 
             className="btn btn--sm btn--ghost" 
+<<<<<<< HEAD
             onClick={() => setFoldersVisible(false)}
             aria-label="إغلاق لوحة المجلدات"
             title="إغلاق لوحة المجلدات"
+=======
+            onClick={() => setMobileFolderOpen(false)}
+            aria-label="إغلاق لوحة المجلدات"
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
           >
             ✕
           </button>
@@ -327,7 +355,11 @@ export const ArchivePage = () => {
                 <h1>الأرشيف والمستندات</h1>
                 <p>إدارة مستندات ومخططات المشاريع بصيغ متعددة مع تتبع كامل للإصدارات</p>
               </div>
+<<<<<<< HEAD
               <div className="heroChip archiveCountChip">
+=======
+              <div className="heroChip" style={{ marginInlineStart: 12 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                 <b className="num">{list.data?.total ?? '—'}</b>
                 <span>مستند</span>
               </div>
@@ -336,12 +368,17 @@ export const ArchivePage = () => {
             <div className="archiveHeader__actions">
               <button
                 className="btn btn--ghost archiveFolderToggle"
+<<<<<<< HEAD
                 onClick={() => {
                   setMobileFolderOpen((v) => !v); // mobile drawer
                   setFoldersVisible(folderHidden); // desktop panel (toggles)
                 }}
                 aria-label="عرض لوحة المجلدات"
                 aria-expanded={!folderHidden || mobileFolderOpen}
+=======
+                onClick={() => setMobileFolderOpen(!mobileFolderOpen)}
+                aria-label="عرض لوحة المجلدات"
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               >
                 المجلدات
               </button>
@@ -367,7 +404,11 @@ export const ArchivePage = () => {
           </div>
 
           <div className="archiveToolbar" role="search" aria-label="أدوات تصفية المستندات">
+<<<<<<< HEAD
             <div className="archiveSearchWrap">
+=======
+            <div style={{ flex: 1, minWidth: 260 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               <SearchInput 
                 value={list.state.q} 
                 onChange={list.setQ} 
@@ -377,7 +418,11 @@ export const ArchivePage = () => {
             <Select 
               value={f.projectId ?? ''} 
               onChange={(e) => list.setFilter('projectId', e.target.value)}
+<<<<<<< HEAD
               className="archiveFilterProject"
+=======
+              style={{ minWidth: 160 }}
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               aria-label="تصفية حسب المشروع"
             >
               <option value="">كل المشاريع</option>
@@ -386,7 +431,11 @@ export const ArchivePage = () => {
             <Select 
               value={f.category ?? ''} 
               onChange={(e) => list.setFilter('category', e.target.value)}
+<<<<<<< HEAD
               className="archiveFilterCategory"
+=======
+              style={{ minWidth: 140 }}
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               aria-label="تصفية حسب التصنيف"
             >
               <option value="">كل التصنيفات</option>
@@ -464,7 +513,11 @@ export const ArchivePage = () => {
                       checked={selectedIds.includes(doc.id)} 
                       onChange={() => toggleSelect(doc.id)} 
                       aria-label={`تحديد ${doc.title}`}
+<<<<<<< HEAD
                       className="docCheck"
+=======
+                      style={{ marginTop: 3 }}
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                     />
                     <IconFile kind={fileIconKind(doc.fileExtension)} size={22} />
                     <div>
@@ -484,7 +537,11 @@ export const ArchivePage = () => {
                   </div>
                   <div className="docCard__metaItem">
                     <span className="docCard__metaLabel">الإصدار</span>
+<<<<<<< HEAD
                     <button className="linkBtn num revBtn revBtn--start" onClick={() => openRevisions(doc)}>
+=======
+                    <button className="linkBtn num" onClick={() => openRevisions(doc)} style={{ textAlign: 'start' }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                       {doc.revision || '00'}
                     </button>
                   </div>
@@ -496,7 +553,11 @@ export const ArchivePage = () => {
                   </div>
                   <div className="docCard__metaItem">
                     <span className="docCard__metaLabel">الملف</span>
+<<<<<<< HEAD
                     <span className="docCard__metaValue docFileName">
+=======
+                    <span className="docCard__metaValue text-muted" style={{ fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                       {doc.fileName}
                     </span>
                   </div>
@@ -551,7 +612,11 @@ export const ArchivePage = () => {
       <Modal title={`إصدارات المستند: ${revisionsDoc?.title ?? ''}`} open={!!revisionsDoc} onClose={() => setRevisionsDoc(null)} wide>
         <div className="stack">
           {revisions.length === 0 ? (
+<<<<<<< HEAD
             <p className="muted text-center revsEmpty">لا توجد إصدارات مسجلة</p>
+=======
+            <p className="muted text-center" style={{ padding: 24 }}>لا توجد إصدارات مسجلة</p>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
           ) : (
             <div className="revisionsTimeline">
               {revisions.map((r) => {
@@ -563,6 +628,7 @@ export const ArchivePage = () => {
                     </Badge>
                     <div className="revisionItem__meta">
                       <strong>{r.fileName}</strong>
+<<<<<<< HEAD
                       <div className="revMeta">
                         <span>رفع بواسطة: {r.uploadedBy ?? '—'}</span> &bull; 
                         <span className="num revDate">
@@ -573,6 +639,18 @@ export const ArchivePage = () => {
                     </div>
                     {revisionsDoc ? (
                       <div className="revActions">
+=======
+                      <div className="muted" style={{ fontSize: 12 }}>
+                        <span>رفع بواسطة: {r.uploadedBy ?? '—'}</span> &bull; 
+                        <span className="num" style={{ marginInlineStart: 4 }}>
+                          {new Date(r.uploadedAt).toLocaleDateString('ar-EG')}
+                        </span>
+                      </div>
+                      {r.notes ? <p className="muted" style={{ fontSize: 12, margin: '4px 0 0 0' }}>{r.notes}</p> : null}
+                    </div>
+                    {revisionsDoc ? (
+                      <div style={{ display: 'flex', gap: 6 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                         <PreviewDocButton small documentId={revisionsDoc.id} fileName={r.fileName} revision={r.id} />
                         {can('archive.download') && (
                           <DownloadDocButton small documentId={revisionsDoc.id} fileName={r.fileName} revision={r.id} />

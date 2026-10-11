@@ -132,7 +132,11 @@ export const StockPage = () => {
       <div className="invHeader">
         <div className="invHeader__titleGroup">
           <div>
+<<<<<<< HEAD
             <div className="invTitleRow">
+=======
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               <h1>إدارة المخزون</h1>
               <span className="heroChip num">{list.data?.total ?? 0} حركة</span>
             </div>
@@ -177,7 +181,11 @@ export const StockPage = () => {
         >
           أصناف تحت حد الأمان
           {overview && overview.lowStock.length > 0 ? (
+<<<<<<< HEAD
             <span className="badge badge--red num stockLowBadge">
+=======
+            <span className="badge badge--red num" style={{ marginRight: 8, padding: '2px 6px' }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               {overview.lowStock.length}
             </span>
           ) : null}
@@ -246,7 +254,11 @@ export const StockPage = () => {
                     {warehouse.type === 'central' ? 'مركزي' : 'موقع'}
                   </Badge>
                 </div>
+<<<<<<< HEAD
                 <div className="tableWrap tableWrap--bare">
+=======
+                <div className="tableWrap" style={{ border: 'none', borderRadius: 0 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                   <table className="table">
                     <thead>
                       <tr>
@@ -282,6 +294,7 @@ export const StockPage = () => {
         <div className="stockWarehouseSection">
           <div className="stockWarehouseHeader">
             <h3>الأصناف تحت حد الأمان (مطلوب إعادة طلب)</h3>
+<<<<<<< HEAD
             {overview.lowStock.length > 0 ? (
               <StatusDot tone="red">{overview.lowStock.length} صنف منخفض</StatusDot>
             ) : (
@@ -289,6 +302,11 @@ export const StockPage = () => {
             )}
           </div>
           <div className="tableWrap tableWrap--bare">
+=======
+            <Badge tone="red">{overview.lowStock.length} صنف منخفض</Badge>
+          </div>
+          <div className="tableWrap" style={{ border: 'none', borderRadius: 0 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
             <table className="table">
               <thead>
                 <tr>

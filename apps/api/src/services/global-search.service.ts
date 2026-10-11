@@ -1,5 +1,6 @@
 import { includesNormalized } from '@cos/shared';
 import type { Id } from '@cos/shared';
+<<<<<<< HEAD
 import { projectRepository } from '../repositories/project.repository.js';
 import { documentRepository } from '../repositories/document.repository.js';
 import { warehouseRepository } from '../repositories/warehouse.repository.js';
@@ -7,6 +8,15 @@ import { itemRepository } from '../repositories/item.repository.js';
 import { stockTransactionRepository } from '../repositories/stock-transaction.repository.js';
 import { loadContext, can } from './authorization.service.js';
 import type { AuthzContext } from './authorization.service.js';
+=======
+import { projectRepository } from '../repositories/project.repository';
+import { documentRepository } from '../repositories/document.repository';
+import { warehouseRepository } from '../repositories/warehouse.repository';
+import { itemRepository } from '../repositories/item.repository';
+import { stockTransactionRepository } from '../repositories/stock-transaction.repository';
+import { loadContext, can } from './authorization.service';
+import type { AuthzContext } from './authorization.service';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
 export interface SearchHit {
   id: Id;

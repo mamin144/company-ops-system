@@ -1,4 +1,5 @@
 import { Router } from 'express';
+<<<<<<< HEAD
 import { warehouseRepository } from '../../repositories/warehouse.repository.js';
 import { applyPagination, applySearch, applySort } from '../../services/filter.service.js';
 import { warehouseSchema } from './warehouses.validators.js';
@@ -10,6 +11,19 @@ import { scopeWarehouseRow, scopeFromBody, filterVisible, checkFilterProject } f
 import { can } from '../../services/authorization.service.js';
 import { auditService } from '../../services/audit.service.js';
 import { deleteSafety } from '../../services/stock.service.js';
+=======
+import { warehouseRepository } from '../../repositories/warehouse.repository';
+import { applyPagination, applySearch, applySort } from '../../services/filter.service';
+import { warehouseSchema } from './warehouses.validators';
+import { projectRepository } from '../../repositories/project.repository';
+import { excelService } from '../../services/excel.service';
+import { requireAuth, requirePermission, requireProjectAccess, requestContext } from '../../middleware/auth';
+import type { AuthedRequest } from '../../middleware/auth';
+import { scopeWarehouseRow, scopeFromBody, filterVisible, checkFilterProject } from '../../services/projectScope';
+import { can } from '../../services/authorization.service';
+import { auditService } from '../../services/audit.service';
+import { deleteSafety } from '../../services/stock.service';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
 export const warehousesRouter = Router();
 warehousesRouter.use(requireAuth);

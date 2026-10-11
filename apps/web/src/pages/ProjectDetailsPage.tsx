@@ -127,7 +127,11 @@ export const ProjectDetailsPage = () => {
       {/* ============ Project Header Card ============ */}
       <div className="projectHeaderCard">
         <div className="projectIdentity">
+<<<<<<< HEAD
           <div className="projBackWrap">
+=======
+          <div style={{ marginBottom: 4 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
             <BackButton />
           </div>
           <div className="projectIdentity__titleRow">
@@ -137,7 +141,11 @@ export const ProjectDetailsPage = () => {
             </Badge>
           </div>
           <div className="projectIdentity__meta">
+<<<<<<< HEAD
             <span>كود المشروع: <strong className="num projCode">{project.projectCode}</strong></span>
+=======
+            <span>كود المشروع: <strong className="num" style={{ color: 'var(--primary)' }}>{project.projectCode}</strong></span>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
             <span>•</span>
             <span>العميل: <strong>{project.client}</strong></span>
             {project.owner && (
@@ -176,9 +184,15 @@ export const ProjectDetailsPage = () => {
 
       {/* ============ Tab 2: Sites ============ */}
       {tab === 'sites' && (
+<<<<<<< HEAD
         <div className="sitesStack">
           <div className="sitesHead">
             <h3 className="sitesTitle">مواقع العمل التابعة للمشروع</h3>
+=======
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ margin: 0 }}>مواقع العمل التابعة للمشروع</h3>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
             {can('projects.edit') && (
               <button
                 type="button"
@@ -203,7 +217,11 @@ export const ProjectDetailsPage = () => {
                   <div className="siteCard__head">
                     <div>
                       <h4 className="siteCard__title">{s.name}</h4>
+<<<<<<< HEAD
                       <span className="num small siteCode">
+=======
+                      <span className="num small" style={{ color: 'var(--primary)', fontWeight: 700 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                         {s.code}
                       </span>
                     </div>
@@ -254,7 +272,11 @@ export const ProjectDetailsPage = () => {
                     <td className="num">{d.revision}</td>
                     <td>{d.status}</td>
                     <td>
+<<<<<<< HEAD
                       <div className="docRowActions">
+=======
+                      <div style={{ display: 'inline-flex', gap: '4px' }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                         <PreviewDocButton small documentId={d.id} fileName={d.fileName} />
                         <DownloadDocButton small documentId={d.id} fileName={d.fileName} />
                       </div>
@@ -276,7 +298,11 @@ export const ProjectDetailsPage = () => {
             {warehouses.map((w) => (
               <div className="card" key={w.id}>
                 <div className="card__label">{w.type === 'central' ? 'مخزن مركزي' : 'مخزن موقع'}</div>
+<<<<<<< HEAD
                 <div className="card__value whName">{w.name}</div>
+=======
+                <div className="card__value" style={{ fontSize: 18 }}>{w.name}</div>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                 {w.location && <div className="card__footer muted small">{w.location}</div>}
               </div>
             ))}

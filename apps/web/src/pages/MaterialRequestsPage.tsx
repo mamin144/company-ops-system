@@ -245,7 +245,11 @@ export const MaterialRequestsPage = () => {
       <div className="invHeader">
         <div className="invHeader__titleGroup">
           <div>
+<<<<<<< HEAD
             <div className="invTitleRow">
+=======
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               <h1>طلبات المواد</h1>
               <span className="heroChip num">{requests.length} طلب</span>
             </div>
@@ -313,7 +317,11 @@ export const MaterialRequestsPage = () => {
           }
           loading={loading}
           actions={(row) => (
+<<<<<<< HEAD
             <div className="mrRowActions">
+=======
+            <div style={{ display: 'inline-flex', gap: 6 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               <button
                 className="btn btn--sm btn--ghost"
                 onClick={() => setViewTarget(row)}
@@ -511,13 +519,20 @@ export const MaterialRequestsPage = () => {
             </div>
 
             {viewTarget.notes ? (
+<<<<<<< HEAD
               <div className="mrNoteBlock">
                 <span className="small muted">ملاحظات الطلب:</span>
                 <p className="mrNoteText">{viewTarget.notes}</p>
+=======
+              <div style={{ marginBottom: 16 }}>
+                <span className="small muted">ملاحظات الطلب:</span>
+                <p style={{ margin: '4px 0 0', fontWeight: 500 }}>{viewTarget.notes}</p>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               </div>
             ) : null}
 
             {viewTarget.reviewNotes ? (
+<<<<<<< HEAD
               <div className="mrReviewBox">
                 <span className="small dangerHighlight">ملاحظات المراجعة:</span>
                 <p className="mrNoteText">{viewTarget.reviewNotes}</p>
@@ -526,6 +541,16 @@ export const MaterialRequestsPage = () => {
 
             <h3 className="mrLinesTitle">الأصناف المطلوبة وحالة الصرف</h3>
             <div className="tableWrap mrLinesWrap">
+=======
+              <div style={{ marginBottom: 16, background: 'rgba(239, 68, 68, 0.05)', padding: 10, borderRadius: 6 }}>
+                <span className="small dangerHighlight">ملاحظات المراجعة:</span>
+                <p style={{ margin: '4px 0 0', fontWeight: 500 }}>{viewTarget.reviewNotes}</p>
+              </div>
+            ) : null}
+
+            <h3 style={{ fontSize: 15, margin: '16px 0 10px' }}>الأصناف المطلوبة وحالة الصرف</h3>
+            <div className="tableWrap" style={{ border: '1px solid var(--border)' }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               <table className="table">
                 <thead>
                   <tr>
@@ -548,10 +573,17 @@ export const MaterialRequestsPage = () => {
                         <td className="bold">{it?.name || line.itemId}</td>
                         <td className="small muted">{it?.unit || '—'}</td>
                         <td className="num bold">{line.requestedQty}</td>
+<<<<<<< HEAD
                         <td className={`num${issued > 0 ? ' mrIssued' : ''}`}>
                           {issued}
                         </td>
                         <td className={`num bold${remaining > 0 ? ' mrRemaining' : ' mrSettled'}`}>
+=======
+                        <td className="num" style={{ color: issued > 0 ? 'var(--primary)' : 'inherit' }}>
+                          {issued}
+                        </td>
+                        <td className="num bold" style={{ color: remaining > 0 ? 'var(--amber)' : 'var(--success)' }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                           {remaining}
                         </td>
                       </tr>
@@ -561,7 +593,11 @@ export const MaterialRequestsPage = () => {
               </table>
             </div>
 
+<<<<<<< HEAD
             <div className="formActions mrFormActions">
+=======
+            <div className="formActions" style={{ marginTop: 20 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               {viewTarget.status === 'draft' && can('materialRequests.create') ? (
                 <button className="btn btn--primary" onClick={() => act(viewTarget, 'submit')}>
                   إرسال للمراجعة
@@ -653,17 +689,29 @@ export const MaterialRequestsPage = () => {
           </Field>
         </div>
 
+<<<<<<< HEAD
         <div className="stack mrLinesStack">
           <div className="mrLinesHead">
+=======
+        <div className="stack" style={{ marginTop: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
             <strong className="small">الأصناف والكميات المطلوبة *</strong>
             <span className="small muted">{lines.length} صنف</span>
           </div>
 
           {lines.map((line, idx) => (
+<<<<<<< HEAD
             <div className="filtersRow formLineRow" key={idx}>
               <Select
                 aria-label={`اختيار الصنف ${idx + 1}`}
                 className="mrLineItem"
+=======
+            <div className="filtersRow" key={idx} style={{ marginBottom: 0 }}>
+              <Select
+                aria-label={`اختيار الصنف ${idx + 1}`}
+                style={{ flex: 3 }}
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                 value={line.itemId}
                 onChange={(e) =>
                   setLines(lines.map((l, i) => (i === idx ? { ...l, itemId: e.target.value } : l)))
@@ -678,17 +726,29 @@ export const MaterialRequestsPage = () => {
               </Select>
               <input
                 aria-label={`الكمية للصنف ${idx + 1}`}
+<<<<<<< HEAD
                 className="input num mrLineQty"
+=======
+                className="input num"
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                 type="number"
                 min={1}
                 step="any"
                 placeholder="الكمية المطلوبة"
+<<<<<<< HEAD
+=======
+                style={{ flex: 1 }}
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                 value={line.requestedQty}
                 onChange={(e) =>
                   setLines(lines.map((l, i) => (i === idx ? { ...l, requestedQty: e.target.value } : l)))
                 }
               />
+<<<<<<< HEAD
               <span className="small muted mrLineUnit">
+=======
+              <span className="small muted" style={{ minWidth: 40 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
                 {itemUnit(line.itemId)}
               </span>
               {lines.length > 1 ? (
@@ -743,8 +803,13 @@ export const MaterialRequestsPage = () => {
             المخزن: <strong>{whName(issueTarget?.warehouseId)}</strong> — حدد الكميات الفعلية المراد صرفها الآن:
           </p>
           {issueLines.map((line, idx) => (
+<<<<<<< HEAD
             <div className="filtersRow formLineRow" key={line.itemId}>
               <span className="issueLineName">{itemName(line.itemId)}</span>
+=======
+            <div className="filtersRow" key={line.itemId} style={{ marginBottom: 0 }}>
+              <span style={{ minWidth: 160, fontWeight: 600 }}>{itemName(line.itemId)}</span>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               <input
                 aria-label={`الكمية المصروفة من ${itemName(line.itemId)}`}
                 className="input num"
@@ -760,7 +825,11 @@ export const MaterialRequestsPage = () => {
               <span className="small muted">{itemUnit(line.itemId)}</span>
             </div>
           ))}
+<<<<<<< HEAD
           <p className="small muted issueNote">
+=======
+          <p className="small muted" style={{ background: 'var(--surface-2)', padding: 8, borderRadius: 4 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
             سيتم إنشاء حركة صرف مخزنية معتمدة من نوع OUT مرتبطة بهذا الطلب.
           </p>
         </div>

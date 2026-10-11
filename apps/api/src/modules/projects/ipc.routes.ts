@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
+<<<<<<< HEAD
 import { ipcRepository, ipcItemRepository } from '../../repositories/ipc.repository.js';
 import { boqRepository } from '../../repositories/boq.repository.js';
 import { projectRepository } from '../../repositories/project.repository.js';
@@ -9,6 +10,17 @@ import type { AuthedRequest } from '../../middleware/auth.js';
 import { scopeFromParam } from '../../services/projectScope.js';
 import { can } from '../../services/authorization.service.js';
 import { auditService } from '../../services/audit.service.js';
+=======
+import { ipcRepository, ipcItemRepository } from '../../repositories/ipc.repository';
+import { boqRepository } from '../../repositories/boq.repository';
+import { projectRepository } from '../../repositories/project.repository';
+import { deleteSafety } from '../../services/stock.service';
+import { requireAuth, requireAnyPermission, requireAnyProjectAccess, requestContext } from '../../middleware/auth';
+import type { AuthedRequest } from '../../middleware/auth';
+import { scopeFromParam } from '../../services/projectScope';
+import { can } from '../../services/authorization.service';
+import { auditService } from '../../services/audit.service';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
 export const ipcRouter = Router({ mergeParams: true });
 

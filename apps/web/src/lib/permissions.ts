@@ -1,12 +1,16 @@
+<<<<<<< HEAD
 // Permission catalog — MUST stay in sync with the backend vocabulary:
 // ALL_PERMISSIONS (@cos/shared) + roles.manage + projects.access + users.resetPassword.
 // Stale keys are rejected by the API with «صلاحية غير معروفة», so do NOT add
 // keys here without adding them backend-side first.
+=======
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 export const PERMISSIONS_AR: Record<string, string> = {
   'archive.view': 'عرض الأرشيف',
   'archive.upload': 'رفع ملفات للأرشيف',
   'archive.edit': 'تعديل ملفات الأرشيف',
   'archive.delete': 'حذف ملفات الأرشيف',
+<<<<<<< HEAD
   'archive.download': 'تحميل ملفات الأرشيف',
   'warehouse.view': 'عرض المخازن',
   'warehouse.create': 'إنشاء مخازن',
@@ -34,3 +38,33 @@ export const PERMISSIONS_AR: Record<string, string> = {
   'projects.access': 'إدارة صلاحيات المشاريع',
   'users.resetPassword': 'إعادة تعيين كلمات المرور',
 };
+=======
+  'archive.share': 'مشاركة الملفات',
+  'archive.unassigned': 'إدارة المجلد غير المخصص',
+  'warehouse.view': 'عرض المستودعات',
+  'warehouse.manage': 'إدارة المستودعات',
+  'items.manage': 'إدارة الأصناف',
+  'stock.in': 'إدخال مخزون (IN)',
+  'stock.out': 'صرف مخزون (OUT)',
+  'stock.transfer': 'نقل مخزون (TRANSFER)',
+  'stock.audit': 'جرد المخزون',
+  'projects.view': 'عرض المشاريع',
+  'projects.manage': 'إدارة المشاريع',
+  'projects.boq.view': 'عرض جداول الكميات (BOQ)',
+  'projects.boq.manage': 'إدارة جداول الكميات',
+  'projects.ipc.view': 'عرض المستخلصات (IPC)',
+  'projects.ipc.manage': 'إدارة المستخلصات',
+  'materialRequests.view': 'عرض طلبات المواد',
+  'materialRequests.create': 'إنشاء طلبات المواد',
+  'materialRequests.submit': 'تقديم طلبات المواد',
+  'materialRequests.approve': 'اعتماد طلبات المواد',
+  'materialRequests.fulfill': 'تجهيز/صرف الطلبات',
+  'materialRequests.reject': 'رفض الطلبات',
+  'audit.view': 'عرض سجلات التدقيق',
+  'backup.manage': 'إدارة النسخ الاحتياطي',
+  'roles.manage': 'إدارة الأدوار',
+  'users.manage': 'إدارة المستخدمين',
+  'users.resetPassword': 'إعادة تعيين كلمات المرور',
+  'projects.access': 'إدارة صلاحيات المشاريع',
+};
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e

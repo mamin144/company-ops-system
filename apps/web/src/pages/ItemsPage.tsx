@@ -92,7 +92,11 @@ export const ItemsPage = () => {
       <div className="invHeader">
         <div className="invHeader__titleGroup">
           <div>
+<<<<<<< HEAD
             <div className="invTitleRow">
+=======
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
               <h1>الأصناف</h1>
               <span className="heroChip num">{list.data?.total ?? 0} صنف</span>
             </div>

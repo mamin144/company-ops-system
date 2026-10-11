@@ -1,8 +1,15 @@
 import { Router } from 'express';
+<<<<<<< HEAD
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
 import { folderRepository } from '../../repositories/folder.repository.js';
 import { auditService } from '../../services/audit.service.js';
 import type { AuthedRequest } from '../../middleware/auth.js';
+=======
+import { requireAuth, requirePermission } from '../../middleware/auth';
+import { folderRepository } from '../../repositories/folder.repository';
+import { auditService } from '../../services/audit.service';
+import type { AuthedRequest } from '../../middleware/auth';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
 export const foldersRouter = Router();
 

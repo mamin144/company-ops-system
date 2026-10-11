@@ -96,7 +96,11 @@ export const ProjectsPage = () => {
       label: 'كود المشروع',
       sortable: true,
       render: (p) => (
+<<<<<<< HEAD
         <Link to={`/projects/${p.id}`} className="num projCodeLink">
+=======
+        <Link to={`/projects/${p.id}`} className="num" style={{ color: 'var(--primary)', fontWeight: 700 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
           {p.projectCode}
         </Link>
       ),
@@ -106,7 +110,11 @@ export const ProjectsPage = () => {
       label: 'اسم المشروع',
       sortable: true,
       render: (p) => (
+<<<<<<< HEAD
         <Link to={`/projects/${p.id}`} className="projNameLink">
+=======
+        <Link to={`/projects/${p.id}`} style={{ fontWeight: 600 }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
           {p.projectName}
         </Link>
       ),
@@ -116,7 +124,10 @@ export const ProjectsPage = () => {
     { key: 'mainContractor', label: 'المقاول الرئيسي', render: (p) => p.mainContractor || '—' },
     { key: 'siteLocation', label: 'موقع العمل', render: (p) => p.siteLocation || '—' },
     { key: 'contractNumber', label: 'رقم العقد', render: (p) => <span className="num">{p.contractNumber || '—'}</span> },
+<<<<<<< HEAD
     { key: 'contractValue', label: 'قيمة العقد (جنيه)', render: (p) => <span className="num">{Number(p.contractValue ?? 0).toLocaleString()}</span> },
+=======
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
     {
       key: 'status',
       label: 'الحالة',
@@ -128,8 +139,13 @@ export const ProjectsPage = () => {
     <div className="page">
       <div className="pageHero">
         <div>
+<<<<<<< HEAD
           <div className="pageEyebrow">
             <IconProjects size={16} aria-hidden="true" />
+=======
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', opacity: 0.85, fontSize: '13px' }}>
+            <IconProjects size={16} />
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
             <span>نظام إدارة المشروعات والمواقع</span>
           </div>
           <h1>المشاريع</h1>
@@ -206,7 +222,11 @@ export const ProjectsPage = () => {
         onSort={list.toggleSort}
         onPage={list.setPage}
         actions={(row) => (
+<<<<<<< HEAD
           <>
+=======
+          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
             <button
               type="button"
               className="btn btn--sm btn--ghost"
@@ -222,7 +242,11 @@ export const ProjectsPage = () => {
                 onDelete={() => setDeleteTarget(row)}
               />
             )}
+<<<<<<< HEAD
           </>
+=======
+          </div>
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
         )}
       />
 

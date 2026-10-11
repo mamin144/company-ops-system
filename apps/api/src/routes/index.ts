@@ -1,4 +1,5 @@
 import { Router } from 'express';
+<<<<<<< HEAD
 import { projectsRouter } from '../modules/projects/projects.routes.js';
 import { documentsRouter } from '../modules/documents/documents.routes.js';
 import { foldersRouter } from '../modules/folders/folders.routes.js';
@@ -12,6 +13,21 @@ import { rolesRouter } from '../modules/roles/roles.routes.js';
 import { sitesRouter } from '../modules/sites/sites.routes.js';
 import { materialRequestsRouter } from '../modules/material-requests/material-requests.routes.js';
 import { systemRouter } from '../modules/system/system.routes.js';
+=======
+import { projectsRouter } from '../modules/projects/projects.routes';
+import { documentsRouter } from '../modules/documents/documents.routes';
+import { foldersRouter } from '../modules/folders/folders.routes';
+import { warehousesRouter } from '../modules/warehouses/warehouses.routes';
+import { itemsRouter } from '../modules/items/items.routes';
+import { stockRouter } from '../modules/stock/stock.routes';
+import { configRouter } from '../modules/config/config.routes';
+import { importRouter } from '../modules/import/import.routes';
+import { authRouter, usersRouter, usersExtRouter } from '../modules/auth/auth.routes';
+import { rolesRouter } from '../modules/roles/roles.routes';
+import { sitesRouter } from '../modules/sites/sites.routes';
+import { materialRequestsRouter } from '../modules/material-requests/material-requests.routes';
+import { systemRouter } from '../modules/system/system.routes';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
 export const apiRouter = Router();
 

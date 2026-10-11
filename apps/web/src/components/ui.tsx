@@ -239,6 +239,7 @@ export const Button = ({
   >
     {busy ? 'جاري التحميل…' : children}
   </button>
+<<<<<<< HEAD
 );
 
 /* ---------- Command Deck primitives (Phase 3) ---------- */
@@ -408,4 +409,6 @@ export const StatusDot = ({ tone = 'gray', children }: { tone?: StatusTone; chil
     <i aria-hidden="true" />
     <span>{children}</span>
   </span>
+=======
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 );

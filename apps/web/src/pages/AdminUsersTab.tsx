@@ -320,8 +320,12 @@ export const ManageAccessModal = ({ user, isSelf, onClose, onSave }: any) => {
       const res = await api.get<any>(`/api/users/${user.id}/effective`);
       setData(res);
       const ov: Record<string, string> = {};
+<<<<<<< HEAD
       // backend stores lowercase (grant/deny); UI radios use uppercase
       res.overrides.forEach((o: any) => { ov[o.permissionKey] = String(o.effect ?? '').toUpperCase(); });
+=======
+      res.overrides.forEach((o: any) => { ov[o.permissionKey] = o.effect; });
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
       setOverrides(ov);
     } catch (e) {
       if (e instanceof ApiError) showToast('error', e.message);

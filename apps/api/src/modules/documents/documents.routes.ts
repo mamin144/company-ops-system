@@ -7,6 +7,7 @@ import { documentLinkRepository } from '../../repositories/document-link.reposit
 import path from 'path';
 import fs from 'fs';
 import { ZipArchive } from 'archiver';
+<<<<<<< HEAD
 import { applyPagination, applySearch, applySort } from '../../services/filter.service.js';
 import { fileStorageService } from '../../storage/file-storage.js';
 import { projectRepository } from '../../repositories/project.repository.js';
@@ -21,6 +22,22 @@ import { notificationService } from '../../services/notification.service.js';
 import { deleteSafety } from '../../services/stock.service.js';
 import { createId } from '../../shared/id.js';
 import { nowIso } from '../../shared/time.js';
+=======
+import { applyPagination, applySearch, applySort } from '../../services/filter.service';
+import { fileStorageService } from '../../storage/file-storage';
+import { projectRepository } from '../../repositories/project.repository';
+import { ipcRepository } from '../../repositories/ipc.repository';
+import { excelService } from '../../services/excel.service';
+import { requireAuth, requirePermission, requireProjectAccess, requestContext } from '../../middleware/auth';
+import type { AuthedRequest } from '../../middleware/auth';
+import { scopeDocumentRow, scopeFromBody, filterVisible, checkFilterProject } from '../../services/projectScope';
+import { can } from '../../services/authorization.service';
+import { auditService } from '../../services/audit.service';
+import { notificationService } from '../../services/notification.service';
+import { deleteSafety } from '../../services/stock.service';
+import { createId } from '../../shared/id';
+import { nowIso } from '../../shared/time';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 import type { DocumentRevision } from '@cos/shared';
 
 const upload = multer({

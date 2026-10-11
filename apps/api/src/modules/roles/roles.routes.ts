@@ -1,15 +1,27 @@
 import { Router } from 'express';
 import { z } from 'zod';
+<<<<<<< HEAD
 import { pool } from '../../database/connection.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
 import type { AuthedRequest } from '../../middleware/auth.js';
 import { auditService } from '../../services/audit.service.js';
 import { userRepository } from '../../repositories/user.repository.js';
+=======
+import { pool } from '../../database/connection';
+import { requireAuth, requirePermission } from '../../middleware/auth';
+import type { AuthedRequest } from '../../middleware/auth';
+import { auditService } from '../../services/audit.service';
+import { userRepository } from '../../repositories/user.repository';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 import {
   can,
   wouldLoseAdminCoverageOnRoleChange,
   MANAGED_PERMISSIONS,
+<<<<<<< HEAD
 } from '../../services/authorization.service.js';
+=======
+} from '../../services/authorization.service';
+>>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
 const roleNameSchema = z
   .string()
