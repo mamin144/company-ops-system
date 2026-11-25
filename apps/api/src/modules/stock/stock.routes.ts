@@ -1,5 +1,4 @@
 import { Router } from 'express';
-<<<<<<< HEAD
 import { stockTransactionSchema } from './stock.validators.js';
 import { stockTransactionRepository } from '../../repositories/stock-transaction.repository.js';
 import { warehouseRepository } from '../../repositories/warehouse.repository.js';
@@ -11,19 +10,6 @@ import type { AuthzContext } from '../../services/authorization.service.js';
 import { auditService } from '../../services/audit.service.js';
 import { excelService } from '../../services/excel.service.js';
 import { stockService } from '../../services/stock.service.js';
-=======
-import { stockTransactionSchema } from './stock.validators';
-import { stockTransactionRepository } from '../../repositories/stock-transaction.repository';
-import { warehouseRepository } from '../../repositories/warehouse.repository';
-import { itemRepository } from '../../repositories/item.repository';
-import { requireAuth, requirePermission, requireAnyPermission, requestContext } from '../../middleware/auth';
-import type { AuthedRequest } from '../../middleware/auth';
-import { can } from '../../services/authorization.service';
-import type { AuthzContext } from '../../services/authorization.service';
-import { auditService } from '../../services/audit.service';
-import { excelService } from '../../services/excel.service';
-import { stockService } from '../../services/stock.service';
->>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 import type { StockTransactionType } from '@cos/shared';
 import { createStockTransactionInternal } from './stock.factory.js';
 
@@ -73,12 +59,30 @@ const expandForExport = async (tx: any) => {
 export const stockRouter = Router();
 stockRouter.use(requireAuth);
 
-stockRouter.get('/overview', requirePermission('warehouse.view'), async (_req, res) => {
+stockRouter.get('/overview', requirePermission('warehouse.view'), async (req: AuthedRequest, res) => {
+  // WP-2.5: aggregates follow the same project scope as the transaction list;
+  // otherwise per-warehouse/item totals leak other projects' stock.
+  const ctx = await requestContext(req);
+  const whProject = await warehouseProjectMap();
+  const allowed = scopedProjectSet(ctx);
+  const projectOf = (tx: any): string | null =>
+    tx.projectId
+      ?? (tx.warehouseId ? whProject.get(tx.warehouseId) ?? null : null)
+      ?? (tx.destinationWarehouseId ? whProject.get(tx.destinationWarehouseId) ?? null : null)
+      ?? null;
+  const inScope = (pid: string | null) => allowed === null || !pid || allowed.has(pid);
+
+  const warehouses = (await warehouseRepository.list()).filter((w: any) => inScope(w.projectId ?? null));
+  const transactions = (await stockTransactionRepository.list()).filter((t: any) => inScope(projectOf(t)));
+
   res.json({
-    byWarehouse: await stockService.getCurrentStockByWarehouse(),
-    totalByItem: await stockService.totalStockPerItem(),
-    lowStock: await stockService.lowStockItems(),
-    summaryByType: await stockService.summaryByType(),
+    byWarehouse: await Promise.all(warehouses.map(async (warehouse: any) => ({
+      warehouse,
+      items: await stockService.stockForWarehouse(warehouse.id, transactions),
+    }))),
+    totalByItem: await stockService.totalStockPerItem(transactions),
+    lowStock: await stockService.lowStockItems(transactions),
+    summaryByType: await stockService.summaryByType(transactions),
   });
 });
 
@@ -91,12 +95,12 @@ stockRouter.get('/transactions', requirePermission('warehouse.view'), async (req
 });
 
 // keep legacy export path working
-stockRouter.get('/transactions/export/xlsx', requirePermission('reports.view'), async (_req, res) => {
-  await sendExport(res);
+stockRouter.get('/transactions/export/xlsx', requirePermission('reports.view'), async (req: AuthedRequest, res) => {
+  await sendExport(res, await requestContext(req), await warehouseProjectMap());
 });
 
-stockRouter.get('/export/xlsx', requirePermission('reports.view'), async (_req, res) => {
-  await sendExport(res);
+stockRouter.get('/export/xlsx', requirePermission('reports.view'), async (req: AuthedRequest, res) => {
+  await sendExport(res, await requestContext(req), await warehouseProjectMap());
 });
 
 /** Warehouse → project map in one query (no per-row lookups). */
@@ -105,10 +109,21 @@ async function warehouseProjectMap(): Promise<Map<string, string | null>> {
   return new Map(whs.map((w: { id: string; projectId?: string | null }) => [w.id, w.projectId ?? null]));
 }
 
+/**
+ * Allowed project set for the caller, or null for "sees everything"
+ * (projects.access holders). Fail closed: a null context yields an empty set.
+ */
+function scopedProjectSet(ctx: AuthzContext | null): Set<string> | null {
+  if (!ctx || !can(ctx, 'warehouse.view')) return new Set();
+  if (can(ctx, 'projects.access')) return null;
+  return new Set((ctx.memberships ?? []).filter((m) => m.access !== 'NONE').map((m) => m.projectId));
+}
+
 async function applyTxFilters(
   query: Record<string, unknown>,
   ctx: AuthzContext | null,
   whProject: Map<string, string | null>,
+  opts?: { viewKey?: string },
 ) {
   let items = await Promise.all((await stockTransactionRepository.list()).map(expandForExport));
   const q = String(query.q ?? '').toLowerCase();
@@ -127,7 +142,7 @@ async function applyTxFilters(
   // can() is pure over the cached context — no per-row queries.
   // Null context denies everything (fail closed); rows whose warehouse is
   // gone fall back to the global gate (scope undeterminable, pre-existing data).
-  if (!ctx || !can(ctx, 'warehouse.view')) return [];
+  if (!ctx || !can(ctx, opts?.viewKey ?? 'warehouse.view')) return [];
   if (!can(ctx, 'projects.access')) {
     const allowed = new Set(
       (ctx.memberships ?? []).filter((m) => m.access !== 'NONE').map((m) => m.projectId),
@@ -161,8 +176,13 @@ async function listTxsPaged(
   };
 }
 
-async function sendExport(res: import('express').Response) {
-  const data = await Promise.all((await stockTransactionRepository.list()).map(expandForExport));
+async function sendExport(
+  res: import('express').Response,
+  ctx: AuthzContext | null,
+  whProject: Map<string, string | null>,
+) {
+  // WP-2.5: exports must respect project scope — never dump every transaction.
+  const data = await applyTxFilters({}, ctx, whProject, { viewKey: 'reports.view' });
   const buffer = excelService.exportJson(
     data,
     'StockTransactions',
@@ -179,9 +199,15 @@ stockRouter.post(
     const parsed = stockTransactionSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ message: 'بيانات الحركة غير صالحة', issues: parsed.error.flatten() });
 
-    // per-type permission enforcement
+    // per-type permission enforcement — central authz (role/overrides + the
+    // transaction's project scope), never the stale req.user snapshot.
     const needed = TYPE_PERMISSION[parsed.data.type];
-    if (!req.user!.permissions.includes(needed))
+    const ctx = await requestContext(req);
+    const whProject = await warehouseProjectMap();
+    const projectId = (parsed.data.projectId || undefined)
+      ?? (parsed.data.warehouseId ? whProject.get(parsed.data.warehouseId) ?? undefined : undefined)
+      ?? (parsed.data.destinationWarehouseId ? whProject.get(parsed.data.destinationWarehouseId) ?? undefined : undefined);
+    if (!can(ctx, needed, projectId))
       return res.status(403).json({ message: `ليس لديك صلاحية ${needed}` });
 
     try {

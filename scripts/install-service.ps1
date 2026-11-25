@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) { throw 'Run this script as Administrator: right-click PowerShell > Run as administrator, then run the script again.' }
 
-$ProjectRoot = 'C:\Users\PC-01\Documents\Default Project\company-ops-system'
+$ProjectRoot = 'D:\Default Project\company-ops-system'
 $ApiDir = Join-Path $ProjectRoot 'apps\api'
 $NodeExe = 'C:\Program Files\nodejs\node.exe'
 $Nssm = 'C:\tools\nssm\nssm-2.24\win64\nssm.exe'

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" direction="rtl">
+<title>C — Queues First (structural schematic, synthetic data)</title>
+<rect width="1200" height="660" fill="#f4f6f9"/>
+<text x="600" y="30" text-anchor="middle" font-size="20" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">C — الطوابير أولاً · «ما الذي يحتاجني؟»</text>
+<text x="600" y="52" text-anchor="middle" font-size="12" font-family="Cairo, sans-serif" fill="#64748b">مخطط هيكلي للمقارنة فقط — بيانات تخيلية، ليست تصميماً نهائياً</text>
+<!-- queue cards -->
+<rect x="810" y="65" width="370" height="170" rx="10" fill="#ffffff" stroke="#dc2626"/>
+<rect x="810" y="65" width="370" height="36" rx="10" fill="#fef2f2"/>
+<text x="1160" y="89" text-anchor="end" font-size="14" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a"><tspan fill="#dc2626">●</tspan> مقدمة بانتظار المراجعة (٢)</text>
+<text x="1160" y="118" text-anchor="end" font-size="13" font-family="Cairo, sans-serif" fill="#0f172a">MR-012 · حديد (PRJ-004)</text>
+<text x="1160" y="142" text-anchor="end" font-size="13" font-family="Cairo, sans-serif" fill="#0f172a">IPC-03 · مستخلص (PRJ-004)</text>
+<rect x="830" y="175" width="140" height="36" rx="7" fill="#2563eb"/><text x="900" y="198" text-anchor="middle" font-size="13" font-weight="bold" font-family="Cairo, sans-serif" fill="#fff">مراجعة ← التفاصيل</text>
+<rect x="415" y="65" width="370" height="170" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+<text x="765" y="89" text-anchor="end" font-size="14" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a"><tspan fill="#d97706">●</tspan> مخزون حرج (٣)</text>
+<text x="765" y="118" text-anchor="end" font-size="13" font-family="Cairo, sans-serif" fill="#0f172a">أسمنت · حديد ١٢مم · كابلات</text>
+<text x="765" y="142" text-anchor="end" font-size="12" font-family="Cairo, sans-serif" fill="#64748b">المصدر: stock/overview (خادم)</text>
+<rect x="435" y="175" width="140" height="36" rx="7" fill="#ffffff" stroke="#2563eb"/><text x="505" y="198" text-anchor="middle" font-size="13" font-weight="bold" font-family="Cairo, sans-serif" fill="#2563eb">طلب توريد</text>
+<rect x="20" y="65" width="370" height="170" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+<text x="370" y="89" text-anchor="end" font-size="14" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a"><tspan fill="#059669">●</tspan> المرفوضات للمتابعة (١)</text>
+<text x="370" y="118" text-anchor="end" font-size="13" font-family="Cairo, sans-serif" fill="#0f172a">MR-009 مرفوض — راجع ملاحظات المراجعة</text>
+<text x="370" y="142" text-anchor="end" font-size="12" font-family="Cairo, sans-serif" fill="#64748b">لا IPCs معلقة ولا فشل استيراد — بلا مصدر، بلا بطاقة</text>
+<!-- browse -->
+<rect x="20" y="248" width="1160" height="150" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+<text x="1160" y="278" text-anchor="end" font-size="15" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">تصفح: المشاريع · الأرشيف · المخازن · التقارير — بحث شامل + وصول مباشر</text>
+<text x="1160" y="306" text-anchor="end" font-size="13" font-family="Cairo, sans-serif" fill="#0f172a">PRJ-004 ← opened from task · DOC-220 ← opened from task · كل كيان يفتح مساحته الكاملة</text>
+<text x="1160" y="334" text-anchor="end" font-size="12" font-family="Cairo, sans-serif" fill="#64748b">خطر موثق: التصفح المرجعي والتدقيق أضعف بهذه العقلية — التغطية الإلزامية للمهام شرط</text>
+<text x="1160" y="362" text-anchor="end" font-size="12" font-family="Cairo, sans-serif" fill="#64748b">حالة الهدوء: «لا بنود عاجلة» الخضراء بدل الفراغ</text>
+<!-- mobile -->
+<rect x="20" y="410" width="1160" height="100" rx="8" fill="#0f172a"/>
+<text x="600" y="440" text-anchor="middle" font-size="13" font-family="Cairo, sans-serif" fill="#f1f5f9">موبايل أصلي: بطاقة مهمة واحدة لكل شاشة — [اعتماد] [رفض] [تفاصيل] — سحب للتأجيل</text>
+<text x="600" y="465" text-anchor="middle" font-size="11" font-family="Cairo, sans-serif" fill="#94a3b8">شريط سفلي + إشعارات فورية للمهام الجديدة (استطلاع ٣٠ث الحالي)</text>
+<text x="600" y="540" text-anchor="middle" font-size="12" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">قوة: أوضح "ما الذي يحتاجني" · خطر: ضياع مهام خارج التغطية · يحفظ: كل الطرق والصلاحيات</text>
+<text x="600" y="570" text-anchor="middle" font-size="11" font-family="Cairo, sans-serif" fill="#64748b">مقارنة هيكلية عادلة — نفس السيناريو في A وB · بلا مؤشرات مخترعة</text>
+</svg>

@@ -1,21 +1,22 @@
 import { Router } from 'express';
-<<<<<<< HEAD
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
 import { folderRepository } from '../../repositories/folder.repository.js';
 import { auditService } from '../../services/audit.service.js';
 import type { AuthedRequest } from '../../middleware/auth.js';
-=======
-import { requireAuth, requirePermission } from '../../middleware/auth';
-import { folderRepository } from '../../repositories/folder.repository';
-import { auditService } from '../../services/audit.service';
-import type { AuthedRequest } from '../../middleware/auth';
->>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
 export const foldersRouter = Router();
 
 foldersRouter.use(requireAuth);
 
-foldersRouter.get('/', async (req, res) => {
+/**
+ * Folders are a global tree (no project column in the schema), so their scope
+ * is archive-scope, not project-scope. Every route — including the listing —
+ * requires the explicit permission it mutates/reads, resolved through central
+ * authorization (role + overrides, DENY precedence) rather than any client
+ * claim. The unscoped `GET /` that existed before allowed any authenticated
+ * user to enumerate the tree.
+ */
+foldersRouter.get('/', requirePermission('archive.view'), async (_req, res) => {
   const folders = await folderRepository.list();
   res.json(folders);
 });

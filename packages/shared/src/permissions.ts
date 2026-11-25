@@ -17,6 +17,8 @@ export const ALL_PERMISSIONS = [
   'projects.create',
   'projects.edit',
   'projects.delete',
+  'ipcs.approve',
+  'ipcs.resubmit',
   'materialRequests.view',
   'materialRequests.create',
   'materialRequests.approve',

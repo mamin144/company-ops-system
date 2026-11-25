@@ -30,6 +30,9 @@ export interface Project extends BaseEntity {
   status: ProjectStatus;
   role?: CompanyRole;
   notes?: string;
+  /** O12: logical deletion marker (null/undefined = active). */
+  deletedAt?: string | null;
+  deletedBy?: string | null;
 }
 
 export type CompanyRole = 'main-contractor' | 'subcontractor' | 'direct-contractor';
@@ -195,6 +198,9 @@ export interface User extends BaseEntity {
   passwordHash: string;
   roleName: UserRoleName;
   isActive: boolean;
+  /** Phase 14 O1: optional profile fields (nullable in DB). */
+  department?: string | null;
+  title?: string | null;
 }
 
 export type SafeUser = Omit<User, 'passwordHash'> & { permissions: string[] };
@@ -206,6 +212,8 @@ export interface AuditLog {
   action: string;
   entity: string;
   entityId?: string;
+  /** Phase 14 O8: null for global (non-project) events. */
+  projectId?: string | null;
   oldValue?: unknown;
   newValue?: unknown;
   timestamp: string;
@@ -276,7 +284,24 @@ export interface BoqItem extends BaseEntity {
   totalPrice: number;
 }
 
-export type IpcStatus = 'draft' | 'submitted' | 'approved' | 'rejected';
+export type IpcStatus = 'draft' | 'submitted' | 'under-review' | 'approved' | 'rejected';
+
+/**
+ * Phase 14 O2/O5/O6: explicit "not available" contract. A missing financial
+ * value is NEVER reported as 0 — it is reported as unavailable with a reason.
+ */
+export type UnavailableReason =
+  | 'NOT_ENTERED'
+  | 'PAYMENTS_DEFERRED'
+  | 'TAX_RULES_UNDEFINED'
+  | 'RETENTION_RULES_UNDEFINED'
+  | 'ADVANCE_RULES_UNDEFINED';
+
+export interface UnavailableField {
+  value: null;
+  unavailable: true;
+  reason: UnavailableReason;
+}
 
 export interface Ipc extends BaseEntity {
   projectId: Id;
@@ -296,4 +321,19 @@ export interface IpcItem extends BaseEntity {
   previousQuantity: number;
   currentQuantity: number;
   totalQuantity: number;
+}
+
+/** Phase 14 O4: append-only IPC status transition log. */
+export type IpcDecision = 'approve' | 'reject';
+
+export interface IpcStatusEvent {
+  id: Id;
+  ipcId: Id;
+  fromStatus: IpcStatus | null;
+  toStatus: IpcStatus;
+  actorUserId: Id;
+  actorUsername: string;
+  decision?: IpcDecision | null;
+  notes?: string | null;
+  createdAt: string;
 }

@@ -17,6 +17,8 @@ export class UserRepository extends PgBaseRepository<User> {
       passwordHash: row.password_hash,
       roleName: row.role_name,
       isActive: row.is_active,
+      department: row.department,
+      title: row.title,
       createdAt: row.created_at,
       updatedAt: row.updated_at
     };

@@ -7,13 +7,12 @@ import { documentLinkRepository } from '../../repositories/document-link.reposit
 import path from 'path';
 import fs from 'fs';
 import { ZipArchive } from 'archiver';
-<<<<<<< HEAD
 import { applyPagination, applySearch, applySort } from '../../services/filter.service.js';
 import { fileStorageService } from '../../storage/file-storage.js';
 import { projectRepository } from '../../repositories/project.repository.js';
 import { ipcRepository } from '../../repositories/ipc.repository.js';
 import { excelService } from '../../services/excel.service.js';
-import { requireAuth, requirePermission, requireProjectAccess, requestContext } from '../../middleware/auth.js';
+import { requireAuth, requirePermission, requireAnyPermission, requireProjectAccess, requestContext } from '../../middleware/auth.js';
 import type { AuthedRequest } from '../../middleware/auth.js';
 import { scopeDocumentRow, scopeFromBody, filterVisible, checkFilterProject } from '../../services/projectScope.js';
 import { can } from '../../services/authorization.service.js';
@@ -22,29 +21,105 @@ import { notificationService } from '../../services/notification.service.js';
 import { deleteSafety } from '../../services/stock.service.js';
 import { createId } from '../../shared/id.js';
 import { nowIso } from '../../shared/time.js';
-=======
-import { applyPagination, applySearch, applySort } from '../../services/filter.service';
-import { fileStorageService } from '../../storage/file-storage';
-import { projectRepository } from '../../repositories/project.repository';
-import { ipcRepository } from '../../repositories/ipc.repository';
-import { excelService } from '../../services/excel.service';
-import { requireAuth, requirePermission, requireProjectAccess, requestContext } from '../../middleware/auth';
-import type { AuthedRequest } from '../../middleware/auth';
-import { scopeDocumentRow, scopeFromBody, filterVisible, checkFilterProject } from '../../services/projectScope';
-import { can } from '../../services/authorization.service';
-import { auditService } from '../../services/audit.service';
-import { notificationService } from '../../services/notification.service';
-import { deleteSafety } from '../../services/stock.service';
-import { createId } from '../../shared/id';
-import { nowIso } from '../../shared/time';
->>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
-import type { DocumentRevision } from '@cos/shared';
+import type { Document, DocumentRevision } from '@cos/shared';
+
+/**
+ * D6 conservative allowlist: PDF, images and Office documents only.
+ * `svg`/`html`/text-extensions-other are deliberately excluded — they are
+ * the classic stored-XSS carriers when served inline or reopened in a
+ * browser context.
+ */
+const isZip = (b: Buffer) => b.subarray(0, 4).toString('latin1') === 'PK\x03\x04';
+const isOle = (b: Buffer) => b.subarray(0, 8).toString('hex') === 'd0cf11e0a1b11ae1';
+
+const UPLOAD_ALLOWLIST: Record<string, (head: Buffer) => boolean> = {
+  pdf: (b) => b.subarray(0, 5).toString('latin1') === '%PDF-',
+  png: (b) => b.subarray(0, 8).toString('hex') === '89504e470d0a1a0a',
+  jpg: (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
+  jpeg: (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
+  gif: (b) => ['GIF87a', 'GIF89a'].includes(b.subarray(0, 6).toString('latin1')),
+  webp: (b) =>
+    b.subarray(0, 4).toString('latin1') === 'RIFF' && b.subarray(8, 12).toString('latin1') === 'WEBP',
+  txt: (b) => !b.includes(0),
+  csv: (b) => !b.includes(0),
+  zip: isZip,
+  docx: isZip,
+  xlsx: isZip,
+  pptx: isZip,
+  doc: isOle,
+  xls: isOle,
+  ppt: isOle,
+};
+
+/**
+ * Server-side content validation for an accepted upload. Returns an Arabic
+ * error message, or null when the file is acceptable.
+ * Runs AFTER multer stored the temp file and BEFORE any metadata row or
+ * permanent storage location is created.
+ */
+const validateUpload = (file: { originalname: string; path: string }): string | null => {
+  const ext = extOf(repairFileName(file.originalname));
+  const signature = UPLOAD_ALLOWLIST[ext];
+  if (!signature) {
+    return 'نوع الملف غير مسموح. المسموح: PDF، صور، ومستندات Office فقط.';
+  }
+  let head: Buffer;
+  try {
+    const fd = fs.openSync(file.path, 'r');
+    try {
+      head = Buffer.alloc(16);
+      fs.readSync(fd, head, 0, 16, 0);
+    } finally {
+      fs.closeSync(fd);
+    }
+  } catch {
+    return 'تعذر قراءة الملف المرفوع.';
+  }
+  if (!signature(head)) {
+    return 'محتوى الملف لا يطابق امتداده. رفض الملف.';
+  }
+  return null;
+};
+
+// D6 (owner-approved): 25 MB per upload. nginx is configured to match.
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
 const upload = multer({
   dest: 'temp',
-  // aligned with nginx client_max_body_size (50M); prevents disk-fill abuse
-  limits: { fileSize: 50 * 1024 * 1024 },
+  limits: { fileSize: MAX_UPLOAD_BYTES },
+  fileFilter: (_req, file, cb) => {
+    // Defense in depth: the extension is checked again against content bytes
+    // in validateUpload; the client MIME type is never trusted on its own.
+    if (!UPLOAD_ALLOWLIST[extOf(repairFileName(file.originalname))]) {
+      cb(new Error('UNSUPPORTED_FILE_TYPE'));
+      return;
+    }
+    cb(null, true);
+  },
 });
+
+/** Best-effort removal of a rejected temp upload (never a stored file). */
+const removeTempFile = (tempPath: string) => {
+  try {
+    if (existsSync(tempPath)) unlinkSync(tempPath);
+  } catch {
+    /* ignore */
+  }
+};
+
+/** Upload middleware with explicit 4xx answers instead of a generic 500. */
+const singleUpload = (field: string) =>
+  (req: import('express').Request, res: import('express').Response, next: import('express').NextFunction) =>
+    upload.single(field)(req, res, (err: any) => {
+      if (!err) return next();
+      if (err?.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({
+          message: `حجم الملف يتجاوز الحد المسموح (${MAX_UPLOAD_BYTES / (1024 * 1024)} ميجابايت).`,
+          code: 'FILE_TOO_LARGE',
+        });
+      }
+      return res.status(400).json({ message: 'نوع الملف غير مسموح أو تعذر رفعه.', code: 'UNSUPPORTED_FILE_TYPE' });
+    });
 
 const STATUS_AR: Record<string, string> = {
   draft: 'مسودة',
@@ -66,6 +141,30 @@ const checkIpcProject = async (projectId?: string, ipcId?: string): Promise<stri
   const ipc = await ipcRepository.findById(ipcId);
   if (!ipc) return 'المستخلص غير موجود';
   if (projectId && ipc.projectId !== projectId) return 'المستخلص لا ينتمي لهذا المشروع';
+  return null;
+};
+
+/**
+ * Sniff the first bytes of a stored file and return its extension ONLY when
+ * the real content matches the declared extension. A mismatch (e.g. HTML
+ * stored under a `.pdf` name) returns null so the caller forces a download.
+ */
+const inferExtension = (absolute: string, declaredExt: string): string | null => {
+  try {
+    const fd = fs.openSync(absolute, 'r');
+    try {
+      const head = Buffer.alloc(16);
+      fs.readSync(fd, head, 0, 16, 0);
+      for (const ext of Object.keys(UPLOAD_ALLOWLIST)) {
+        if (ext !== declaredExt.toLowerCase()) continue;
+        if (UPLOAD_ALLOWLIST[ext](head)) return ext;
+      }
+    } finally {
+      fs.closeSync(fd);
+    }
+  } catch {
+    return null;
+  }
   return null;
 };
 
@@ -131,12 +230,32 @@ const MIME: Record<string, string> = {
   jpeg: 'image/jpeg',
   gif: 'image/gif',
   webp: 'image/webp',
-  svg: 'image/svg+xml',
   txt: 'text/plain; charset=utf-8',
   csv: 'text/csv; charset=utf-8',
+  // svg is intentionally absent: never served, see forceAttachment
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  xls: 'application/vnd.ms-excel',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  ppt: 'application/vnd.ms-powerpoint',
+  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  zip: 'application/zip',
 };
 
+/**
+ * Only these extensions may ever be rendered inline by a browser. Anything
+ * else — including any legacy file still stored with an .svg/.html/.xhtml
+ * extension from before the allowlist — is forced to download, and inline
+ * responses carry a deny-by-default CSP so a payload can never execute in
+ * the application origin.
+ */
+const INLINE_SAFE = new Set(['pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp']);
+const UNSAFE_INLINE = new Set(['svg', 'html', 'htm', 'xhtml', 'xht', 'xml']);
+
 const mimeFor = (ext: string) => MIME[ext.toLowerCase()] ?? 'application/octet-stream';
+
+/** attachment for anything that is not proven inline-safe */
+const forceAttachment = (ext: string) => UNSAFE_INLINE.has(ext.toLowerCase()) || !INLINE_SAFE.has(ext.toLowerCase());
 
 /**
  * Content-Disposition safe for HTTP headers and all browsers:
@@ -178,8 +297,22 @@ const sendDocumentFile = async (req: AuthedRequest, res: import('express').Respo
   const absolute = fileStorageService.resolveAbsolute(filePath); // throws on path traversal
   if (!existsSync(absolute)) return res.status(404).json({ message: 'ملف المستند غير موجود على الخادم' });
 
-  res.setHeader('Content-Type', mimeFor(ext));
-  res.setHeader('Content-Disposition', contentDisposition(inline ? 'inline' : 'attachment', fileName));
+  // D6: an inline response is only ever used for proven-inline-safe types;
+  // everything else is downloaded, and no inline response ever gets an
+  // origin that could execute embedded script.
+  const asInline = inline && !forceAttachment(ext);
+  // A stored extension is not trustworthy on its own: sniff the bytes too.
+  const sniffInline = asInline ? inferExtension(absolute, ext) : null;
+
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  if (asInline && sniffInline) {
+    res.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; sandbox");
+    res.setHeader('Content-Type', mimeFor(sniffInline));
+    res.setHeader('Content-Disposition', contentDisposition('inline', fileName));
+  } else {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Disposition', contentDisposition('attachment', fileName));
+  }
   // explicit error handling: a missing/unreadable file becomes a clean 500/404
   // instead of a hanging or empty (204-like) response
   res.sendFile(absolute, (err) => {
@@ -206,16 +339,22 @@ documentsRouter.get('/:id/file', requireAnyDownloadPermission(), async (req, res
   sendDocumentFile(req as AuthedRequest, res, !download);
 });
 
-function requireAnyDownloadPermission() {
-  return (req: AuthedRequest, res: import('express').Response, next: import('express').NextFunction) => {
-    // inline preview needs view; explicit downloads need download permission unless they only have view
-    if (req.user?.permissions.includes('archive.download') || req.user?.permissions.includes('archive.view')) next();
-    else res.status(403).json({ message: 'ليس لديك صلاحية لعرض المستندات' });
-  };
-}
+/**
+ * WP-2.6: route-level gate for file access. Uses central authorization
+ * (role + overrides, DENY-precedence) — never the stale req.user snapshot.
+ * Project-level narrowing happens inside sendDocumentFile (hides existence).
+ */
+const requireAnyDownloadPermission = () =>
+  requireAnyPermission('archive.view', 'archive.download');
 
-documentsRouter.post('/upload', requireProjectAccess('archive.upload', scopeFromBody()), upload.single('file'), async (req: AuthedRequest, res) => {
+documentsRouter.post('/upload', requireProjectAccess('archive.upload', scopeFromBody()), singleUpload('file'), async (req: AuthedRequest, res) => {
   if (!req.file) return res.status(400).json({ message: 'الملف مطلوب' });
+  // D6: extension allowlist + content sniffing (never trust the client MIME).
+  const uploadError = validateUpload(req.file);
+  if (uploadError) {
+    removeTempFile(req.file.path);
+    return res.status(400).json({ message: uploadError, code: 'UNSUPPORTED_FILE_TYPE' });
+  }
   const body = { ...req.body, tags: parseTags(req.body.tags) };
   const parsed = documentSchema.safeParse(body);
   if(!parsed.success) return res.status(400).json({ message: 'بيانات المستند غير صالحة', issues: parsed.error.flatten() });
@@ -267,11 +406,17 @@ documentsRouter.post('/upload', requireProjectAccess('archive.upload', scopeFrom
 documentsRouter.post(
   '/:id/revisions',
   requireProjectAccess('archive.edit', scopeDocumentRow()),
-  upload.single('file'),
+  singleUpload('file'),
   async (req: AuthedRequest, res) => {
     const item = await documentRepository.findById(String(req.params.id));
     if (!item) return res.status(404).json({ message: 'المستند غير موجود' });
     if(!req.file) return res.status(400).json({ message: 'الملف مطلوب' });
+
+    const uploadError = validateUpload(req.file);
+    if (uploadError) {
+      removeTempFile(req.file.path);
+      return res.status(400).json({ message: uploadError, code: 'UNSUPPORTED_FILE_TYPE' });
+    }
 
     const project = item.projectId ? await projectRepository.findById(item.projectId) : undefined;
     const originalName = repairFileName(req.file.originalname);
@@ -308,15 +453,50 @@ documentsRouter.post('/:id/links', requireProjectAccess('archive.edit', scopeDoc
   if (!entityType || !entityId) return res.status(400).json({ message: 'Missing entityType or entityId' });
   const existing = await documentRepository.findById(String(req.params.id));
   if (!existing) return res.status(404).json({ message: 'Document not found' });
+  // WP-2.6: new links must live inside the SAME project the document belongs
+  // to; a cross-project link is how document rows leak into foreign projects.
+  const linkError = await checkLinkProject(existing, entityType, entityId);
+  if (linkError) return res.status(400).json({ message: linkError });
   const link = await documentLinkRepository.link(existing.id, entityType, entityId);
+  auditService.log(req, 'link', 'document', existing.id, undefined, { entityType, entityId });
   res.status(201).json(link);
 });
+
+/**
+ * Cross-project guard for new links. Project-scoped entity types must resolve
+ * to an object whose projectId equals the document's own project; a document
+ * without a project cannot be linked to project-scoped data at all.
+ */
+async function checkLinkProject(doc: Document, entityType: string, entityId: string): Promise<string | null> {
+  switch (entityType) {
+    case 'project': {
+      if (!doc.projectId) return 'المستند غير مرتبط بمشروع.';
+      return entityId === doc.projectId ? null : 'كيان الرابط لا ينتمي لنفس المشروع.';
+    }
+    case 'ipc': {
+      const ipc = await ipcRepository.findById(entityId);
+      if (!ipc) return 'المستخلص غير موجود';
+      if (!doc.projectId || ipc.projectId !== doc.projectId) return 'المستخلص لا ينتمي لنفس المشروع.';
+      return null;
+    }
+    default:
+      return null;
+  }
+}
 
 documentsRouter.delete('/links/:linkId', requirePermission('archive.edit'), async (req: AuthedRequest, res) => {
   const linkId = String(req.params.linkId);
   const link = await documentLinkRepository.findById(linkId);
   if (!link) return res.status(404).json({ message: 'Link not found' });
+  // WP-2.6: deleting a link is document edit scope, enforced on the
+  // LINKED DOCUMENT'S project (existence hides through the same 404 path).
+  const ctx = await requestContext(req);
+  const document = await documentRepository.findById(link.documentId!);
+  if (!document) return res.status(404).json({ message: 'Link not found' });
+  if (!can(ctx, 'archive.edit', document.projectId ?? undefined))
+    return res.status(404).json({ message: 'Link not found' });
   await documentLinkRepository.delete(linkId);
+  auditService.log(req, 'unlink', 'document', link.documentId!, undefined, { entityType: link.entityType, entityId: link.entityId });
   res.status(204).end();
 });
 
@@ -379,20 +559,42 @@ documentsRouter.patch('/:id/status', requireProjectAccess('archive.edit', scopeD
 
 // --- PHASE 3: ZIP Export ---
 documentsRouter.post('/export/zip', requirePermission('archive.download'), async (req: AuthedRequest, res) => {
-  const { documentIds = [], folderIds = [] } = req.body;
+  const documentIds = Array.isArray(req.body?.documentIds) ? req.body.documentIds : [];
+  const folderIds = Array.isArray(req.body?.folderIds) ? req.body.folderIds : [];
   if (!Array.isArray(documentIds) || !Array.isArray(folderIds)) {
     return res.status(400).json({ message: 'Invalid payload' });
   }
 
-  // Basic implementation: fetch specified documents, scoped to membership.
+  // WP-2.6: the archive is scoped with the DOWNLOAD key (not view) and by
+  // project — a caller never receives rows from projects they cannot read.
   const ctx = await requestContext(req);
-  const allDocs = filterVisible(ctx, await documentRepository.list(), (d) => d.projectId, 'archive.view');
-  
+  const allDocs = filterVisible(ctx, await documentRepository.list(), (d) => d.projectId, 'archive.download');
+
+  const wantedDocs = new Set(documentIds.map(String));
+  const wantedFolders = new Set(folderIds.map(String));
+  const selected = allDocs.filter((doc) =>
+    wantedDocs.has(String(doc.id))
+    || (doc.folderId && wantedFolders.has(String(doc.folderId))),
+  );
+  if (selected.length === 0) {
+    // fail closed: an empty selection is an empty archive, never an error
+    // that reveals whether the ids exist.
+    const empty = new ZipArchive({ zlib: { level: 9 } });
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', 'attachment; filename="documents_export.zip"');
+    empty.on('error', (err: any) => {
+      if (!res.headersSent) res.status(500).send({ error: err.message });
+    });
+    empty.pipe(res);
+    empty.finalize();
+    return;
+  }
+
   const archive = new ZipArchive({ zlib: { level: 9 } });
-  
+
   res.setHeader('Content-Type', 'application/zip');
   res.setHeader('Content-Disposition', 'attachment; filename="documents_export.zip"');
-  
+
   archive.on('error', (err: any) => {
     if (!res.headersSent) res.status(500).send({ error: err.message });
   });
@@ -400,9 +602,9 @@ documentsRouter.post('/export/zip', requirePermission('archive.download'), async
   archive.pipe(res);
 
   const processedFiles = new Set();
-  
-  for (const doc of allDocs) {
-    if (documentIds.includes(doc.id)) {
+
+  for (const doc of selected) {
+    if (!doc.filePath) continue;
       if (!doc.filePath) continue;
       
       let fullPath: string;
@@ -427,11 +629,17 @@ documentsRouter.post('/export/zip', requirePermission('archive.download'), async
   archive.finalize();
 });
 
-documentsRouter.post('/:id/replace', requireProjectAccess('archive.edit', scopeDocumentRow()), upload.single('file'), async (req: AuthedRequest, res) => {
+documentsRouter.post('/:id/replace', requireProjectAccess('archive.edit', scopeDocumentRow()), singleUpload('file'), async (req: AuthedRequest, res) => {
   const id = String(req.params.id);
   const item = await documentRepository.findById(id);
   if (!item) return res.status(404).json({ message: 'المستند غير موجود' });
   if(!req.file) return res.status(400).json({ message: 'الملف مطلوب' });
+
+  const uploadError = validateUpload(req.file);
+  if (uploadError) {
+    removeTempFile(req.file.path);
+    return res.status(400).json({ message: uploadError, code: 'UNSUPPORTED_FILE_TYPE' });
+  }
   const project = item.projectId ? await projectRepository.findById(item.projectId) : undefined;
   const originalName = repairFileName(req.file.originalname);
   const relativePath = fileStorageService.storeFromTemp(req.file.path, originalName, project?.projectCode, item.category);

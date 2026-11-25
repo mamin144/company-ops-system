@@ -1,0 +1,2 @@
+ملف بديل تجريبي (تجهيزة فحص ثابتة) — لا يحوي بيانات حقيقية.
+Stage-101 replacement fixture for the archive replace/revision flows.

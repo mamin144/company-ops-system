@@ -20,7 +20,11 @@ export class ProjectRepository extends PgBaseRepository<Project> {
       siteLocation: row.site_location,
       region: row.region,
       contractNumber: row.contract_number,
-      contractValue: Number(row.contract_value ?? 0),
+      // O2: NULL means "not entered" — never coerce to 0 (a stored 0.00 is
+      // real data and must survive the round trip).
+      contractValue: row.contract_value === null || row.contract_value === undefined
+        ? undefined
+        : Number(row.contract_value),
       startDate: row.start_date ? new Date(row.start_date).toISOString() : undefined,
       endDate: row.end_date ? new Date(row.end_date).toISOString() : undefined,
       status: row.status,
@@ -28,8 +32,27 @@ export class ProjectRepository extends PgBaseRepository<Project> {
       notes: row.notes,
       createdBy: row.created_by,
       createdAt: row.created_at,
-      updatedAt: row.updated_at
+      updatedAt: row.updated_at,
+      deletedAt: row.deleted_at ? new Date(row.deleted_at).toISOString() : null,
+      deletedBy: row.deleted_by ?? null,
     };
+  }
+
+  /**
+   * O12: normal listings never show logically deleted projects.
+   * Replaces the base `SELECT *` with an explicit active-only filter.
+   */
+  async list(): Promise<Project[]> {
+    const result = await pool.query(
+      `SELECT * FROM projects WHERE deleted_at IS NULL ORDER BY created_at DESC`,
+    );
+    return result.rows.map(this.mapRowToEntity.bind(this));
+  }
+
+  /** Authorized "show deleted" listing (caller enforces the delete gate). */
+  async listIncludingDeleted(): Promise<Project[]> {
+    const result = await pool.query(`SELECT * FROM projects ORDER BY created_at DESC`);
+    return result.rows.map(this.mapRowToEntity.bind(this));
   }
 
   async create(input: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>): Promise<Project> {
@@ -38,7 +61,7 @@ export class ProjectRepository extends PgBaseRepository<Project> {
     await pool.query(
       `INSERT INTO projects (id, project_code, project_name, client, owner, main_contractor, site_location, region, contract_number, contract_value, start_date, end_date, status, role, notes, created_by, created_at, updated_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
-      [id, input.projectCode, input.projectName, input.client ?? '', input.owner ?? '', input.mainContractor ?? '', input.siteLocation ?? '', input.region || null, input.contractNumber ?? '', input.contractValue ?? 0, input.startDate || null, input.endDate || null, input.status, input.role || null, input.notes || null, input.createdBy || null, now, now]
+      [id, input.projectCode, input.projectName, input.client ?? '', input.owner ?? '', input.mainContractor ?? '', input.siteLocation ?? '', input.region || null, input.contractNumber ?? '', input.contractValue ?? null, input.startDate || null, input.endDate || null, input.status, input.role || null, input.notes || null, input.createdBy || null, now, now]
     );
     return { ...input, id, createdAt: now, updatedAt: now };
   }
@@ -75,6 +98,36 @@ export class ProjectRepository extends PgBaseRepository<Project> {
       params
     );
     
+    if (result.rows.length === 0) return undefined;
+    return this.mapRowToEntity(result.rows[0]);
+  }
+
+  /**
+   * O12: logical delete. Children (sites, BOQ, IPCs, documents, warehouses,
+   * stock) are left untouched — no cascade, no physical removal.
+   */
+  async softDelete(id: string, deletedBy: string | null): Promise<Project | undefined> {
+    const now = nowIso();
+    const result = await pool.query(
+      `UPDATE projects
+          SET deleted_at = $1, deleted_by = $2, updated_at = $1
+        WHERE id = $3 AND deleted_at IS NULL
+        RETURNING *`,
+      [now, deletedBy, id],
+    );
+    if (result.rows.length === 0) return undefined;
+    return this.mapRowToEntity(result.rows[0]);
+  }
+
+  async restore(id: string): Promise<Project | undefined> {
+    const now = nowIso();
+    const result = await pool.query(
+      `UPDATE projects
+          SET deleted_at = NULL, deleted_by = NULL, updated_at = $1
+        WHERE id = $2 AND deleted_at IS NOT NULL
+        RETURNING *`,
+      [now, id],
+    );
     if (result.rows.length === 0) return undefined;
     return this.mapRowToEntity(result.rows[0]);
   }

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" direction="rtl">
+<title>A — Operations Desk (structural schematic, synthetic data)</title>
+<rect width="1200" height="660" fill="#f4f6f9"/>
+<text x="600" y="30" text-anchor="middle" font-size="20" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">A — مكتب العمليات · كثافة قصوى ولوحة أوامر</text>
+<text x="600" y="52" text-anchor="middle" font-size="12" font-family="Cairo, sans-serif" fill="#64748b">مخطط هيكلي للمقارنة فقط — بيانات تخيلية، ليست تصميماً نهائياً</text>
+<!-- rail -->
+<rect x="1110" y="65" width="70" height="420" rx="8" fill="#0f172a"/>
+<circle cx="1145" cy="105" r="13" fill="#2563eb"/>
+<g fill="#334155"><rect x="1128" y="130" width="34" height="9" rx="4"/><rect x="1128" y="148" width="34" height="9" rx="4"/><rect x="1128" y="166" width="34" height="9" rx="4"/><rect x="1128" y="184" width="34" height="9" rx="4"/></g>
+<text x="1145" y="450" text-anchor="middle" font-size="10" font-family="Cairo, sans-serif" fill="#94a3b8">شريط أيقونات</text>
+<!-- command bar -->
+<rect x="20" y="65" width="1070" height="50" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+<text x="1050" y="96" font-size="15" font-family="Cairo, sans-serif" fill="#0f172a">⌘K — انتقال، أوامر، بحث شامل (المصدر: /api/search)</text>
+<!-- queue strip: verified sources only -->
+<rect x="20" y="125" width="1070" height="64" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+<rect x="20" y="125" width="6" height="64" fill="#dc2626"/>
+<text x="1050" y="151" font-size="14" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">طلبات مقدمة للمراجعة: ٢ · ٣ أصناف حد أمان (stock/overview)</text>
+<text x="1050" y="172" font-size="11" font-family="Cairo, sans-serif" fill="#64748b">بلا IPCs معلقة وبلا فشل استيراد — لا مصدر افتراضي لها في اللوحة</text>
+<!-- dense table -->
+<rect x="20" y="199" width="1070" height="286" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+<rect x="20" y="199" width="1070" height="34" fill="#f1f5f9"/>
+<text x="1050" y="222" font-size="13" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">الكود · الاسم · المشروع · الحالة · إجراء [فرز + ترقيم + تحديد مجمع]</text>
+<g font-size="13" font-family="Cairo, sans-serif" fill="#0f172a">
+<text x="1050" y="260">MR-012 · حديد تسليح · PRJ-004 · <tspan fill="#2563eb">● مقدمة</tspan> · [اعتماد] [رفض]</text>
+<text x="1050" y="290">STK · أسمنت · المخزن المركزي · <tspan fill="#dc2626">● تحت الحد</tspan> · [طلب توريد]</text>
+<text x="1050" y="320">DOC-220 · مخططات v03 · PRJ-004 · <tspan fill="#d97706">● قيد المراجعة</tspan> · [معاينة]</text>
+<text x="1050" y="350">IPC-03 · مستخلص · PRJ-004 · <tspan fill="#2563eb">● مقدمة</tspan> · [مراجعة البنود]</text>
+</g>
+<text x="1050" y="390" font-size="11" font-family="Cairo, sans-serif" fill="#64748b">أرقام tabular، حالات موثقة فقط، الجداول تتحول لسجلات عمودية — صفر تمرير أفقي</text>
+<rect x="380" y="410" width="360" height="40" rx="8" fill="#0f172a"/>
+<text x="560" y="435" text-anchor="middle" font-size="13" font-family="Cairo, sans-serif" fill="#fff">تم تحديد ٣ — تحميل ZIP · مسح التحديد</text>
+<!-- mobile -->
+<rect x="20" y="500" width="1070" height="60" rx="8" fill="#0f172a"/>
+<text x="555" y="525" text-anchor="middle" font-size="13" font-family="Cairo, sans-serif" fill="#f1f5f9">موبايل: شريط سفلي (٥ أقسام) + بطاقات بدل الجداول + زر إجراء سفلي</text>
+<text x="555" y="548" text-anchor="middle" font-size="11" font-family="Cairo, sans-serif" fill="#94a3b8">أهداف لمس ≥44px، لا تمرير أفقي للصفحة</text>
+<text x="600" y="600" text-anchor="middle" font-size="12" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">قوة: سرعة الخبراء · خطر: إرهاق الأدوار العرضية · يحفظ: كل الطرق والصلاحيات</text>
+<text x="600" y="630" text-anchor="middle" font-size="11" font-family="Cairo, sans-serif" fill="#64748b">مقارنة هيكلية عادلة — انظر B وC بنفس السيناريو (صباح عمل: اعتمادان + نقص مخزون + مشروع PRJ-004)</text>
+</svg>

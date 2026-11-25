@@ -12,7 +12,6 @@
  * - Null projectId means global/unscoped (constraint does not apply).
  */
 import type { Request } from 'express';
-<<<<<<< HEAD
 import { pool } from '../database/connection.js';
 import { projectRepository } from '../repositories/project.repository.js';
 import { documentRepository } from '../repositories/document.repository.js';
@@ -21,16 +20,6 @@ import { warehouseRepository } from '../repositories/warehouse.repository.js';
 import { materialRequestRepository } from '../repositories/material-request.repository.js';
 import { can } from './authorization.service.js';
 import type { AuthzContext, AccessLevel } from './authorization.service.js';
-=======
-import { pool } from '../database/connection';
-import { projectRepository } from '../repositories/project.repository';
-import { documentRepository } from '../repositories/document.repository';
-import { siteRepository } from '../repositories/site.repository';
-import { warehouseRepository } from '../repositories/warehouse.repository';
-import { materialRequestRepository } from '../repositories/material-request.repository';
-import { can } from './authorization.service';
-import type { AuthzContext, AccessLevel } from './authorization.service';
->>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 
 export type ScopeResolution = { projectId: string | null } | { missing: true };
 export type ScopeResolver = (req: Request) => Promise<ScopeResolution>;
@@ -52,7 +41,9 @@ export const scopeFromParam = (param = 'projectId'): ScopeResolver => async (req
   const v = (req.params as Record<string, unknown> | undefined)?.[param];
   if (typeof v !== 'string' || !v) return { missing: true };
   const project = await projectRepository.findById(v);
-  if (!project) return { missing: true };
+  // O12: a logically deleted project's nested collections are inert
+  // (no new BOQ/IPC/child work on a deleted project).
+  if (!project || project.deletedAt) return { missing: true };
   return { projectId: project.id };
 };
 

@@ -71,13 +71,13 @@ export class StockService {
     }));
   }
 
-  async totalStockPerItem() {
-    const transactions = await this.listTransactions();
+  async totalStockPerItem(transactions?: StockTransaction[]) {
+    const txList = transactions ?? await this.listTransactions();
     const items = await itemRepository.list();
     return items.map((item) => ({
       item,
       // company-wide net is transfer-neutral (one out + one in cancel)
-      quantity: transactions.reduce((sum, tx) => {
+      quantity: txList.reduce((sum, tx) => {
         let total = sum;
         for (const line of transactionLines(tx)) {
           if (line.itemId === item.id && tx.type !== 'TRANSFER') total += signedQty(tx, line.quantity);
@@ -89,17 +89,17 @@ export class StockService {
     }));
   }
 
-  async lowStockItems() {
-    const totals = await this.totalStockPerItem();
+  async lowStockItems(transactions?: StockTransaction[]) {
+    const totals = await this.totalStockPerItem(transactions);
     return totals.filter(
       ({ item, quantity }: { item: any; quantity: number }) => typeof item.minimumStock === 'number' && item.minimumStock > 0 && quantity < item.minimumStock!,
     );
   }
 
-  async summaryByType(): Promise<Record<string, number>> {
+  async summaryByType(transactions?: StockTransaction[]): Promise<Record<string, number>> {
     const summary: Record<string, number> = { IN: 0, OUT: 0, TRANSFER: 0, ADJUSTMENT: 0, RETURN: 0 };
-    const transactions = await this.listTransactions();
-    for (const tx of transactions) {
+    const txList = transactions ?? await this.listTransactions();
+    for (const tx of txList) {
       for (const line of transactionLines(tx)) summary[tx.type] = (summary[tx.type] ?? 0) + line.quantity;
     }
     return summary;

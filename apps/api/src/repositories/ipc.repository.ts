@@ -1,8 +1,25 @@
-import type { Ipc, IpcItem } from '@cos/shared';
+import type { Ipc, IpcItem, IpcStatusEvent, IpcStatus, IpcDecision } from '@cos/shared';
+import type { PoolClient } from 'pg';
 import { PgBaseRepository } from './pg-base.repository.js';
 import { pool } from '../database/connection.js';
 import { createId } from '../shared/id.js';
 import { nowIso } from '../shared/time.js';
+
+/** NULL-aware numeric mapping: a NULL column is "not entered", not 0. */
+const nullableNumber = (value: unknown): number | undefined =>
+  value === null || value === undefined ? undefined : Number(value);
+
+const mapStatusEvent = (row: any): IpcStatusEvent => ({
+  id: row.id,
+  ipcId: row.ipc_id,
+  fromStatus: row.from_status ?? null,
+  toStatus: row.to_status,
+  actorUserId: row.actor_user_id,
+  actorUsername: row.actor_username,
+  decision: row.decision ?? null,
+  notes: row.notes ?? null,
+  createdAt: row.created_at,
+});
 
 export class IpcRepository extends PgBaseRepository<Ipc> {
   constructor() {
@@ -17,9 +34,9 @@ export class IpcRepository extends PgBaseRepository<Ipc> {
       date: row.date ? new Date(row.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       status: row.status,
       notes: row.notes,
-      netAmount: Number(row.net_amount || 0),
-      deductions: Number(row.deductions || 0),
-      grossAmount: Number(row.gross_amount ?? 0),
+      netAmount: nullableNumber(row.net_amount),
+      deductions: nullableNumber(row.deductions),
+      grossAmount: nullableNumber(row.gross_amount),
       createdAt: row.created_at,
       updatedAt: row.updated_at
     };
@@ -32,7 +49,7 @@ export class IpcRepository extends PgBaseRepository<Ipc> {
     await pool.query(
       `INSERT INTO ipcs (id, project_id, ipc_number, date, status, notes, deductions, gross_amount, created_at, updated_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-      [id, input.projectId, input.ipcNumber, input.date, input.status, input.notes || null, input.deductions || 0, input.grossAmount || 0, now, now]
+      [id, input.projectId, input.ipcNumber, input.date, input.status, input.notes || null, input.deductions ?? null, input.grossAmount ?? null, now, now]
     );
     return { ...input, id, netAmount: 0, createdAt: now, updatedAt: now };
   }
@@ -63,6 +80,85 @@ export class IpcRepository extends PgBaseRepository<Ipc> {
     
     if (result.rows.length === 0) return undefined;
     return this.mapRowToEntity(result.rows[0]);
+  }
+
+  // ---------------------------------------------------------------------
+  // Phase 14 O4 — IPC approval workflow helpers (transactional).
+  // All mutating helpers accept a PoolClient so the caller owns BEGIN/COMMIT.
+  // ---------------------------------------------------------------------
+
+  /** Row lock for a concurrency-safe transition. Scoped to the project. */
+  async findByIdForUpdate(client: PoolClient, id: string, projectId?: string): Promise<Ipc | undefined> {
+    const result = projectId
+      ? await client.query(`SELECT * FROM ipcs WHERE id = $1 AND project_id = $2 FOR UPDATE`, [id, projectId])
+      : await client.query(`SELECT * FROM ipcs WHERE id = $1 FOR UPDATE`, [id]);
+    if (result.rows.length === 0) return undefined;
+    return this.mapRowToEntity(result.rows[0]);
+  }
+
+  async setStatus(client: PoolClient, id: string, status: IpcStatus): Promise<Ipc> {
+    const result = await client.query(
+      `UPDATE ipcs SET status = $1, updated_at = $2 WHERE id = $3 RETURNING *`,
+      [status, nowIso(), id],
+    );
+    return this.mapRowToEntity(result.rows[0]);
+  }
+
+  async appendStatusEvent(
+    client: PoolClient,
+    input: {
+      ipcId: string;
+      fromStatus: IpcStatus | null;
+      toStatus: IpcStatus;
+      actorUserId: string;
+      actorUsername: string;
+      decision?: IpcDecision | null;
+      notes?: string | null;
+    },
+  ): Promise<IpcStatusEvent> {
+    const result = await client.query(
+      `INSERT INTO ipc_status_events
+         (id, ipc_id, from_status, to_status, actor_user_id, actor_username, decision, notes, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING *`,
+      [
+        createId(),
+        input.ipcId,
+        input.fromStatus,
+        input.toStatus,
+        input.actorUserId,
+        input.actorUsername,
+        input.decision ?? null,
+        input.notes ?? null,
+        nowIso(),
+      ],
+    );
+    return mapStatusEvent(result.rows[0]);
+  }
+
+  async listStatusEvents(ipcId: string): Promise<IpcStatusEvent[]> {
+    const result = await pool.query(
+      `SELECT * FROM ipc_status_events WHERE ipc_id = $1 ORDER BY created_at ASC, id ASC`,
+      [ipcId],
+    );
+    return result.rows.map(mapStatusEvent);
+  }
+
+  /**
+   * Separation of duties: the actor who submitted (most recently) may not
+   * approve or reject their own submission.
+   */
+  async latestSubmitter(client: PoolClient, ipcId: string): Promise<{ actorUserId: string; actorUsername: string } | undefined> {
+    const result = await client.query(
+      `SELECT actor_user_id, actor_username
+         FROM ipc_status_events
+        WHERE ipc_id = $1 AND to_status = 'submitted'
+        ORDER BY created_at DESC, id DESC
+        LIMIT 1`,
+      [ipcId],
+    );
+    if (result.rows.length === 0) return undefined;
+    return { actorUserId: result.rows[0].actor_user_id, actorUsername: result.rows[0].actor_username };
   }
 }
 

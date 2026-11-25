@@ -12,11 +12,7 @@
  *   -> project-access narrowing (scoped CRUD only; never broadens)
  *   -> global safety (active user, known key).
  */
-<<<<<<< HEAD
 import { pool } from '../database/connection.js';
-=======
-import { pool } from '../database/connection';
->>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 import { ALL_PERMISSIONS } from '@cos/shared';
 
 /** Stable vocabulary (28) + the 3 administration keys. Unknown keys deny. */
@@ -66,6 +62,10 @@ const SCOPED_MIN_LEVEL: Record<string, AccessLevel> = {
   'projects.create': 'WRITE',
   'projects.edit': 'WRITE',
   'projects.delete': 'DELETE',
+  // IPC decisions are project data: an approver must be a member of the IPC's
+  // project at WRITE level. Global base still required (no ROLE_BASE grant).
+  'ipcs.approve': 'WRITE',
+  'ipcs.resubmit': 'WRITE',
   'warehouse.view': 'READ',
   'warehouse.create': 'WRITE',
   'warehouse.edit': 'WRITE',

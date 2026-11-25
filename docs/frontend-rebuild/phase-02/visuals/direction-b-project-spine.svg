@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" direction="rtl">
+<title>B — Project Spine (structural schematic, synthetic data) — alternative, UNAPPROVED</title>
+<rect width="1200" height="660" fill="#f4f6f9"/>
+<text x="600" y="30" text-anchor="middle" font-size="20" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">B — العمود الفقري للمشروع · سياق المشروع أولاً (غير معتمد)</text>
+<text x="600" y="52" text-anchor="middle" font-size="12" font-family="Cairo, sans-serif" fill="#64748b">مخطط هيكلي للمقارنة فقط — بيانات تخيلية، ليست تصميماً نهائياً</text>
+<!-- breadcrumbs -->
+<text x="1160" y="78" text-anchor="end" font-size="12" font-family="Cairo, sans-serif" fill="#64748b">الرئيسية / المشاريع / PRJ-004 / المستندات</text>
+<!-- identity -->
+<rect x="20" y="88" width="1160" height="96" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+<rect x="20" y="88" width="6" height="96" fill="#2563eb"/>
+<text x="1140" y="122" text-anchor="end" font-size="20" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">برج النيل الإداري <tspan font-size="13" fill="#059669">● نشط</tspan></text>
+<text x="1140" y="148" text-anchor="end" font-size="12" font-family="Cairo, sans-serif" fill="#64748b">PRJ-004 · شركة العاصمة · المواقع: ٣ · طلبات معلقة: ٢ (material-requests?projectId=…)</text>
+<text x="1140" y="170" text-anchor="end" font-size="12" font-family="Cairo, sans-serif" fill="#64748b">تبويبات عناوين URL: overview / sites / documents / warehouses / stock / financials</text>
+<!-- scoped docs table -->
+<rect x="20" y="194" width="1160" height="240" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+<rect x="20" y="194" width="1160" height="34" fill="#f1f5f9"/>
+<text x="1140" y="217" text-anchor="end" font-size="13" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">مستندات PRJ-004 — بحث + تصفية بالنوع + تحديد مجمع [معاينة/تنزيل/إصدارات]</text>
+<g font-size="13" font-family="Cairo, sans-serif" fill="#0f172a">
+<text x="1140" y="253">DOC-220 · مخططات إنشائية v03 · <tspan fill="#d97706">● قيد المراجعة</tspan></text>
+<text x="1140" y="283">DOC-198 · مستخلص IPC-03 · <tspan fill="#2563eb">● مقدمة</tspan></text>
+<text x="1140" y="313">DOC-150 · عقد المقاول · <tspan fill="#059669">● معتمد</tspan></text>
+</g>
+<text x="1140" y="353" text-anchor="end" font-size="11" font-family="Cairo, sans-serif" fill="#64748b">نطاق المشروع عبر ?projectId= — الإدارة الكاملة تبقى في مساحة الأرشيف العامة</text>
+<rect x="880" y="380" width="300" height="40" rx="8" fill="#ffffff" stroke="#2563eb"/>
+<text x="1030" y="405" text-anchor="middle" font-size="13" font-weight="bold" font-family="Cairo, sans-serif" fill="#2563eb">فتح مساحة الأرشيف الكاملة ←</text>
+<!-- side queue -->
+<rect x="20" y="444" width="1160" height="56" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+<text x="1140" y="478" text-anchor="end" font-size="13" font-family="Cairo, sans-serif" fill="#0f172a"><tspan fill="#dc2626">●</tspan> MR-012 بانتظار الاعتماد · <tspan fill="#d97706">●</tspan> أسمنت تحت الحد — نشاط المشروع المرتبط فقط</text>
+<!-- mobile -->
+<rect x="20" y="510" width="1160" height="60" rx="8" fill="#0f172a"/>
+<text x="600" y="535" text-anchor="middle" font-size="13" font-family="Cairo, sans-serif" fill="#f1f5f9">موبايل: بطاقة هوية مثبتة + تبويبات ممررة + عمود واحد + إجراء بالإبهام</text>
+<text x="600" y="557" text-anchor="middle" font-size="11" font-family="Cairo, sans-serif" fill="#94a3b8">المناطق العامة (الأصناف/الإدارة/التدقيق) لها بيوت مستقلة خارج المشروع</text>
+<text x="600" y="600" text-anchor="middle" font-size="12" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">قوة: سياقات غير ضائعة · خطر: المبالغة في مركزية المشروع · يحفظ: كل الطرق والصلاحيات</text>
+<text x="600" y="630" text-anchor="middle" font-size="11" font-family="Cairo, sans-serif" fill="#64748b">بديل متماسك غير معتمد — القرار للمالك (Q1) · نفس السيناريو في A وC وD</text>
+</svg>

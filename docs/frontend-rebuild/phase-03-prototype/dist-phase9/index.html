@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>COS v2 — نموذج تفاعلي (بيانات وهمية)</title>
+    <script>
+      // Phase 5: pre-paint language restore. The default (ar/rtl) is corrected
+      // to the saved choice BEFORE any paint so a saved-English reload never
+      // flashes the shell in RTL Arabic. Must mirror src/i18n/direction.ts
+      // exactly: PERSISTENCE_KEY + dirFor. Invalid/missing values keep the
+      // defaults; storage failures (privacy mode, disabled storage) are
+      // swallowed — React's LangProvider re-appplies direction on mount.
+      (function () {
+        try {
+          var l = localStorage.getItem('cos-proto-lang');
+          if (l === 'en' || l === 'ar') {
+            document.documentElement.lang = l;
+            document.documentElement.dir = l === 'en' ? 'ltr' : 'rtl';
+          }
+        } catch (e) { /* keep ar/rtl defaults */ }
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-OjfwmXfl.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D4pNIAft.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

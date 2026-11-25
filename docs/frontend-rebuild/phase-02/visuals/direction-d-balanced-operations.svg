@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" direction="rtl">
+<title>D — Balanced Operations Workspace (structural schematic, synthetic data) — NOT approved</title>
+<rect width="1200" height="660" fill="#f4f6f9"/>
+<text x="600" y="30" text-anchor="middle" font-size="20" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">D — مساحة عمليات متوازنة · عام أولاً، وسياق المشروع حاضر (غير معتمد)</text>
+<text x="600" y="52" text-anchor="middle" font-size="12" font-family="Cairo, sans-serif" fill="#64748b">مخطط هيكلي للمقارنة فقط — بيانات تخيلية، ليست تصميماً نهائياً</text>
+<!-- first-class global nav -->
+<rect x="20" y="65" width="1160" height="46" rx="8" fill="#0f172a"/>
+<text x="600" y="93" text-anchor="middle" font-size="13" font-weight="bold" font-family="Cairo, sans-serif" fill="#f1f5f9">الرئيسية · المشاريع · الأرشيف · المخزون · المالية · الإدارة · التدقيق · الإعدادات — كل الوحدات من الدرجة الأولى</text>
+<!-- home queues: verified sources only -->
+<rect x="20" y="121" width="1160" height="64" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+<rect x="20" y="121" width="6" height="64" fill="#dc2626"/>
+<text x="1140" y="147" text-anchor="end" font-size="14" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">طلبات مقدمة للمراجعة: ٢ (view) · أصناف حد أمان: ٣ (overview) · إجراءات الاعتماد تظهر فقط بصلاحية materialRequests.approve</text>
+<text x="1140" y="170" text-anchor="end" font-size="11" font-family="Cairo, sans-serif" fill="#64748b">بلا IPCs معلقة وبلا فشل استيراد — لا مصدر افتراضياً في اللوحة</text>
+<!-- project workspace (scoped, not forced) -->
+<rect x="610" y="195" width="570" height="250" rx="10" fill="#ffffff" stroke="#2563eb"/>
+<text x="1160" y="223" text-anchor="end" font-size="15" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">PRJ-004 · برج النيل <tspan font-size="12" fill="#059669">● نشط</tspan></text>
+<text x="1160" y="249" text-anchor="end" font-size="13" font-family="Cairo, sans-serif" fill="#0f172a">نظرة · مواقع (٣) · مستندات · مخزون · مالية — تبويبات عناوين URL</text>
+<text x="1160" y="275" text-anchor="end" font-size="13" font-family="Cairo, sans-serif" fill="#0f172a"><tspan fill="#d97706">●</tspan> DOC-220 مخططات v03 قيد المراجعة · <tspan fill="#2563eb">●</tspan> MR-012 مقدمة</text>
+<text x="1160" y="301" text-anchor="end" font-size="12" font-family="Cairo, sans-serif" fill="#64748b">سياق المشروع منظم — العمليات العامة لا تمر عبره إجبارياً</text>
+<rect x="880" y="330" width="280" height="38" rx="7" fill="#ffffff" stroke="#2563eb"/>
+<text x="1020" y="354" text-anchor="middle" font-size="13" font-weight="bold" font-family="Cairo, sans-serif" fill="#2563eb">كل مستندات المشروع ←</text>
+<text x="1160" y="420" text-anchor="end" font-size="11" font-family="Cairo, sans-serif" fill="#64748b">الأصناف العامة والإدارة والتدقيق لها بيوت مستقلة</text>
+<!-- dense global table -->
+<rect x="20" y="195" width="578" height="250" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+<rect x="20" y="195" width="578" height="34" fill="#f1f5f9"/>
+<text x="580" y="218" text-anchor="end" font-size="13" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">الأرشيف/المخزون — جدول كثيف [فرز + تحديد + ZIP]</text>
+<g font-size="13" font-family="Cairo, sans-serif" fill="#0f172a">
+<text x="580" y="254">DOC-220 · مخططات · <tspan fill="#d97706">● قيد المراجعة</tspan> · [معاينة]</text>
+<text x="580" y="284">STK · أسمنت · <tspan fill="#dc2626">● تحت الحد</tspan> · [طلب توريد]</text>
+<text x="580" y="314">IPC-03 · مستخلص · <tspan fill="#2563eb">● مقدمة</tspan> · [مراجعة]</text>
+<text x="580" y="344">DOC-150 · عقد · <tspan fill="#059669">● معتمد</tspan> · [تنزيل]</text>
+</g>
+<text x="580" y="384" text-anchor="end" font-size="11" font-family="Cairo, sans-serif" fill="#64748b">أرقام tabular، سجلات عمودية متجاوبة، شريط مجمع عائم — صفر تمرير أفقي</text>
+<text x="580" y="420" text-anchor="end" font-size="11" font-family="Cairo, sans-serif" fill="#64748b">أزرار التصدير مشروطة reports.view — لا تُعرض للعرض فقط</text>
+<!-- mobile -->
+<rect x="20" y="455" width="1160" height="60" rx="8" fill="#0f172a"/>
+<text x="600" y="480" text-anchor="middle" font-size="13" font-family="Cairo, sans-serif" fill="#f1f5f9">موبايل عملي: شريط سفلي (٥ أقسام) + بطاقات مهام للموقع/المخزن + زر إجراء بالإبهام</text>
+<text x="600" y="502" text-anchor="middle" font-size="11" font-family="Cairo, sans-serif" fill="#94a3b8">مساحة المشروع مكدسة، الجداول بطاقات، لا تمرير أفقي — مصمم للموبايل لا مصغّر منه</text>
+<text x="600" y="552" text-anchor="middle" font-size="12" font-weight="bold" font-family="Cairo, sans-serif" fill="#0f172a">قوة: لا شيء مهم بلا بيت · خطر: أسطح أكثر للبناء والاتساق · يحفظ: كل الطرق والصلاحيات</text>
+<text x="600" y="582" text-anchor="middle" font-size="11" font-family="Cairo, sans-serif" fill="#64748b">مقارنة هيكلية عادلة — نفس السيناريو في A وB وC · بلا مؤشرات مخترعة · غير معتمد</text>
+<text x="600" y="620" text-anchor="middle" font-size="11" font-family="Cairo, sans-serif" fill="#64748b">عربي RTL افتراضي / إنجليزي LTR — الواجهة تُترجم، بيانات الأعمال كما هي من الخادم</text>
+</svg>

@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import multer from 'multer';
-<<<<<<< HEAD
 import { excelService } from '../../services/excel.service.js';
 import { projectRepository } from '../../repositories/project.repository.js';
 import { warehouseRepository } from '../../repositories/warehouse.repository.js';
@@ -16,28 +15,12 @@ import { documentRepository } from '../../repositories/document.repository.js';
 import { requireAuth, requirePermission, requestContext } from '../../middleware/auth.js';
 import type { AuthedRequest } from '../../middleware/auth.js';
 import { can } from '../../services/authorization.service.js';
-=======
-import { excelService } from '../../services/excel.service';
-import { projectRepository } from '../../repositories/project.repository';
-import { warehouseRepository } from '../../repositories/warehouse.repository';
-import { itemRepository } from '../../repositories/item.repository';
-import { stockTransactionRepository } from '../../repositories/stock-transaction.repository';
-import { projectSchema } from '../projects/projects.validators';
-import { warehouseSchema, itemSchema } from '../warehouses/warehouses.validators';
-import { stockTransactionSchema } from '../stock/stock.validators';
-import { documentSchema } from '../documents/documents.validators';
-import { boqSchema } from '../projects/boq.routes';
-import { boqRepository } from '../../repositories/boq.repository';
-import { documentRepository } from '../../repositories/document.repository';
-import { requireAuth, requirePermission, requestContext } from '../../middleware/auth';
-import type { AuthedRequest } from '../../middleware/auth';
-import { can } from '../../services/authorization.service';
->>>>>>> 22bb86216dfc3ef7502b7c36906e4665ecfd9f5e
 import type { BoqItem } from '@cos/shared';
 import { auditService } from '../../services/audit.service.js';
 import { importHistoryRepository } from '../../repositories/import-history.repository.js';
 import { createId } from '../../shared/id.js';
 import { nowIso } from '../../shared/time.js';
+import { detectDuplicates } from '../../services/smart-import/duplicate-detector.js';
 
 const ENTITY_PERMISSION: Record<string, string> = {
   projects: 'projects.create',
@@ -169,7 +152,6 @@ const boqMapper: Mapper = (row) => {
   for (const key of ['projectCode', 'itemCode', 'description', 'unit']) {
     if (!str(row, key)) errors.push(`${key} مطلوب`);
   }
-  if (errors.length) return { errors };
   // Excel cells arrive as strings — coerce numerics before validation so
   // invalid numbers surface as row errors instead of silent NaN rows.
   const parsed = boqSchema.safeParse({
@@ -300,23 +282,33 @@ importRouter.post('/smart/preview', upload.single('file'), requirePermission('ar
 
 /**
  * Step 3 — Execute the import with pre-validated rows.
+ * WP-2.8: server-side duplicate revalidation, 200-row limit, ignore
+ * client-provided duplicateIndices.
  */
 importRouter.post('/smart/confirm', requirePermission('archive.upload'), async (req: AuthedRequest, res) => {
   const rows = Array.isArray(req.body?.rows) ? req.body.rows : [];
-  const skipDuplicates = req.body?.skipDuplicates ?? true;
+  // WP-2.8: enforce 200-row limit
+  if (rows.length > 200) return res.status(400).json({ message: 'Limit exceeded: maximum 200 rows per import' });
   if (!rows.length) return res.status(400).json({ message: 'لا توجد صفوف صالحة للاستيراد' });
 
-  // If skipDuplicates, remove rows flagged as duplicates
-  const duplicateIndices = new Set<number>(
-    Array.isArray(req.body?.duplicateIndices) ? req.body.duplicateIndices : []
-  );
+  // WP-2.8: server-side duplicate revalidation — ignore client-provided duplicateIndices
+  const skipDuplicates = req.body?.skipDuplicates ?? true;
+  const ctx = await requestContext(req);
+
+  // Server-side duplicate detection: documentNumber + projectId
+  const existingDocs = await documentRepository.list();
+  const duplicates = detectDuplicates(rows, existingDocs);
+  const duplicateSet = new Set(duplicates.map((d) => d.rowIndex));
 
   let imported = 0;
   const failures: Array<{ index: number; errors: string[] }> = [];
-  const ctx = await requestContext(req);
 
   for (let i = 0; i < rows.length; i++) {
-    if (skipDuplicates && duplicateIndices.has(i)) continue;
+    // WP-2.8: do not trust client-provided duplicateIndices; use server detection
+    if (skipDuplicates && duplicateSet.has(i)) {
+      // Server detected this as a duplicate — skip it silently
+      continue;
+    }
 
     const row = rows[i] as Record<string, unknown>;
     // Phase 5: rows targeting a project require WRITE-level upload access there.
@@ -342,6 +334,15 @@ importRouter.post('/smart/confirm', requirePermission('archive.upload'), async (
 
       if (!parsed.success) {
         failures.push({ index: i, errors: Object.values(parsed.error.flatten().fieldErrors).flat().map(String) });
+        continue;
+      }
+
+      // WP-2.6: check if a document with same documentNumber + projectId already exists
+      const alreadyExists = existingDocs.some(
+        (d) => d.documentNumber === String(row.documentNumber ?? '') && d.projectId === String(row.projectId ?? '')
+      );
+      if (alreadyExists) {
+        failures.push({ index: i, errors: ['مستلم برقم مستند مكرر']); });
         continue;
       }
 
@@ -488,4 +489,3 @@ importRouter.post('/:entity/confirm', async (req: AuthedRequest, res) => {
   auditService.log(req, 'excel-import', entity, undefined, undefined, { imported, failed: failures.length });
   res.json({ imported, failed: failures.length, failures });
 });
-
